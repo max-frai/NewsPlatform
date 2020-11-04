@@ -1,0 +1,7 @@
+.GrayBorder:hover {
+    @apply border-gray-500 shadow-lg;
+}
+
+.GrayBorder {
+    @apply border border-gray-300 transition-all duration-500 rounded-lg;
+}

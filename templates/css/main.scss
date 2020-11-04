@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    overflow: auto;
+
+    margin: 0;
+    font-family: ysans, sans-serif;
+    font-size: 1em;
+}
+
+a {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: ysans;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/text-regular.woff2) format("woff2"), url(/static/text-regular.woff) format("woff")
+}
+
+@font-face {
+    font-family: ysans;
+    font-weight: 500;
+    font-display: swap;
+    src: url(/static/text-medium.woff2) format("woff2"), url(/static/text-medium.woff) format("woff")
+}
+
+@font-face {
+    font-family: ysans;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/static/text-bold.woff2) format("woff2"), url(/static/text-bold.woff) format("woff")
+}
+
+@font-face {
+    font-family: "ysans-serif";
+    src: url(/static/serif.woff2) format("woff2"), url(/static/serif.woff) format("woff");
+    font-weight: 900;
+    font-style: normal
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: "ysans-serif";
+}
+
+.leftMenuItemActive,
+.leftMenuItem:hover {
+    background-color: rgba(32, 35, 51, 0.07);
+}
+
+.leftMenuItem:active {
+    @apply scale-95 opacity-75;
+}
+
+.leftMenuItem {
+    @apply mb-2 w-5/6 text-lg font-medium py-2 px-4 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
+}
