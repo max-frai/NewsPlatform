@@ -1,11 +1,17 @@
+use std::sync::Arc;
+
 use actix_files::Files;
 use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
 use askama::Template;
+use card_fetcher::{CardFetcher, CardFetcherKind};
 use duct::cmd;
 use mongodb::{options::ClientOptions, Client};
+use state::State;
 
 pub mod card;
+pub mod card_fetcher;
 pub mod modules;
+pub mod state;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -13,10 +19,33 @@ struct IndexTemplate {
     center_content: String,
 }
 
+#[derive(Template)]
+#[template(path = "exact.html")]
+struct ExactTemplate {
+    center_content: String,
+}
+
+#[get("/general/{id}_{slug}")]
+async fn exact(
+    state: web::Data<State>,
+    web::Path((id, slug)): web::Path<(String, String)>,
+) -> impl Responder {
+    // let exact_tpl = modules::exact_card::ExactCardTpl {
+    //     card:
+    // }
+    // .render()
+    // .unwrap();
+
+    ""
+}
+
 #[get("/")]
-async fn index() -> impl Responder {
+async fn index(state: web::Data<State>) -> impl Responder {
+    let index_cards = state.fetcher.fetch(CardFetcherKind::Index).await;
+
     let news_list_tpl = modules::news_list::NewsListTpl {
-        title: Some(String::from("Проверка заголовка")),
+        title: Some(String::from("Последние новости")),
+        cards: vec![],
     }
     .render()
     .unwrap();
@@ -62,14 +91,27 @@ async fn main() -> std::io::Result<()> {
     }
     println!("Css is processed now");
 
-    let client = Client::with_uri_str("mongodb://localhost:27017")
+    println!("Connect mongodb");
+    let client = Client::with_uri_str("mongodb://127.0.0.1:27019")
         .await
         .expect("Failed to connect mongodb");
 
-    HttpServer::new(|| {
+    // let list_databases = client.list_database_names(None, None).await;
+    // dbg!(&list_databases);
+
+    let news = client.database("twn").collection("news");
+    let fetcher = Arc::new(CardFetcher::new(news));
+    // let state = Arc::new(State { fetcher });
+
+    println!("Create server");
+    HttpServer::new(move || {
         App::new()
+            .data(State {
+                fetcher: fetcher.clone(),
+            })
             .wrap(middleware::Logger::default())
             .service(index)
+            .service(exact)
             .service(Files::new("/static", "./templates/"))
     })
     .bind("127.0.0.1:4244")?

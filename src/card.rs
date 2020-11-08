@@ -9,16 +9,24 @@ pub struct Card<C>
 where
     C: Serialize + Clone,
 {
-    _id: ObjectId,
-    image: String,
-    title: String,
-    description: String,
-    slug: String,
-    #[serde(serialize_with = "ts_seconds::serialize")]
-    when: DateTime,
-    genre: Vec<String>,
-    views: u32,
-
+    pub _id: ObjectId,
+    pub og_image: String,
+    pub title: String,
+    pub html: String,
+    pub slug: String,
+    // #[serde(serialize_with = "ts_seconds::serialize")]
+    pub date: DateTime,
+    // genre: Vec<String>,
+    // views: u32,
     #[serde(flatten)]
     additional_fields: C,
+}
+
+impl<C> Card<C>
+where
+    C: Serialize + Clone,
+{
+    pub fn time_str(&self) -> String {
+        self.date.format("%R").to_string()
+    }
 }
