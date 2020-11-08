@@ -109,6 +109,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
+            .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(index)
             .service(exact)
