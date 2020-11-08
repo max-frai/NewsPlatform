@@ -101,14 +101,14 @@ async fn main() -> std::io::Result<()> {
 
     let news = client.database("twn").collection("news");
     let fetcher = Arc::new(CardFetcher::new(news));
-    // let state = Arc::new(State { fetcher });
+    let state = web::Data::new(State {
+        fetcher: fetcher.clone(),
+    });
 
     println!("Create server");
     HttpServer::new(move || {
         App::new()
-            .data(State {
-                fetcher: fetcher.clone(),
-            })
+            .app_data(state.clone())
             .wrap(middleware::Logger::default())
             .service(index)
             .service(exact)
