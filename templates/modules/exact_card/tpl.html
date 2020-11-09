@@ -1,3 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="absolute pointer-events-none w-0 h-0 invisible">
+    <filter id="duotone-one">
+        <feColorMatrix type="matrix" result="grayscale" values="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0">
+        </feColorMatrix>
+        <feComponentTransfer color-interpolation-filters="sRGB" result="duotone">
+            <feFuncR type="table" tableValues="0.27058823529411763 1"></feFuncR>
+            <feFuncG type="table" tableValues="0.30980392156862746 0.807843137254902"></feFuncG>
+            <feFuncB type="table" tableValues="0.5137254901960784 0.8901960784313725"></feFuncB>
+            <feFuncA type="table" tableValues="0 1"></feFuncA>
+        </feComponentTransfer>
+    </filter>
+</svg>
+
 <div class="ArticlePreview mt-2">
     <div class="item">
         <div class="bg-cover w-full h-full" style="background-image: url('{{ card.og_image }}');">
@@ -24,7 +37,14 @@
     </div>
 </div>
 
+<div class="flex my-3 items-center">
+    <div class="height1px w-full flex-grow bg-gray-400"> </div>
+    <div class="flex flex-shrink-0 items-center px-2">
+        <img class="w-4" src="/static/media/demostration.svg">
+    </div>
+    <div class="height1px w-full flex-grow bg-gray-400"> </div>
+</div>
 
-<div class="ArticleContent leading-tight mt-3">
+<div class="ArticleContent leading-tight">
     {{ card.html|safe }}
 </div>
