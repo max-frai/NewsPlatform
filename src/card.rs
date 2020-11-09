@@ -33,7 +33,7 @@ where
 
     pub fn full_date_str(&self) -> String {
         self.date
-            .format_localized("%e %B, %T", Locale::ru_RU)
+            .format_localized("%e %B %H:%M", Locale::ru_RU)
             .to_string()
     }
 }
