@@ -1,0 +1,15 @@
+/* purgecss start ignore */
+
+.ArticleContent img {
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+}
+
+.ArticleContent blockquote,
+.ArticleContent figure {
+    margin: 0;
+    padding: 0;
+}
+
+/* purgecss end ignore */

@@ -61,13 +61,14 @@ h1,
 h2,
 h3,
 h4,
-h5 {
+h5,
+strong {
     font-family: "ysans-serif";
 }
 
 .leftMenuItemActive,
 .leftMenuItem:hover {
-    background-color: rgba(32, 35, 51, 0.07);
+    background-color: white;
 }
 
 .leftMenuItem:active {

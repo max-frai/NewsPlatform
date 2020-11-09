@@ -7,6 +7,10 @@ pub async fn process_tailwind() -> std::io::Result<String> {
     for entry in std::fs::read_dir(modules_dir)? {
         let entry = entry?;
         let path = format!("{}/tpl.scss", entry.path().as_os_str().to_str().unwrap());
+        if !std::path::Path::new(&path).exists() {
+            continue;
+        }
+
         let css = std::fs::read_to_string(path)?;
 
         css_container = format!("{}\n{}", css_container, css);

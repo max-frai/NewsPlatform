@@ -10,7 +10,7 @@
 
     <div class="flex flex-1">
         <div class="w-3/12  relative">
-            <div class="fixed h-full w-3/12 px-6 py-6">
+            <div class="bg-gray-200 fixed h-full w-3/12 px-6 py-6">
                 {% block left_column %}{% endblock %}
             </div>
         </div>
@@ -18,7 +18,9 @@
             {% block center_column %}{% endblock %}
         </div>
         <div class="w-3/12">
-            {% block right_column %}{% endblock %}
+            <div class="bg-gray-200 fixed h-full w-3/12 px-6 py-6">
+                {% block right_column %}{% endblock %}
+            </div>
         </div>
     </div>
 

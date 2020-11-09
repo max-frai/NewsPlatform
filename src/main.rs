@@ -9,6 +9,7 @@ use actix_web::{
 };
 use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
 use card_fetcher::CardFetcher;
+use listenfd::ListenFd;
 
 use config;
 use constants::AppConfig;
@@ -67,7 +68,7 @@ async fn main() -> std::io::Result<()> {
     });
 
     println!("Create server");
-    HttpServer::new(move || {
+    let mut server = HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
             .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
@@ -76,8 +77,14 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(exact)
             .service(Files::new("/static", "./templates/"))
-    })
-    .bind(&constants.server_url)?
-    .run()
-    .await
+    });
+
+    let mut listenfd = ListenFd::from_env();
+    server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
+        server.listen(l)?
+    } else {
+        server.bind(&constants.server_url)?
+    };
+
+    server.run().await
 }
