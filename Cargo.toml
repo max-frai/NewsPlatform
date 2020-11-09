@@ -19,4 +19,5 @@ bson = "1.1"
 mongodb = "1.1"
 futures = "0.3"
 anyhow = "1.0"
+config = "0.10"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }

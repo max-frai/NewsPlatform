@@ -1,0 +1,4 @@
+server_url = "127.0.0.1:4244"
+mongodb_url = "mongodb://127.0.0.1:27019"
+database_name = "twn"
+cards_collection_name = "news"
