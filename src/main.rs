@@ -9,9 +9,10 @@ use actix_web::{
 };
 use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
 use card_fetcher::CardFetcher;
-use duct::cmd;
+
 use mongodb::{options::ClientOptions, Client};
 use state::State;
+use tailwind::process_tailwind;
 
 use crate::routes::error_500::render_500;
 use crate::routes::exact::exact;
@@ -22,26 +23,7 @@ pub mod card_fetcher;
 pub mod modules;
 pub mod routes;
 pub mod state;
-
-async fn process_tailwind() -> std::io::Result<String> {
-    let mut css_container = String::new();
-    let modules_dir = "templates/modules/";
-
-    for entry in std::fs::read_dir(modules_dir)? {
-        let entry = entry?;
-        let path = format!("{}/tpl.scss", entry.path().as_os_str().to_str().unwrap());
-        let css = std::fs::read_to_string(path)?;
-
-        css_container = format!("{}\n{}", css_container, css);
-    }
-
-    let main_css = std::fs::read_to_string("templates/css/main.scss")?;
-    let all_css = format!("{}\n{}", main_css, css_container);
-
-    std::fs::write("templates/css/main.css", all_css)?;
-
-    cmd!("postcss", "templates/css/main.css", "--replace").read()
-}
+pub mod tailwind;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
