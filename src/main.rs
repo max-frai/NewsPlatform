@@ -1,63 +1,27 @@
 use std::sync::Arc;
 
 use actix_files::Files;
+use actix_web::{
+    dev::{self, Body, ResponseBody},
+    http,
+    middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers},
+    Error,
+};
 use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
-use askama::Template;
-use card_fetcher::{CardFetcher, CardFetcherKind};
+use card_fetcher::CardFetcher;
 use duct::cmd;
 use mongodb::{options::ClientOptions, Client};
 use state::State;
 
+use crate::routes::error_500::render_500;
+use crate::routes::exact::exact;
+use crate::routes::index::index;
+
 pub mod card;
 pub mod card_fetcher;
 pub mod modules;
+pub mod routes;
 pub mod state;
-
-#[derive(Template)]
-#[template(path = "index.html")]
-struct IndexTemplate {
-    center_content: String,
-}
-
-#[derive(Template)]
-#[template(path = "exact.html")]
-struct ExactTemplate {
-    center_content: String,
-}
-
-#[get("/general/{id}_{slug}")]
-async fn exact(
-    state: web::Data<State>,
-    web::Path((id, slug)): web::Path<(String, String)>,
-) -> impl Responder {
-    // let exact_tpl = modules::exact_card::ExactCardTpl {
-    //     card:
-    // }
-    // .render()
-    // .unwrap();
-
-    ""
-}
-
-#[get("/")]
-async fn index(state: web::Data<State>) -> impl Responder {
-    let index_cards = state.fetcher.fetch(CardFetcherKind::Index).await;
-
-    let news_list_tpl = modules::news_list::NewsListTpl {
-        title: Some(String::from("Последние новости")),
-        cards: vec![],
-    }
-    .render()
-    .unwrap();
-
-    HttpResponse::Ok().content_type("text/html").body(
-        IndexTemplate {
-            center_content: news_list_tpl,
-        }
-        .render()
-        .unwrap(),
-    )
-}
 
 async fn process_tailwind() -> std::io::Result<String> {
     let mut css_container = String::new();
@@ -109,6 +73,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
+            .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(index)

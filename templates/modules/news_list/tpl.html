@@ -7,7 +7,7 @@
     {% for card in cards %}
     <div>
         <div class="mb-1 twoRows" title="{{ card.title }}">
-            <a href="/general/1_{{ card.slug }}">
+            <a href="/general/{{ card._id }}_{{ card.slug }}">
                 <span class="font-medium text-xs px-1 md:px-2 text-gray-600 bg-gray-200 rounded-full inline-block mr-1">
                     {{ card.time_str() }}
                 </span>

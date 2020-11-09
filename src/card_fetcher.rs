@@ -1,12 +1,12 @@
 use crate::card::Card;
 use anyhow::Result;
-use bson::doc;
+use bson::{doc, oid::ObjectId};
 use futures::stream::StreamExt;
 use mongodb::{options::FindOptions, Collection};
 
 pub enum CardFetcherKind {
     Index,
-    Exact(u64),
+    Exact(String),
 }
 
 pub struct CardFetcher {
@@ -45,17 +45,20 @@ impl CardFetcher {
         Ok(result)
     }
 
-    async fn exact_fetcher(&self, id: u64) -> Result<Vec<Card<()>>> {
-        // let card = self
-        //     .collection
-        //     .find_one(
-        //         doc! {
-        //             "_id" : id
-        //         },
-        //         None,
-        //     )
-        //     .await;
-        Ok(vec![])
+    async fn exact_fetcher(&self, id: String) -> Result<Vec<Card<()>>> {
+        let card = self
+            .collection
+            .find_one(
+                doc! {
+                    "_id" : ObjectId::with_string(&id).unwrap()
+                },
+                None,
+            )
+            .await;
+
+        let card = bson::from_document(card?.unwrap())?;
+
+        Ok(vec![card])
     }
 
     pub async fn fetch(&self, kind: CardFetcherKind) -> Result<Vec<Card<()>>> {
