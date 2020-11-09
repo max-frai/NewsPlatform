@@ -1,4 +1,8 @@
-<h1>{{ card.title }}</h1>
+<h1 class="text-2xl mb-2 leading-tight">{{ card.title }}</h1>
+
+<span class="text-gray-600">{{ card.full_date_str() }}</span>
+
+<hr>
 
 <div>
     {{ card.html|safe }}

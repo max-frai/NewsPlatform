@@ -1,4 +1,5 @@
 use bson::{oid::ObjectId, DateTime};
+use chrono::prelude::*;
 use chrono::serde::ts_seconds;
 use serde::{Deserialize, Serialize};
 
@@ -28,5 +29,11 @@ where
 {
     pub fn time_str(&self) -> String {
         self.date.format("%R").to_string()
+    }
+
+    pub fn full_date_str(&self) -> String {
+        self.date
+            .format_localized("%e %B, %T", Locale::ru_RU)
+            .to_string()
     }
 }

@@ -7,7 +7,7 @@ use actix_web::{get, web, HttpResponse, Responder};
 use askama::Template;
 
 #[derive(Template)]
-#[template(path = "exact.html")]
+#[template(path = "routes/exact.html")]
 struct ExactTemplate {
     center_content: String,
 }
