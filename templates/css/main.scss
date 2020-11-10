@@ -5,13 +5,11 @@
 html,
 body {
     max-width: 100%;
-    overflow: hidden;
-    position: relative;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    overflow: auto;
+    height: auto !important;
 
     margin: 0;
     font-family: ysans, sans-serif;
@@ -21,6 +19,10 @@ body {
 a {
     text-decoration: none !important;
     color: inherit !important;
+}
+
+p {
+    margin-bottom: 15px;
 }
 
 *,

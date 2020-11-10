@@ -30,7 +30,19 @@ async fn exact(
         .render(
             "modules/compact_news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
-                title: Some(String::from("Похожие новости")),
+                title: Some(String::from("Последние новости")),
+                cards: index_cards.clone(),
+            })
+            .unwrap(),
+        )
+        .unwrap();
+
+    let right_tpl2 = state
+        .tera
+        .render(
+            "modules/compact_news_list/tpl.tera",
+            &Context::from_serialize(&modules::news_list::NewsListTpl {
+                title: Some(String::from("Новости Спорта")),
                 cards: index_cards,
             })
             .unwrap(),
@@ -39,7 +51,7 @@ async fn exact(
 
     let mut context = Context::new();
     context.insert("center_content", &center_tpl);
-    context.insert("right_content", &right_tpl);
+    context.insert("right_content", &format!("{}{}", right_tpl, right_tpl2));
 
     HttpResponse::Ok()
         .content_type("text/html")

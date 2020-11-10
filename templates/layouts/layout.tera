@@ -4,26 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/static/css/main.css" rel="stylesheet">
+    <script src="/static/js/sticky-sidebar.min.js"></script>
 </head>
 
 <body>
 
-    <div class="flex flex-1">
+    <div class="flex flex-1 stickycontainer">
         <div class="w-3/12  relative">
             <div class="fixed h-full w-3/12 px-6 py-6">
                 {% block left_column %}{% endblock left_column %}
             </div>
         </div>
-        <div class="w-6/12  p-6 py-3">
+        <div id="content" class="w-6/12  p-6 py-3">
             {% block center_column %}{% endblock center_column %}
         </div>
-        <div class="w-3/12">
-            <div class=" fixed h-full w-3/12 px-6 py-6">
+        <div id="sidebar" class="w-3/12 ">
+            <div class="sidebar__inner px-6">
                 {% block right_column %}{% endblock right_column %}
             </div>
         </div>
     </div>
 
+    <style>
+    #sidebar{
+        will-change: min-height;
+    }
+
+    .sidebar__inner{
+        transform: translate(0, 0);
+        transform: translate3d(0, 0, 0);
+        will-change: position, transform;
+        position: relative;
+    }
+    </style>
+    <script type="text/javascript">
+        var sidebar = new StickySidebar('#sidebar', {
+            containerSelector: '.stickycontainer',
+            innerWrapperSelector: '.sidebar__inner',
+            minWidth: 300,
+            topSpacing: 20,
+            bottomSpacing: 20
+        });
+    </script>
 </body>
 
 </html>

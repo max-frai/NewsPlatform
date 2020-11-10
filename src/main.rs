@@ -12,6 +12,7 @@ use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
 use crate::routes::exact::exact;
+use crate::routes::test::test;
 use config;
 use constants::AppConfig;
 use mongodb::{options::ClientOptions, Client};
@@ -81,6 +82,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(index)
             .service(exact)
+            .service(test)
             .service(Files::new("/static", "./templates/"))
     });
 
