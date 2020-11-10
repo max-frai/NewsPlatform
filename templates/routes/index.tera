@@ -1,7 +1,7 @@
-{% extends "layouts/layout.html" %}
+{% extends "layouts/layout.tera" %}
 
 {% block left_column %}
-{% include "parts/menu.html" %}
+{% include "parts/menu.tera" %}
 {% endblock %}
 
 {% block center_column %}

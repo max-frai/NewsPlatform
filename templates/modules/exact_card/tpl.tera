@@ -1,27 +1,29 @@
-{% include "media/svg_filters.svg" %}
+{% include "media/svg_filters.tera" %}
 
 <div class="ArticlePreview mt-2">
     <div class="item">
-        <div class="bg-cover w-full h-full" style="background-image: url('{{ card.og_image }}');">
+        <div class="bg-cover w-full h-full" style="background-image: url('{{ og_image }}');">
         </div>
     </div>
     <div class="shade"></div>
     <div class="info pl-4 md:pl-5">
-        <h1 class="title pr-4 md:pr-8">{{ card.title }}</h1>
+        <h1 class="title pr-4 md:pr-8">{{ title }}</h1>
         <div class="flex flex-1 justify-between items-center mt-4 text-xs">
             <div class="tags">
                 <a>Спорт</a>
                 <a>Наука</a>
             </div>
             <div class="dateViews">
-                {{ card.full_date_str }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
-                {% include "media/eye.svg" %}
+                {{ date['$date'] | date(format="%d %b %H:%M") }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                {% include "media/eye.tera" %}
                 &nbsp;&nbsp;50.7 K
             </div>
         </div>
     </div>
 </div>
 
+
+{# {% import "parts/lined_title.tera" as linedtitle %} #}
 <!-- <div class="flex my-3 items-center">
     <div class="height1px w-full flex-grow bg-gray-400"> </div>
     <div class="flex flex-shrink-0 items-center px-2">
@@ -30,6 +32,8 @@
     <div class="height1px w-full flex-grow bg-gray-400"> </div>
 </div> -->
 
+{# {{ linedtitle::generate("<img class="w-4" src="/static/media/demostration.svg">") }} #}
+
 <div class="ArticleContent leading-tight">
-    {{ card.html }}
+    {{ html | safe }}
 </div>

@@ -20,7 +20,7 @@ pub fn make_card_url(args: &HashMap<String, Value>) -> Result<Value> {
 }
 
 pub fn init_tera() -> Arc<Tera> {
-    let mut tera = Tera::new("templates/**/*.html").expect("Failed to load templates");
+    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
     tera.register_function("make_card_url", make_card_url);
 
     Arc::new(tera)

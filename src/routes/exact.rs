@@ -4,14 +4,7 @@ use crate::{
     modules,
 };
 use actix_web::{get, web, HttpResponse, Responder};
-use askama::Template;
-
-#[derive(Template)]
-#[template(path = "routes/exact.html")]
-struct ExactTemplate {
-    center_content: String,
-    right_content: String,
-}
+use tera::Context;
 
 #[get("/general/{id}_{slug}")]
 async fn exact(
@@ -23,27 +16,32 @@ async fn exact(
         .fetch(CardFetcherKind::Exact(id))
         .await
         .unwrap();
-
-    let center_content = modules::exact_card::ExactCardTpl {
-        card: card.first().unwrap().clone(),
-    }
-    .render()
-    .unwrap();
+    let center_tpl = state
+        .tera
+        .render(
+            "modules/exact_card/tpl.tera",
+            &Context::from_serialize(&card.first().unwrap().clone()).unwrap(),
+        )
+        .unwrap();
 
     let index_cards = state.fetcher.fetch(CardFetcherKind::Index).await.unwrap();
-    let right_content = modules::compact_news_list::NewsListTpl {
-        title: Some(String::from("Похожие новости")),
-        cards: index_cards,
-    }
-    .render()
-    .unwrap();
+    let right_tpl = state
+        .tera
+        .render(
+            "modules/compact_news_list/tpl.tera",
+            &Context::from_serialize(&modules::news_list::NewsListTpl {
+                title: Some(String::from("Похожие новости")),
+                cards: index_cards,
+            })
+            .unwrap(),
+        )
+        .unwrap();
 
-    HttpResponse::Ok().content_type("text/html").body(
-        ExactTemplate {
-            center_content,
-            right_content,
-        }
-        .render()
-        .unwrap(),
-    )
+    let mut context = Context::new();
+    context.insert("center_content", &center_tpl);
+    context.insert("right_content", &right_tpl);
+
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(state.tera.render("routes/exact.tera", &context).unwrap())
 }

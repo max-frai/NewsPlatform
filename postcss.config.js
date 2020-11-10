@@ -9,7 +9,7 @@ module.exports = {
     //   preset: 'default'
     // }),
     purgecss({
-      content: ['./templates/**/*.html', './templates/*.html', './templates/modules/**/*.html', './templates/media/*.svg', './templates/parts/*.html'],
+      content: ['./templates/**/*.tera', './templates/*.tera', './templates/modules/**/*.tera', './templates/media/*.tera', './templates/parts/*.tera'],
       defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
     })
   ]

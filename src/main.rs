@@ -11,6 +11,7 @@ use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Respo
 use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
+use crate::routes::exact::exact;
 use config;
 use constants::AppConfig;
 use mongodb::{options::ClientOptions, Client};
@@ -45,10 +46,10 @@ async fn main() -> std::io::Result<()> {
         Arc::new(settings.try_into().expect("Wrong configuration format"));
 
     println!("Start css processing...");
-    // if let Err(e) = process_tailwind().await {
-    //     println!("Failed to process tailwind modules");
-    //     dbg!(e);
-    // }
+    if let Err(e) = process_tailwind().await {
+        println!("Failed to process tailwind modules");
+        dbg!(e);
+    }
     println!("Css is processed now");
 
     println!("Load tera templates...");
@@ -79,7 +80,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(index)
-            // .service(exact)
+            .service(exact)
             .service(Files::new("/static", "./templates/"))
     });
 
