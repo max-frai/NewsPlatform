@@ -4,7 +4,7 @@
 {{ lined_title::generate(title="<h1>" ~ title ~ "</h1>") }}
 {% endif %}
 
-<div class="text-sm font-medium mt-3 tracking-tight">
+<div class="text-sm mt-3 tracking-tight">
 
     {% for card in cards %}
     <div class="mb-3 leading-tight" title="{{ card.title | escape }}">

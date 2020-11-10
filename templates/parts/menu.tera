@@ -2,6 +2,7 @@
     <img class="w-6 mx-3" src="/static/media/demostration.svg"> Новостная Платформа
 </div>
 
+<a href="/">
 <div class="leftMenuItem leftMenuItemActive">
     <span>
         {% include "media/feed.tera" %}
@@ -10,6 +11,7 @@
         Лента
     </span>
 </div>
+</a>
 
 
 <div class="leftMenuItem">

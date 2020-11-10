@@ -31,6 +31,15 @@ p {
     box-sizing: border-box;
 }
 
+/* purgecss start ignore */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* purgecss end ignore */
+
 @font-face {
     font-family: ysans;
     font-weight: 400;
@@ -59,18 +68,9 @@ p {
     font-style: normal
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-strong {
-    font-family: "ysans-serif";
-}
-
 .leftMenuItemActive,
 .leftMenuItem:hover {
-    background-color: white;
+    background-color: rgba(32, 35, 51, 0.07);
 }
 
 .leftMenuItem:active {

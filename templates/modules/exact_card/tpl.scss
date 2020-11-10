@@ -16,6 +16,15 @@
     margin: 0 auto;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+strong {
+    font-family: "ysans-serif" !important;
+}
+
 .ArticlePreview {
     @apply relative w-full inline-block h-64;
 }
