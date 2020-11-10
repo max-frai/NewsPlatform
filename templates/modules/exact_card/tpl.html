@@ -14,7 +14,7 @@
                 <a>Наука</a>
             </div>
             <div class="dateViews">
-                {{ card.full_date_str() }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                {{ card.full_date_str }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
                 {% include "media/eye.svg" %}
                 &nbsp;&nbsp;50.7 K
             </div>
@@ -22,14 +22,14 @@
     </div>
 </div>
 
-<div class="flex my-3 items-center">
+<!-- <div class="flex my-3 items-center">
     <div class="height1px w-full flex-grow bg-gray-400"> </div>
     <div class="flex flex-shrink-0 items-center px-2">
         <img class="w-4" src="/static/media/demostration.svg">
     </div>
     <div class="height1px w-full flex-grow bg-gray-400"> </div>
-</div>
+</div> -->
 
 <div class="ArticleContent leading-tight">
-    {{ card.html|safe }}
+    {{ card.html }}
 </div>

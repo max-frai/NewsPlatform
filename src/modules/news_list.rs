@@ -1,10 +1,8 @@
-use askama::Template;
-
 use crate::card::Card;
+use serde::{Deserialize, Serialize};
 
-#[derive(Template)]
-#[template(path = "modules/news_list/tpl.html")]
+#[derive(Serialize, Deserialize)]
 pub struct NewsListTpl {
     pub title: Option<String>,
-    pub cards: Vec<Card<()>>,
+    pub cards: Vec<Card>,
 }

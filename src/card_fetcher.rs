@@ -18,7 +18,7 @@ impl CardFetcher {
         CardFetcher { collection }
     }
 
-    async fn index_fetcher(&self) -> Result<Vec<Card<()>>> {
+    async fn index_fetcher(&self) -> Result<Vec<Card>> {
         let opts = FindOptions::builder()
             .limit(10)
             .sort(Some(doc! {
@@ -38,14 +38,14 @@ impl CardFetcher {
 
         let mut result = vec![];
         while let Some(card) = cards.next().await {
-            let card_typed: Card<()> = bson::from_document(card?)?;
+            let card_typed: Card = bson::from_document(card?)?;
             result.push(card_typed);
         }
 
         Ok(result)
     }
 
-    async fn exact_fetcher(&self, id: String) -> Result<Vec<Card<()>>> {
+    async fn exact_fetcher(&self, id: String) -> Result<Vec<Card>> {
         let card = self
             .collection
             .find_one(
@@ -61,7 +61,7 @@ impl CardFetcher {
         Ok(vec![card])
     }
 
-    pub async fn fetch(&self, kind: CardFetcherKind) -> Result<Vec<Card<()>>> {
+    pub async fn fetch(&self, kind: CardFetcherKind) -> Result<Vec<Card>> {
         match kind {
             CardFetcherKind::Index => self.index_fetcher().await,
             CardFetcherKind::Exact(id) => self.exact_fetcher(id).await,

@@ -16,9 +16,10 @@ use constants::AppConfig;
 use mongodb::{options::ClientOptions, Client};
 use state::State;
 use tailwind::process_tailwind;
+use tera::Tera;
 
-use crate::routes::error_500::render_500;
-use crate::routes::exact::exact;
+// use crate::routes::error_500::render_500;
+// use crate::routes::exact::exact;
 use crate::routes::index::index;
 
 pub mod card;
@@ -28,6 +29,7 @@ pub mod modules;
 pub mod routes;
 pub mod state;
 pub mod tailwind;
+pub mod templates;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -43,19 +45,20 @@ async fn main() -> std::io::Result<()> {
         Arc::new(settings.try_into().expect("Wrong configuration format"));
 
     println!("Start css processing...");
-    if let Err(e) = process_tailwind().await {
-        println!("Failed to process tailwind modules");
-        dbg!(e);
-    }
+    // if let Err(e) = process_tailwind().await {
+    //     println!("Failed to process tailwind modules");
+    //     dbg!(e);
+    // }
     println!("Css is processed now");
+
+    println!("Load tera templates...");
+    let tera = templates::init_tera();
+    println!("Templates are loaded");
 
     println!("Connect mongodb");
     let client = Client::with_uri_str(&constants.mongodb_url)
         .await
         .expect("Failed to connect mongodb");
-
-    // let list_databases = client.list_database_names(None, None).await;
-    // dbg!(&list_databases);
 
     let news = client
         .database(&constants.database_name)
@@ -65,17 +68,18 @@ async fn main() -> std::io::Result<()> {
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
+        tera: tera.clone(),
     });
 
     println!("Create server");
     let mut server = HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
+            // .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(index)
-            .service(exact)
+            // .service(exact)
             .service(Files::new("/static", "./templates/"))
     });
 

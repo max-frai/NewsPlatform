@@ -10,6 +10,7 @@ use askama::Template;
 #[template(path = "routes/exact.html")]
 struct ExactTemplate {
     center_content: String,
+    right_content: String,
 }
 
 #[get("/general/{id}_{slug}")]
@@ -23,15 +24,24 @@ async fn exact(
         .await
         .unwrap();
 
-    let exact_tpl = modules::exact_card::ExactCardTpl {
+    let center_content = modules::exact_card::ExactCardTpl {
         card: card.first().unwrap().clone(),
+    }
+    .render()
+    .unwrap();
+
+    let index_cards = state.fetcher.fetch(CardFetcherKind::Index).await.unwrap();
+    let right_content = modules::compact_news_list::NewsListTpl {
+        title: Some(String::from("Похожие новости")),
+        cards: index_cards,
     }
     .render()
     .unwrap();
 
     HttpResponse::Ok().content_type("text/html").body(
         ExactTemplate {
-            center_content: exact_tpl,
+            center_content,
+            right_content,
         }
         .render()
         .unwrap(),

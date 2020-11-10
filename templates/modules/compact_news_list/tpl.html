@@ -1,0 +1,18 @@
+{% if title %}
+<h1 class="mb-2">{{ title }}</h1>
+{% endif %}
+
+<div class="text-sm font-medium">
+
+    {% for card in cards %}
+    <div class="mb-3 leading-tight" title="{{ card.title }}">
+        <a href="{{ card.link }}">
+            <span class="text-xs mr-1 text-gray-600 inline-block">
+                {{ "2019-09-19T13:18:48.731Z" | date(format="%Y-%m-%d %H:%M") }}
+            </span>
+            <span class="title">{{ card.title }}</span>
+        </a>
+    </div>
+    {% endfor %}
+
+</div>
