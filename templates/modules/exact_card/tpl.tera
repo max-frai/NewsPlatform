@@ -1,3 +1,4 @@
+{% import "parts/lined_title.tera" as lined_title %}
 {% include "media/svg_filters.tera" %}
 
 <div class="ArticlePreview mt-2">
@@ -22,17 +23,7 @@
     </div>
 </div>
 
-
-{# {% import "parts/lined_title.tera" as linedtitle %} #}
-<!-- <div class="flex my-3 items-center">
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
-    <div class="flex flex-shrink-0 items-center px-2">
-        <img class="w-4" src="/static/media/demostration.svg">
-    </div>
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
-</div> -->
-
-{# {{ linedtitle::generate("<img class="w-4" src="/static/media/demostration.svg">") }} #}
+{{ lined_title::generate(title='<img class="w-4" src="/static/media/demostration.svg">') }}
 
 <div class="ArticleContent leading-tight">
     {{ html | safe }}
