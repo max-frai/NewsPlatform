@@ -46,6 +46,12 @@ h1 {
  * 2. Show the overflow in Edge and IE.
  */
 
+hr {
+  box-sizing: content-box; /* 1 */
+  height: 0; /* 1 */
+  overflow: visible; /* 2 */
+}
+
 /**
  * 1. Correct the inheritance and scaling of font size in all browsers.
  * 2. Correct the odd `em` font sizing in all browsers.
@@ -206,6 +212,7 @@ img {
 
 
 h1,
+hr,
 p {
   margin: 0;
 }
@@ -269,6 +276,10 @@ html {
 /*
  * Ensure horizontal rules are visible by default
  */
+
+hr {
+  border-top-width: 1px;
+}
 
 /**
  * Undo the `border-style: none` reset that Normalize applies to images so that
@@ -372,6 +383,12 @@ img {
   }
 }
 
+.bg-white {
+  --bg-opacity: 1;
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, var(--bg-opacity));
+}
+
 .bg-gray-200 {
   --bg-opacity: 1;
   background-color: #edf2f7;
@@ -386,6 +403,12 @@ img {
 
 .bg-cover {
   background-size: cover;
+}
+
+.border-gray-300 {
+  --border-opacity: 1;
+  border-color: #e2e8f0;
+  border-color: rgba(226, 232, 240, var(--border-opacity));
 }
 
 .rounded-xl {
@@ -412,12 +435,28 @@ img {
   display: flex;
 }
 
+.inline-flex {
+  display: inline-flex;
+}
+
 .table {
   display: table;
 }
 
+.flex-no-wrap {
+  flex-wrap: nowrap;
+}
+
 .items-center {
   align-items: center;
+}
+
+.content-center {
+  align-content: center;
+}
+
+.self-center {
+  align-self: center;
 }
 
 .justify-between {
@@ -448,6 +487,14 @@ img {
   height: 0;
 }
 
+.h-6 {
+  height: 1.5rem;
+}
+
+.h-10 {
+  height: 2.5rem;
+}
+
 .h-full {
   height: 100%;
 }
@@ -464,6 +511,10 @@ img {
   font-size: 1.125rem;
 }
 
+.text-2xl {
+  font-size: 1.5rem;
+}
+
 .leading-tight {
   line-height: 1.25;
 }
@@ -476,6 +527,11 @@ img {
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mr-1 {
@@ -510,8 +566,21 @@ img {
   margin-bottom: 2rem;
 }
 
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
 .p-6 {
   padding: 1.5rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .px-1 {
@@ -537,6 +606,14 @@ img {
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
+}
+
+.pl-1 {
+  padding-left: 0.25rem;
 }
 
 .pl-3 {
@@ -571,10 +648,32 @@ img {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
+.text-center {
+  text-align: center;
+}
+
 .text-gray-600 {
   --text-opacity: 1;
   color: #718096;
   color: rgba(113, 128, 150, var(--text-opacity));
+}
+
+.text-red-600 {
+  --text-opacity: 1;
+  color: #e53e3e;
+  color: rgba(229, 62, 62, var(--text-opacity));
+}
+
+.text-orange-800 {
+  --text-opacity: 1;
+  color: #9c4221;
+  color: rgba(156, 66, 33, var(--text-opacity));
+}
+
+.text-green-600 {
+  --text-opacity: 1;
+  color: #38a169;
+  color: rgba(56, 161, 105, var(--text-opacity));
 }
 
 .tracking-tight {
@@ -881,6 +980,10 @@ strong {
 
 @media (min-width: 768px) {
 
+  .md\:justify-center {
+    justify-content: center;
+  }
+
   .md\:p-3 {
     padding: 0.75rem;
   }
@@ -888,6 +991,16 @@ strong {
   .md\:px-2 {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+  }
+
+  .md\:py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .md\:px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
   .md\:px-4 {

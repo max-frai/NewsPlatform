@@ -1,6 +1,8 @@
 {% import "parts/lined_title.tera" as lined_title %}
 {% include "media/svg_filters.tera" %}
 
+{% include "parts/graphs.tera" %}
+
 <div class="ArticlePreview mt-2 shadow-2xl rounded-xl">
     <div class="item">
         <div class="bg-cover w-full h-full" style="background-image: url('{{ og_image }}');">
