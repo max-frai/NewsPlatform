@@ -30,7 +30,7 @@ impl CardFetcher {
         }
     }
 
-    async fn fetcher(&self, query: &CardQuery) -> Result<Vec<Card>> {
+    pub async fn fetch(&self, query: &CardQuery) -> Result<Vec<Card>> {
         if let Ok(mut cache) = self.cache.lock() {
             if let Some((cards, timeouts)) = cache.get_mut(&query.name) {
                 if Utc::now().timestamp() >= *timeouts {
@@ -63,7 +63,7 @@ impl CardFetcher {
         Ok(result)
     }
 
-    async fn exact_fetcher(&self, id: String) -> Result<Card> {
+    pub async fn fetch_exact(&self, id: String) -> Result<Card> {
         if let Ok(mut cache) = self.exact_cache.lock() {
             if let Some(card) = cache.get_mut(&id) {
                 return Ok(card.clone());
@@ -86,13 +86,5 @@ impl CardFetcher {
         }
 
         Ok(card)
-    }
-
-    pub async fn fetch(&self, query: &CardQuery) -> Result<Vec<Card>> {
-        self.fetcher(query).await
-    }
-
-    pub async fn fetch_exact(&self, id: String) -> Result<Card> {
-        self.exact_fetcher(id).await
     }
 }

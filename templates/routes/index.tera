@@ -1,9 +1,5 @@
 {% extends "layouts/layout.tera" %}
 
-{% block left_column %}
-{% include "parts/menu.tera" %}
-{% endblock %}
-
 {% block center_column %}
 {% if center_content %}
 {{ center_content | safe }}

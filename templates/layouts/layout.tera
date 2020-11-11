@@ -12,7 +12,10 @@
     <div class="flex flex-1 stickycontainer">
         <div class="w-3/12  relative">
             <div class="fixed h-full w-3/12 px-6 py-6">
-                {% block left_column %}{% endblock left_column %}
+                <div class="relative h-full w-full">
+                    {% include "parts/menu.tera" %}
+                    {% block left_column %}{% endblock left_column %}
+                </div>
             </div>
         </div>
         <div id="content" class="w-6/12  p-6 py-3">
@@ -31,9 +34,7 @@
         var sidebar = new StickySidebar('#sidebar', {
             containerSelector: '.stickycontainer',
             innerWrapperSelector: '.sidebar__inner',
-            minWidth: 300
-            /*topSpacing: 20,
-            bottomSpacing: 30*/
+            minWidth: 800
         });
     </script>
 </body>
