@@ -1,5 +1,4 @@
-use serde::Serialize;
-use std::{collections::BTreeMap, collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 use tera::{from_value, to_value, Tera, Value};
 use tera::{Error, Result};
 

@@ -1,8 +1,4 @@
 use crate::state::State;
-use crate::{
-    card_fetcher::{CardFetcher, CardFetcherKind},
-    modules,
-};
 use actix_web::{get, web, HttpResponse, Responder};
 use tera::Context;
 

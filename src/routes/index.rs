@@ -1,14 +1,14 @@
 use crate::state::State;
 use crate::{
-    card_fetcher::{CardFetcher, CardFetcherKind},
     modules,
 };
 use actix_web::{get, web, HttpResponse, Responder};
 use tera::Context;
+use crate::card_queries::INDEX_CARDQUERY;
 
 #[get("/")]
 async fn index(state: web::Data<State>) -> impl Responder {
-    let index_cards = state.fetcher.fetch(CardFetcherKind::Index).await.unwrap();
+    let index_cards = state.fetcher.fetch(&INDEX_CARDQUERY).await.unwrap();
 
     let news_list_tpl = state
         .tera

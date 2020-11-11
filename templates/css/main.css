@@ -524,9 +524,9 @@ img {
   margin-right: 0.75rem;
 }
 
-.my-4 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.my-6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .mx-auto {
@@ -821,9 +821,11 @@ select:focus {
 
   src: url(/static/media/serif.woff2) format("woff2"), url(/static/media/serif.woff) format("woff");
 
+  font-display: swap;
+
   font-weight: 900;
 
-  font-style: normal
+  font-style: normal;
 }
 
 .leftMenuItemActive,
@@ -867,6 +869,17 @@ select:focus {
   height: 1px;
 }
 
+#sidebar {
+  will-change: min-height;
+}
+
+.sidebar__inner {
+  transform: translate(0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: position, transform;
+  position: relative;
+}
+
 .GrayBorder:hover {
   --border-opacity: 1;
   border-color: #a0aec0;
@@ -888,6 +901,7 @@ select:focus {
   max-width: 100%;
   margin: 0 auto;
   border-radius: 5px;
+  display: none;
 }
 
 .ArticleContent blockquote,
@@ -898,6 +912,10 @@ select:focus {
   max-width: 100%;
   display: block;
   margin: 0 auto;
+}
+
+.h-68 {
+  height: 20rem;
 }
 
 h1,
@@ -913,7 +931,7 @@ strong {
   position: relative;
   width: 100%;
   display: inline-block;
-  height: 16rem;
+  height: 20rem;
 }
 
 .ArticlePreview .info {
@@ -969,7 +987,7 @@ strong {
 
 .ArticlePreview .item {
   width: 100%;
-  height: 16rem;
+  height: 20rem;
   display: inline-block;
   overflow: hidden;
   position: relative;

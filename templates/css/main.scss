@@ -64,8 +64,9 @@ select:focus {
 @font-face {
     font-family: "ysans-serif";
     src: url(/static/media/serif.woff2) format("woff2"), url(/static/media/serif.woff) format("woff");
+    font-display: swap;
     font-weight: 900;
-    font-style: normal
+    font-style: normal;
 }
 
 .leftMenuItemActive,
@@ -83,4 +84,15 @@ select:focus {
 
 .height1px {
     height: 1px;
+}
+
+#sidebar {
+    will-change: min-height;
+}
+
+.sidebar__inner {
+    transform: translate(0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: position, transform;
+    position: relative;
 }

@@ -1,7 +1,6 @@
 use bson::{oid::ObjectId, DateTime};
-use chrono::prelude::*;
 // use chrono::serde::ts_seconds;
-use serde::{Deserialize, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Card {
@@ -15,15 +14,3 @@ pub struct Card {
     // genre: Vec<String>,
     // views: u32,
 }
-
-// let extended = Extended {
-//     card: self,
-//     time_str: self.date.format("%R").to_string(),
-//     full_date_str: self
-//         .date
-//         .format_localized("%e %B %H:%M", Locale::ru_RU)
-//         .to_string(),
-//     link: format!("/general/{}_{}", self._id, self.slug),
-// };
-
-// serializer.

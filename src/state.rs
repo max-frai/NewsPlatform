@@ -1,7 +1,5 @@
 use std::sync::Arc;
-
 use tera::Tera;
-
 use crate::{card_fetcher::CardFetcher, constants::AppConfig};
 
 pub struct State {

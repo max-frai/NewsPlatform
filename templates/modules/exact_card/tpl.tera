@@ -25,7 +25,7 @@
     </div>
 </div>
 
-<div class="my-4">
+<div class="my-6">
 {{ lined_title::generate(title='<img class="w-4" src="/static/media/demostration.svg">') }}
 </div>
 

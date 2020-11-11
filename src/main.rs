@@ -1,31 +1,28 @@
 use std::sync::Arc;
 
 use actix_files::Files;
-use actix_web::{
-    dev::{self, Body, ResponseBody},
-    http,
-    middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers},
-    Error,
-};
-use actix_web::{get, middleware, post, web, App, HttpResponse, HttpServer, Responder};
+// use actix_web::{
+//     middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers},
+//     Error,
+// };
+use actix_web::{middleware, web, App, HttpServer};
 use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
 use crate::routes::exact::exact;
 use crate::routes::test::test;
+use crate::routes::index::index;
+
 use config;
 use constants::AppConfig;
-use mongodb::{options::ClientOptions, Client};
+use mongodb::{Client};
 use state::State;
 use tailwind::process_tailwind;
-use tera::Tera;
 
-// use crate::routes::error_500::render_500;
-// use crate::routes::exact::exact;
-use crate::routes::index::index;
 
 pub mod card;
 pub mod card_fetcher;
+pub mod card_queries;
 pub mod constants;
 pub mod modules;
 pub mod routes;

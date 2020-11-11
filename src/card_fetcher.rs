@@ -1,38 +1,47 @@
-use crate::card::Card;
+use std::sync::Mutex;
+
+use crate::{card::Card, card_queries::CardQuery};
 use anyhow::Result;
 use bson::{doc, oid::ObjectId};
 use futures::stream::StreamExt;
-use mongodb::{options::FindOptions, Collection};
-
-pub enum CardFetcherKind {
-    Index,
-    Exact(String),
-}
+use mongodb::{Collection};
+use lru_cache::LruCache;
+use chrono::prelude::*;
 
 pub struct CardFetcher {
     collection: Collection,
+
+    // Cache name -> (Cards, future timestamp when cache timeouts)
+    cache: Mutex<LruCache<String, (Vec<Card>, i64)>>,
+    // Card id -> Card
+    exact_cache: Mutex<LruCache<String, Card>>
 }
 
 impl CardFetcher {
     pub fn new(collection: Collection) -> Self {
-        CardFetcher { collection }
+        CardFetcher {
+            collection,
+            cache: Mutex::new(LruCache::new(1000)),
+            exact_cache: Mutex::new(LruCache::new(1000))
+        }
     }
 
-    async fn index_fetcher(&self) -> Result<Vec<Card>> {
-        let opts = FindOptions::builder()
-            .limit(10)
-            .sort(Some(doc! {
-                "date" : -1
-            }))
-            .build();
+    async fn fetcher(&self, query: &CardQuery) -> Result<Vec<Card>> {
+        if let Ok(mut cache) = self.cache.lock() {
+            if let Some((cards, timeouts)) = cache.get_mut(&query.name) {
+                if Utc::now().timestamp() >= *timeouts {
+                    // Invalidate cache, just skip this step
+                } else {
+                    return Ok(cards.clone());
+                }
+            }
+        }
 
         let mut cards = self
             .collection
             .find(
-                doc! {
-                    "country" : "ua"
-                },
-                opts,
+                query.query.clone(),
+                query.options.clone()
             )
             .await?;
 
@@ -42,10 +51,21 @@ impl CardFetcher {
             result.push(card_typed);
         }
 
+        if let Ok(mut cache) = self.cache.lock() {
+            let when_timeouts = Utc::now() + query.lifetime;
+            cache.insert(query.name.to_owned(), (result.clone(), when_timeouts.timestamp()));
+        }
+
         Ok(result)
     }
 
-    async fn exact_fetcher(&self, id: String) -> Result<Vec<Card>> {
+    async fn exact_fetcher(&self, id: String) -> Result<Card> {
+        if let Ok(mut cache) = self.exact_cache.lock() {
+            if let Some(card) = cache.get_mut(&id) {
+                return Ok(card.clone());
+            }
+        }
+
         let card = self
             .collection
             .find_one(
@@ -56,15 +76,19 @@ impl CardFetcher {
             )
             .await;
 
-        let card = bson::from_document(card?.unwrap())?;
+        let card: Card = bson::from_document(card?.unwrap())?;
+        if let Ok(mut cache) = self.exact_cache.lock() {
+            cache.insert(id, card.clone());
+        }
 
-        Ok(vec![card])
+        Ok(card)
     }
 
-    pub async fn fetch(&self, kind: CardFetcherKind) -> Result<Vec<Card>> {
-        match kind {
-            CardFetcherKind::Index => self.index_fetcher().await,
-            CardFetcherKind::Exact(id) => self.exact_fetcher(id).await,
-        }
+    pub async fn fetch(&self, query: &CardQuery) -> Result<Vec<Card>> {
+        self.fetcher(query).await
+    }
+
+    pub async fn fetch_exact(&self, id: String) -> Result<Card> {
+        self.exact_fetcher(id).await
     }
 }

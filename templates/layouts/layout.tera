@@ -1,11 +1,10 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/static/css/main.css" rel="stylesheet">
-    <script src="/static/js/sticky-sidebar.min.js"></script>
-    <script src="/static/js/ResizeSensor.js"></script>
 </head>
 
 <body>
@@ -26,18 +25,8 @@
         </div>
     </div>
 
-    <style>
-    #sidebar{
-        will-change: min-height;
-    }
-
-    .sidebar__inner{
-        transform: translate(0, 0);
-        transform: translate3d(0, 0, 0);
-        will-change: position, transform;
-        position: relative;
-    }
-    </style>
+    <script src="/static/js/sticky-sidebar.min.js"></script>
+    <script src="/static/js/ResizeSensor.js"></script>
     <script type="text/javascript">
         var sidebar = new StickySidebar('#sidebar', {
             containerSelector: '.stickycontainer',

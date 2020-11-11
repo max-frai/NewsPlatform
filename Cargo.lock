@@ -324,53 +324,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b62fc65de8e4e7f52534fb52b0f3ed04746ae267519eef2a83941e8085068b"
 
 [[package]]
-name = "askama"
-version = "0.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70a6e7ebd44d0047fd48206c83c5cd3214acc7b9d87f001da170145c47ef7d12"
-dependencies = [
- "askama_derive",
- "askama_escape",
- "askama_shared",
-]
-
-[[package]]
-name = "askama_derive"
-version = "0.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1d7169690c4f56343dcd821ab834972a22570a2662a19a84fd7775d5e1c3881"
-dependencies = [
- "askama_shared",
- "proc-macro2 1.0.24",
- "quote 1.0.7",
- "syn 1.0.48",
-]
-
-[[package]]
-name = "askama_escape"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90c108c1a94380c89d2215d0ac54ce09796823cca0fd91b299cfff3b33e346fb"
-
-[[package]]
-name = "askama_shared"
-version = "0.10.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62fc272363345c8cdc030e4c259d9d028237f8b057dc9bb327772a257bde6bb5"
-dependencies = [
- "askama_escape",
- "humansize",
- "nom 5.1.2",
- "num-traits 0.2.14",
- "percent-encoding",
- "proc-macro2 1.0.24",
- "quote 1.0.7",
- "serde 1.0.117",
- "syn 1.0.48",
- "toml",
-]
-
-[[package]]
 name = "async-trait"
 version = "0.1.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1685,7 +1638,6 @@ dependencies = [
  "actix-files",
  "actix-web",
  "anyhow",
- "askama",
  "bson",
  "chrono",
  "config",
@@ -1693,7 +1645,9 @@ dependencies = [
  "env_logger",
  "fluent",
  "futures",
+ "lazy_static",
  "listenfd",
+ "lru-cache",
  "mongodb",
  "serde 1.0.117",
  "tera",

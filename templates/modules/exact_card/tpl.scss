@@ -4,6 +4,7 @@
     max-width: 100%;
     margin: 0 auto;
     border-radius: 5px;
+    display: none;
 }
 
 .ArticleContent blockquote,
@@ -16,6 +17,10 @@
     margin: 0 auto;
 }
 
+.h-68 {
+    height: 20rem;
+}
+
 h1,
 h2,
 h3,
@@ -26,7 +31,7 @@ strong {
 }
 
 .ArticlePreview {
-    @apply relative w-full inline-block h-64;
+    @apply relative w-full inline-block h-68;
 }
 
 .ArticlePreview .info {
@@ -54,7 +59,7 @@ strong {
 }
 
 .ArticlePreview .item {
-    @apply w-full h-64 inline-block overflow-hidden relative rounded-xl;
+    @apply w-full h-68 inline-block overflow-hidden relative rounded-xl;
     background-color: rgb(248, 227, 172);
     filter: url('#duotone-one');
 }
