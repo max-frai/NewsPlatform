@@ -1,14 +1,14 @@
+use bson::doc;
 use bson::Document;
 use chrono::Duration;
-use mongodb::{options::FindOptions};
 use lazy_static::lazy_static;
-use bson::{doc};
+use mongodb::options::FindOptions;
 
 pub struct CardQuery {
     pub name: String,
     pub lifetime: Duration,
     pub options: FindOptions,
-    pub query: Document
+    pub query: Document,
 }
 
 lazy_static! {

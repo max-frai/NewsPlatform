@@ -10,15 +10,14 @@ use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
 use crate::routes::exact::exact;
-use crate::routes::test::test;
 use crate::routes::index::index;
+use crate::routes::test::test;
 
 use config;
 use constants::AppConfig;
-use mongodb::{Client};
+use mongodb::Client;
 use state::State;
 use tailwind::process_tailwind;
-
 
 pub mod card;
 pub mod card_fetcher;
@@ -63,7 +62,12 @@ async fn main() -> std::io::Result<()> {
         .database(&constants.database_name)
         .collection(&constants.cards_collection_name);
 
-    let fetcher = Arc::new(CardFetcher::new(news));
+    let fetcher = Arc::new(CardFetcher::new(
+        news,
+        constants.queries_cache_size,
+        constants.exact_card_cache_size,
+    ));
+
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),
         constants: constants.clone(),

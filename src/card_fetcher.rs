@@ -3,10 +3,10 @@ use std::sync::Mutex;
 use crate::{card::Card, card_queries::CardQuery};
 use anyhow::Result;
 use bson::{doc, oid::ObjectId};
-use futures::stream::StreamExt;
-use mongodb::{Collection};
-use lru_cache::LruCache;
 use chrono::prelude::*;
+use futures::stream::StreamExt;
+use lru_cache::LruCache;
+use mongodb::Collection;
 
 pub struct CardFetcher {
     collection: Collection,
@@ -14,15 +14,19 @@ pub struct CardFetcher {
     // Cache name -> (Cards, future timestamp when cache timeouts)
     cache: Mutex<LruCache<String, (Vec<Card>, i64)>>,
     // Card id -> Card
-    exact_cache: Mutex<LruCache<String, Card>>
+    exact_cache: Mutex<LruCache<String, Card>>,
 }
 
 impl CardFetcher {
-    pub fn new(collection: Collection) -> Self {
+    pub fn new(
+        collection: Collection,
+        queries_cache_size: usize,
+        exact_card_cache_size: usize,
+    ) -> Self {
         CardFetcher {
             collection,
-            cache: Mutex::new(LruCache::new(1000)),
-            exact_cache: Mutex::new(LruCache::new(1000))
+            cache: Mutex::new(LruCache::new(queries_cache_size)),
+            exact_cache: Mutex::new(LruCache::new(exact_card_cache_size)),
         }
     }
 
@@ -39,10 +43,7 @@ impl CardFetcher {
 
         let mut cards = self
             .collection
-            .find(
-                query.query.clone(),
-                query.options.clone()
-            )
+            .find(query.query.clone(), query.options.clone())
             .await?;
 
         let mut result = vec![];
@@ -53,7 +54,10 @@ impl CardFetcher {
 
         if let Ok(mut cache) = self.cache.lock() {
             let when_timeouts = Utc::now() + query.lifetime;
-            cache.insert(query.name.to_owned(), (result.clone(), when_timeouts.timestamp()));
+            cache.insert(
+                query.name.to_owned(),
+                (result.clone(), when_timeouts.timestamp()),
+            );
         }
 
         Ok(result)
