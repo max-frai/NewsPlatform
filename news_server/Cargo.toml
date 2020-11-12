@@ -1,0 +1,24 @@
+[package]
+name = "news_server"
+version = "0.1.0"
+authors = ["Max Frai"]
+edition = "2018"
+
+[dependencies]
+actix-web = "3.2"
+actix-files = "0.4"
+
+serde = "1.0"
+fluent = "0.13"
+duct = "0.13"
+env_logger = "0.8"
+lru-cache = "0.1"
+lazy_static = "1.4"
+tera = "1.5"
+bson = "1.1"
+mongodb = "1.1"
+futures = "0.3"
+anyhow = "1.0"
+config = "0.10"
+listenfd = "0.3"
+chrono = { version = "0.4", features = ["serde", "unstable-locales"] }

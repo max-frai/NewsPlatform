@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/css/main.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="flex flex-1 stickycontainer">
+        <div class="w-3/12  relative">
+            <div class="fixed h-full w-3/12 px-6 py-6">
+                <div class="relative h-full w-full">
+                    {% include "parts/menu.tera" %}
+                    {% block left_column %}{% endblock left_column %}
+                </div>
+            </div>
+        </div>
+        <div id="content" class="w-6/12  p-6 py-3">
+            {% block center_column %}{% endblock center_column %}
+        </div>
+        <div id="sidebar" class="w-3/12 ">
+            <div class="sidebar__inner px-6 py-3">
+                {% block right_column %}{% endblock right_column %}
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/sticky-sidebar.min.js"></script>
+    <script src="/static/js/ResizeSensor.js"></script>
+    <script type="text/javascript">
+        var sidebar = new StickySidebar('#sidebar', {
+            containerSelector: '.stickycontainer',
+            innerWrapperSelector: '.sidebar__inner',
+            minWidth: 800
+        });
+    </script>
+</body>
+
+</html>

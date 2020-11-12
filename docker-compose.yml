@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+    mongodb:
+        command: mongod
+        image: mongo:4.4
+        container_name: "mongodb"
+        ports:
+            - 127.0.0.1:27017:27017
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./mongo-volume:/data/db
+
+    # newsparser:
+    #     build:
+    #         context: .
+    #         dockerfile: newsparser/Dockerfile
+    #     working_dir: /newsparser/
+    #     command: ./run.sh
+    #     volumes:
+    #         - ./configs:/newsparser/configs
+    #     depends_on:
+    #         - mongodb
+    #         - meilisearch
+            # - wordpress
