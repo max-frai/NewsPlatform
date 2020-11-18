@@ -36,12 +36,6 @@ pub struct ClusteringThread {
     pub category: String,
 }
 
-// #[derive(Serialize, Deserialize, Debug)]
-// pub struct ClusteringResult {
-//     pub category: String,
-//     pub threads: Vec<ClusteringThread>,
-// }
-
 pub fn categorise_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");

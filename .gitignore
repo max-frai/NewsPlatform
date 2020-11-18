@@ -4,3 +4,4 @@ mongo-volume
 mac-*/
 models/
 configs/
+dp_components/

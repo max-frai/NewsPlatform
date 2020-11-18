@@ -11,6 +11,16 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./mongo-volume:/data/db
 
+    deeppavlov:
+        image: deeppavlov/base-cpu:latest
+        container_name: "deeppavlov"
+        ports:
+            - 127.0.0.1:5555:5000
+        volumes:
+            - ./dp_components:/root/.deeppavlov
+        environment:
+            - CONFIG=ner_ontonotes_bert_mult
+
     # newsparser:
     #     build:
     #         context: .
