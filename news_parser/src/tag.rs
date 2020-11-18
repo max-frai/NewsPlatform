@@ -17,6 +17,7 @@ use unicode_segmentation::UnicodeSegmentation;
 use bson::oid::ObjectId;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use wikipedia::iter::Category;
 
 #[derive(Serialize, Deserialize)]
 struct ClusteringItem {
@@ -36,9 +37,17 @@ pub struct ClusteringThread {
     pub category: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ModelJsonRequest {
-    pub x: Vec<String>,
+fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+    let client = reqwest::blocking::Client::new();
+    let result = client
+        .post("http://localhost:5555/model")
+        .json(&maplit::hashmap! {
+            "x" => vec![text]
+        })
+        .send()?
+        .json::<Vec<Vec<Vec<String>>>>()?;
+
+    Ok((result[0][0].to_owned(), result[0][1].to_owned()))
 }
 
 pub fn tag_news(client: Arc<Client>) {
@@ -69,30 +78,13 @@ pub fn tag_news(client: Arc<Client>) {
     let client = reqwest::blocking::Client::new();
 
     for item in news {
-        let text = item.get("markdown").unwrap().as_str().unwrap().to_string();
+        let text = item.get("markdown").unwrap().as_str().unwrap();
         let _id = item.get("_id").unwrap().as_object_id().unwrap();
 
-        let json_req = ModelJsonRequest { x: vec![text] };
-        let json_req_str = serde_json::to_string(&json_req).unwrap();
-        let model_response: Value = client
-            .post("http://127.0.0.1:5555/model")
-            .body(json_req_str)
-            .send()
-            .unwrap()
-            .json()
-            .unwrap();
+        let (words, tags) = ner(text).unwrap();
 
-        let mut array_results = model_response
-            .as_array()
-            .unwrap()
-            .first()
-            .unwrap()
-            .as_array()
-            .unwrap()
-            .iter();
-
-        let mut words = array_results.next().unwrap().as_array().unwrap().iter();
-        let mut tags = array_results.next().unwrap().as_array().unwrap().iter();
+        let mut words = words.iter();
+        let mut tags = tags.iter();
 
         let ok_tags = vec![
             "person",
@@ -102,6 +94,7 @@ pub fn tag_news(client: Arc<Client>) {
             "event",
             "law",
             "product",
+            "facility",
         ];
 
         let mut current_word = String::new();
@@ -109,8 +102,8 @@ pub fn tag_news(client: Arc<Client>) {
         let mut previous_tag = String::new();
 
         while let Some(word) = words.next() {
-            let word = word.as_str().unwrap().to_lowercase();
-            let tag = tags.next().unwrap().as_str().unwrap().to_lowercase();
+            let word = word.as_str().to_lowercase();
+            let tag = tags.next().unwrap().as_str().to_lowercase();
 
             if tag == "o" {
                 continue;
@@ -137,6 +130,8 @@ pub fn tag_news(client: Arc<Client>) {
         }
 
         dbg!(passed_words);
+
+        pub type Wiki = wikipedia::Wikipedia<wikipedia::http::default::Client>;
 
         // dbg!(model_response);
         break;
