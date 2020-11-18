@@ -20,7 +20,7 @@ pub fn translate_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(1).build();
+    let options = FindOptions::builder().limit(50).build();
     let news = news_collection
         .find(
             Some(doc! {
@@ -135,8 +135,7 @@ pub fn translate_news(client: Arc<Client>) {
                         "title" : translated_title,
                         "markdown" : translated_body,
                         "slug" : new_slug,
-                        "lang" : "rus",
-                        "rewritten" : true
+                        "lang" : "rus"
                     }
                 },
                 None,

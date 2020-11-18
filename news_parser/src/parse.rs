@@ -55,6 +55,7 @@ pub struct Card {
     pub lang: String,
     pub link: String,
     pub country: String,
+    pub category: String,
     pub rewritten: bool,
     pub marks: Vec<String>,
 }
@@ -360,6 +361,7 @@ pub fn parse_news(client: Arc<Client>) {
                             og_image: og_image.to_owned(),
                             title,
                             slug,
+                            category: String::from(""),
                             date: bson::DateTime(date),
                             country,
                             description: description.to_owned(),

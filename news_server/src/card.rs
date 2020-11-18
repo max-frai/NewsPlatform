@@ -9,6 +9,7 @@ pub struct Card {
     pub title: String,
     pub html: String,
     pub slug: String,
+    pub category: String,
     // #[serde(serialize_with = "ts_seconds::serialize")]
     pub date: DateTime,
     // genre: Vec<String>,

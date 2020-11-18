@@ -28,10 +28,11 @@ pub fn rewrite_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(1).build();
+    let options = FindOptions::builder().limit(50).build();
     let news = news_collection
         .find(
             Some(doc! {
+                "lang" : "rus",
                 "rewritten" : false
             }),
             Some(options),
@@ -49,6 +50,7 @@ pub fn rewrite_news(client: Arc<Client>) {
     println!("News found to rewrite: {}", news.len());
 
     let mut rewrite_array = vec![];
+
     for item in news {
         let title = item
             .get("title")
@@ -77,7 +79,9 @@ pub fn rewrite_news(client: Arc<Client>) {
     let handle = cmd!(
         format!("./rewritebinary_{}", env::consts::OS),
         "cfd724963e8336a0965bea0c0279cdab2ebb95de846e7019b62e1cd44292ebbcef5dba1efea6f351b8cbb9bb7bebc17ff3e13c35eba00c930cce494e25133724",
-        "0"
+        "0",
+        "0",
+        ""
     )
     .stdin_bytes(json_string.to_owned())
     .stdout_capture()
@@ -98,6 +102,7 @@ pub fn rewrite_news(client: Arc<Client>) {
         for item in json.as_array().unwrap() {
             let tag = item.get("tag").unwrap().as_str().unwrap();
             let text = item.get("text").unwrap().as_str().unwrap();
+            let service_text = item.get("service_text").unwrap().as_str().unwrap();
             let title = item.get("title").unwrap().as_str().unwrap();
 
             let object_id = ObjectId::with_string(&tag).unwrap();
@@ -111,6 +116,28 @@ pub fn rewrite_news(client: Arc<Client>) {
                 println!("\t EMPTY TEXT, skip for now this rewrite");
             }
 
+            // Fix marks
+            // let marks = &id2marks[tag];
+            // let mark_re = regex::Regex::new(r"\{ ?(\d)+ ?\}").unwrap();
+            // let multi_whitespace_re = regex::Regex::new(r" {2,}").unwrap();
+
+            // rewritten_text = mark_re
+            //     .replace_all(&rewritten_text, |caps: &regex::Captures| {
+            //         if let Ok(index) = caps[1].parse::<usize>() {
+            //             if index > marks.len() {
+            //                 println!("index more than caps");
+            //             }
+            //             marks.get(index).cloned().unwrap_or_default()
+            //         } else {
+            //             String::default()
+            //         }
+            //     })
+            //     .to_string();
+
+            // rewritten_text = multi_whitespace_re
+            //     .replace_all(&rewritten_text, " ")
+            //     .to_string();
+
             // dbg!(&rewritten_title);
 
             news_collection.find_one_and_update(
@@ -122,7 +149,8 @@ pub fn rewrite_news(client: Arc<Client>) {
                         // "title" : rewritten_title.to_owned(),
                         // "slug" : rewritten_slug,
                         "markdown" : rewritten_text.to_owned(),
-                        "rewritten" : true
+                        "service_markdown" : service_text.to_owned(),
+                        "rewritten" : true,
                     }
                 },
                 None,
