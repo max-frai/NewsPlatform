@@ -27,6 +27,8 @@ base64="0.13"
 lazy_static = "1.4"
 config = "0.10"
 clap = "3.0.0-beta.1"
+wikipedia = "0.3"
+three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
 
 reqwest = { version = "0.10", features = ["blocking", "json"] }
 
