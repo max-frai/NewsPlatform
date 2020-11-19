@@ -7,6 +7,8 @@ use mongodb::{
     sync::Client,
 };
 use regex::Regex;
+use rsmorphy::Source;
+use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru};
 use serde_json::{json, Value};
 use slug::slugify;
 use std::env;
@@ -37,6 +39,10 @@ struct ClusteringItem {
 pub struct ClusteringThread {
     pub articles: Vec<String>,
     pub category: String,
+}
+
+lazy_static! {
+    static ref MORPH: MorphAnalyzer = MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH);
 }
 
 fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
@@ -73,6 +79,22 @@ fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     _ner(chunks)
 }
 
+fn normal_form(word: &str) -> Option<String> {
+    let parsed = MORPH.parse(word);
+    if !parsed.is_empty() {
+        let lex = parsed[0].lex.clone();
+        if let Some(part) = lex.get_tag(&MORPH).pos {
+            return if part == Noun {
+                Some(lex.get_normal_form(&MORPH).to_string())
+            } else {
+                None
+            };
+        }
+    }
+
+    None
+}
+
 lazy_static! {
     static ref OK_TAGS: Vec<&'static str> = vec![
         "person",
@@ -95,7 +117,7 @@ pub fn tag_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(3).build();
+    let options = FindOptions::builder().limit(20).build();
     let news = news_collection
         .find(
             Some(doc! {
@@ -128,7 +150,7 @@ pub fn tag_news(client: Arc<Client>) {
 
         let _id = item.get("_id").unwrap().as_object_id().unwrap();
 
-        println!("Text:\n{}", text.trim());
+        // println!("Text:\n{}", text.trim());
 
         let (words, tags) = ner(&text.trim()).unwrap_or((vec![], vec![]));
 
@@ -158,10 +180,12 @@ pub fn tag_news(client: Arc<Client>) {
                 if tag.ends_with(&format!("-{}", ok)) {
                     if tag.starts_with("b-") {
                         if !current_word.is_empty() {
-                            passed_words.push((
-                                current_word,
-                                previous_tag.replace("i-", "").replace("b-", ""),
-                            ));
+                            if current_word.chars().count() > 3 {
+                                passed_words.push((
+                                    current_word,
+                                    previous_tag.replace("i-", "").replace("b-", ""),
+                                ));
+                            }
                             current_word = String::new();
                         }
                         current_word = word.to_owned();
@@ -215,8 +239,19 @@ pub fn tag_news(client: Arc<Client>) {
                 // dbg!(similarity);
                 // println!("---------");
 
-                if !tags.contains(&found) && similarity > 0.5 {
-                    tags.push(found);
+                if similarity > 0.5 {
+                    let normal = if found.contains(" ") {
+                        Some(found)
+                    } else {
+                        normal_form(&found)
+                    };
+
+                    if let Some(normal) = normal {
+                        let normal = normal.to_lowercase();
+                        if !tags.contains(&normal) {
+                            tags.push(normal);
+                        }
+                    }
                 }
             }
 
@@ -225,15 +260,15 @@ pub fn tag_news(client: Arc<Client>) {
 
         dbg!(&tags);
 
-        // news_collection.update_one(
-        //     doc! {
-        //         "_id" : _id
-        //     },
-        //     doc! {
-        //         "$set" : doc!{ "tags" : tags }
-        //     },
-        //     None,
-        // );
+        news_collection.update_one(
+            doc! {
+                "_id" : _id
+            },
+            doc! {
+                "$set" : doc!{ "tags" : tags }
+            },
+            None,
+        );
 
         // dbg!(model_response);
         // break;
