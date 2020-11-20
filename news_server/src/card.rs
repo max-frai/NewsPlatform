@@ -12,6 +12,5 @@ pub struct Card {
     pub category: String,
     // #[serde(serialize_with = "ts_seconds::serialize")]
     pub date: DateTime,
-    // genre: Vec<String>,
-    // views: u32,
+    pub tags: Vec<String>,
 }

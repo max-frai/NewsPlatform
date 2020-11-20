@@ -1,7 +1,7 @@
-.GrayBorder:hover {
-    @apply border-gray-500 shadow-lg;
+.GrayBorder {
+    @apply border border-gray-300 transition-all duration-500 rounded-lg hover:border-gray-500 hover:shadow-lg;
 }
 
-.GrayBorder {
-    @apply border border-gray-300 transition-all duration-500 rounded-lg;
+.dateMark  {
+    @apply font-medium text-xs px-1 md:px-2 text-gray-600 bg-gray-200 rounded-full inline-block mr-1;
 }
