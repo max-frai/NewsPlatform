@@ -102,7 +102,7 @@ lazy_static! {
         "organization",
         "gpe",
         "event",
-        "law",
+        // "law",
         "product",
         "facility",
     ];
@@ -117,12 +117,12 @@ pub fn tag_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(20).build();
+    let options = FindOptions::builder().limit(700).build();
     let news = news_collection
         .find(
             Some(doc! {
                 "rewritten" : true,
-                "tags" : doc!{ "$eq" : Vec::<String>::new() }
+                "tagged" : false
             }),
             Some(options),
             // None,
@@ -146,7 +146,8 @@ pub fn tag_news(client: Arc<Client>) {
             .unwrap()
             .as_str()
             .unwrap()
-            .replace("*", "");
+            .replace("*", "")
+            .replace("--", "-");
 
         let _id = item.get("_id").unwrap().as_object_id().unwrap();
 
@@ -228,7 +229,7 @@ pub fn tag_news(client: Arc<Client>) {
                 continue;
             }
 
-            // println!("Search wiki for: {}; {}", word, tag);
+            println!("Search wiki for: {}; {}", word, tag);
             let search_result = wiki.search(&word).unwrap();
             if let Some(found) = search_result.first() {
                 let mut found = found.to_owned();
@@ -240,6 +241,7 @@ pub fn tag_news(client: Arc<Client>) {
                 // println!("---------");
 
                 if similarity > 0.5 {
+                    // Don't take normal form for places
                     let normal = if found.contains(" ") {
                         Some(found)
                     } else {
@@ -247,7 +249,7 @@ pub fn tag_news(client: Arc<Client>) {
                     };
 
                     if let Some(normal) = normal {
-                        let normal = normal.to_lowercase();
+                        let normal = normal.trim().to_lowercase();
                         if !tags.contains(&normal) {
                             tags.push(normal);
                         }
@@ -265,7 +267,7 @@ pub fn tag_news(client: Arc<Client>) {
                 "_id" : _id
             },
             doc! {
-                "$set" : doc!{ "tags" : tags }
+                "$set" : doc!{ "tags" : tags, "tagged" : true }
             },
             None,
         );

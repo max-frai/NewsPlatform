@@ -56,8 +56,12 @@ pub struct Card {
     pub link: String,
     pub country: String,
     pub category: String,
-    pub rewritten: bool,
     pub marks: Vec<String>,
+    pub tags: Vec<String>,
+
+    pub rewritten: bool,
+    pub categorised: bool,
+    pub tagged: bool,
 }
 
 impl Default for RssItemFull {
@@ -167,10 +171,11 @@ pub fn parse_news(client: Arc<Client>) {
     println!("Last news slug length: {}", last_news_slug.len());
 
     println!("Get all sources...");
-    let options = FindOptions::builder().limit(1).build();
+    // let options = FindOptions::builder().limit(1).build();
+    let options = FindOptions::builder().build();
     let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(1);
-    let data_result = sources_collection.find(None, Some(options));
-    // let data_result = sources_collection.find(None, None);
+    // let data_result = sources_collection.find(None, Some(options));
+    let data_result = sources_collection.find(None, None);
 
     if data_result.is_err() {
         println!("Failed to get sources: {:?}", data_result.as_ref().err());
@@ -184,7 +189,7 @@ pub fn parse_news(client: Arc<Client>) {
         println!("Sources count: {}", all_sources.len());
         all_sources.shuffle(&mut rand::thread_rng());
 
-        for source_chunk in all_sources.chunks(1) {
+        for source_chunk in all_sources.chunks(50) {
             result_rss_items.clear();
 
             result_rss_items = source_chunk
@@ -301,6 +306,8 @@ pub fn parse_news(client: Arc<Client>) {
                         let mark_regex = vec![
                             regex::Regex::new(r"(<table>.*?</table>)").unwrap(), // HTML table
                             regex::Regex::new(r"(<img.*?>)").unwrap(),           // HTML image
+                            regex::Regex::new(r"(<iframe>.*?</iframe>)").unwrap(), // HTML table
+                            regex::Regex::new(r"(<iframe.*?/>").unwrap(), // HTML table
                         ];
 
                         let mut marks = vec![];
@@ -369,8 +376,12 @@ pub fn parse_news(client: Arc<Client>) {
                             html: html.to_string(),
                             markdown: markdown.to_string(),
                             markdown_original: markdown.to_string(),
+                            marks,
+                            tags: vec![],
+
                             rewritten: false,
-                            marks
+                            categorised: false,
+                            tagged: false
                         };
 
                         return Some(bson::to_bson(&item).unwrap().as_document().unwrap().clone());

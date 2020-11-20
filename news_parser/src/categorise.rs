@@ -40,12 +40,12 @@ pub fn categorise_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(50).build();
+    let options = FindOptions::builder().limit(100).build();
     let news = news_collection
         .find(
             Some(doc! {
                 "rewritten" : true,
-                "category" : doc!{ "$eq" : "" }
+                "categorised" : false
             }),
             Some(options),
             // None,
@@ -107,7 +107,7 @@ pub fn categorise_news(client: Arc<Client>) {
                     "_id" : doc!{ "$in" : articles_ids }
                 },
                 doc! {
-                    "$set" : doc!{ "category" : thread.category }
+                    "$set" : doc!{ "category" : thread.category, "categorised" : true }
                 },
                 None,
             );

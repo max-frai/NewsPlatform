@@ -28,7 +28,7 @@ pub fn rewrite_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(50).build();
+    let options = FindOptions::builder().limit(200).build();
     let news = news_collection
         .find(
             Some(doc! {
@@ -79,7 +79,7 @@ pub fn rewrite_news(client: Arc<Client>) {
     let handle = cmd!(
         format!("./rewritebinary_{}", env::consts::OS),
         "cfd724963e8336a0965bea0c0279cdab2ebb95de846e7019b62e1cd44292ebbcef5dba1efea6f351b8cbb9bb7bebc17ff3e13c35eba00c930cce494e25133724",
-        "0",
+        "1",
         "0",
         ""
     )

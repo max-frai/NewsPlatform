@@ -18,8 +18,8 @@ fn main() {
     );
 
     println!("Parse news");
-    // crate::translate::translate_news(client);
     // crate::parse::parse_news(client);
+    // crate::translate::translate_news(client);
     // crate::rewrite::rewrite_news(client);
     // crate::categorise::categorise_news(client);
     crate::tag::tag_news(client);
