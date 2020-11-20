@@ -12,9 +12,8 @@
     <div class="info pl-4 md:pl-5">
         <h1 class="title pr-4 md:pr-8">{{ title }}</h1>
         <div class="flex flex-1 justify-between items-center mt-4 text-xs">
-            <div class="tags">
-                <a>Спорт</a>
-                <a>Наука</a>
+            <div class="category">
+                <a>{{ category_name(category=category) }}</a>
             </div>
             <div class="dateViews">
                 {{ date['$date'] | date(format="%d %b %H:%M") }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
@@ -30,5 +29,11 @@
 </div>
 
 <div class="ArticleContent leading-tight">
-    {{ html | safe }}
+    {{ markdown2html(markdown=markdown) | safe }}
+</div>
+
+<div class="tagWrap mt-5">
+    {% for tag in tags %}
+        <div class="tagItem">{{ tag }}</div>
+    {% endfor %}
 </div>

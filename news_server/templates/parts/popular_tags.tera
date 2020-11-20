@@ -1,34 +1,4 @@
 
 <div class="absolute bottom-0 left-0">
 
-<div class="flex items-center mb-3">
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
-    <div class="flex flex-shrink-0 items-center px-2 text-gray-600 tracking-wider">
-    <h1>Популярные теги</h1>
-    </div>
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
-</div>
-
-<div class="flex flex-wrap text-xs flex-grow"><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">карантин <span class="text-gray-500">1475</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">коронавирус <span class="text-gray-500">404</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">байден <span class="text-gray-500">304</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">карабах <span class="text-gray-500">179</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">польша <span class="text-gray-500">145</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">вакцина <span class="text-gray-500">137</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">результат <span class="text-gray-500">127</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">больница <span class="text-gray-500">126</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">шмыгаль <span class="text-gray-500">120</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">протест <span class="text-gray-500">116</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">автомобиль <span class="text-gray-500">114</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">донбасс <span class="text-gray-500">109</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">закарпатие <span class="text-gray-500">102</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">армения <span class="text-gray-500">96</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">медик <span class="text-gray-500">88</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">война <span class="text-gray-500">82</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">минздрав <span class="text-gray-500">82</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">опрос <span class="text-gray-500">77</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">слуга <span class="text-gray-500">76</span> </div><div class="mr-1 flex-grow bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
-capitalize">порошенко <span class="text-gray-500">71</span> </div></div>
-
 </div>

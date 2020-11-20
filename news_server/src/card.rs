@@ -7,7 +7,7 @@ pub struct Card {
     pub _id: ObjectId,
     pub og_image: String,
     pub title: String,
-    pub html: String,
+    pub markdown: String,
     pub slug: String,
     pub category: String,
     // #[serde(serialize_with = "ts_seconds::serialize")]

@@ -42,9 +42,13 @@ strong {
     @apply font-bold text-2xl;
 }
 
-.ArticlePreview .tags a {
-    @apply py-1 px-3 mr-1 border-solid border rounded-2xl;
+.ArticlePreview .category a {
+    @apply py-1 px-3 mr-1 border-solid border rounded-2xl cursor-pointer transition;
     border-color: rgba(255, 255, 255, 0.25);
+}
+
+.ArticlePreview .category a:hover {
+    border-color: rgba(255, 255, 255, 0.45);
 }
 
 .ArticlePreview .dateViews {

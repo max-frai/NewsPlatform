@@ -96,3 +96,15 @@ select:focus {
     will-change: position, transform;
     position: relative;
 }
+
+.tagWrap {
+    @apply flex flex-wrap text-xs;
+}
+
+.tagItem {
+    @apply mr-1 bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1 capitalize transition;
+}
+
+.tagItem:hover {
+    @apply bg-gray-300 cursor-pointer;
+}
