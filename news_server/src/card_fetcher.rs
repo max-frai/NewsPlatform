@@ -6,6 +6,7 @@ use bson::{doc, oid::ObjectId};
 use chrono::prelude::*;
 use futures::stream::StreamExt;
 use lru_cache::LruCache;
+use mongodb::options::FindOptions;
 use mongodb::Collection;
 
 pub struct CardFetcher {
@@ -30,21 +31,31 @@ impl CardFetcher {
         }
     }
 
-    pub async fn fetch(&self, query: &CardQuery) -> Result<Vec<Card>> {
+    // fn query_hash(&self, query: &CardQuery) -> String {
+    //     format!("{:?}{:?}{:?}", query.limit, sort, query.query)
+    // }
+
+    pub async fn fetch(&self, query: CardQuery) -> Result<Vec<Card>> {
+        let query_hash = query.to_string();
+        dbg!(&query_hash);
+
         if let Ok(mut cache) = self.cache.lock() {
-            if let Some((cards, timeouts)) = cache.get_mut(&query.name) {
+            if let Some((cards, timeouts)) = cache.get_mut(&query_hash) {
                 if Utc::now().timestamp() >= *timeouts {
                     // Invalidate cache, just skip this step
                 } else {
+                    println!("get from cache");
                     return Ok(cards.clone());
                 }
             }
         }
 
-        let mut cards = self
-            .collection
-            .find(query.query.clone(), query.options.clone())
-            .await?;
+        let options = FindOptions::builder()
+            .sort(query.sort)
+            .limit(query.limit)
+            .build();
+
+        let mut cards = self.collection.find(query.query, options).await?;
 
         let mut result = vec![];
         while let Some(card) = cards.next().await {
@@ -53,11 +64,9 @@ impl CardFetcher {
         }
 
         if let Ok(mut cache) = self.cache.lock() {
+            println!("write to cache");
             let when_timeouts = Utc::now() + query.lifetime;
-            cache.insert(
-                query.name.to_owned(),
-                (result.clone(), when_timeouts.timestamp()),
-            );
+            cache.insert(query_hash, (result.clone(), when_timeouts.timestamp()));
         }
 
         Ok(result)

@@ -1,14 +1,22 @@
 use crate::state::State;
-use crate::{
-    modules,
-};
+use crate::{card_queries::CardQuery, modules};
 use actix_web::{get, web, HttpResponse, Responder};
+use bson::doc;
+use chrono::Duration;
 use tera::Context;
-use crate::card_queries::INDEX_CARDQUERY;
 
 #[get("/")]
 async fn index(state: web::Data<State>) -> impl Responder {
-    let index_cards = state.fetcher.fetch(&INDEX_CARDQUERY).await.unwrap();
+    let index_cards = state
+        .fetcher
+        .fetch(CardQuery {
+            lifetime: Duration::seconds(60),
+            limit: Some(10),
+            sort: Some(doc! { "date" : -1 }),
+            query: doc! { "country" : "ua" },
+        })
+        .await
+        .unwrap();
 
     let news_list_tpl = state
         .tera
