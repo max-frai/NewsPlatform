@@ -19,13 +19,13 @@ async fn exact(
         )
         .unwrap();
 
-    let index_cards = state
+    let last_cards = state
         .fetcher
         .fetch(CardQuery {
             lifetime: Duration::seconds(60),
             limit: Some(10),
             sort: Some(doc! { "date" : -1 }),
-            query: doc! { "country" : "ua" },
+            query: doc! {},
         })
         .await
         .unwrap();
@@ -36,10 +36,21 @@ async fn exact(
             "modules/compact_news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(String::from("Последние новости")),
-                cards: index_cards.clone(),
+                cards: last_cards,
             })
             .unwrap(),
         )
+        .unwrap();
+
+    let category_cards = state
+        .fetcher
+        .fetch(CardQuery {
+            lifetime: Duration::seconds(60),
+            limit: Some(10),
+            sort: Some(doc! { "date" : -1 }),
+            query: doc! { "category" : card.category },
+        })
+        .await
         .unwrap();
 
     let right_tpl2 = state
@@ -48,7 +59,7 @@ async fn exact(
             "modules/compact_news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(String::from("Новости Спорта")),
-                cards: index_cards,
+                cards: category_cards,
             })
             .unwrap(),
         )

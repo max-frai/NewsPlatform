@@ -35,7 +35,11 @@ impl CardFetcher {
     //     format!("{:?}{:?}{:?}", query.limit, sort, query.query)
     // }
 
-    pub async fn fetch(&self, query: CardQuery) -> Result<Vec<Card>> {
+    pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {
+        query.query.insert("rewritten", true);
+        query.query.insert("categorised", true);
+        query.query.insert("tagged", true);
+
         let query_hash = query.to_string();
         dbg!(&query_hash);
 
@@ -44,7 +48,6 @@ impl CardFetcher {
                 if Utc::now().timestamp() >= *timeouts {
                     // Invalidate cache, just skip this step
                 } else {
-                    println!("get from cache");
                     return Ok(cards.clone());
                 }
             }
@@ -64,7 +67,6 @@ impl CardFetcher {
         }
 
         if let Ok(mut cache) = self.cache.lock() {
-            println!("write to cache");
             let when_timeouts = Utc::now() + query.lifetime;
             cache.insert(query_hash, (result.clone(), when_timeouts.timestamp()));
         }

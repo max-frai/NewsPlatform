@@ -20,7 +20,10 @@ pub fn translate_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(100).build();
+    let options = FindOptions::builder()
+        .sort(doc! {"date" : 1})
+        .limit(100)
+        .build();
     let news = news_collection
         .find(
             Some(doc! {

@@ -307,7 +307,7 @@ pub fn parse_news(client: Arc<Client>) {
                             regex::Regex::new(r"(<table>.*?</table>)").unwrap(), // HTML table
                             regex::Regex::new(r"(<img.*?>)").unwrap(),           // HTML image
                             regex::Regex::new(r"(<iframe>.*?</iframe>)").unwrap(), // HTML table
-                            regex::Regex::new(r"(<iframe.*?/>").unwrap(), // HTML table
+                            regex::Regex::new(r"(<iframe.*?/>)").unwrap(), // HTML table
                         ];
 
                         let mut marks = vec![];

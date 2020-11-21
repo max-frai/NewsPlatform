@@ -30,6 +30,7 @@ clap = "3.0.0-beta.1"
 wikipedia = "0.3"
 three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
 rsmorphy = "0.4"
+scraper = "0.12.0"
 
 reqwest = { version = "0.10", features = ["blocking", "json"] }
 

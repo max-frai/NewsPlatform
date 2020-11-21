@@ -20,6 +20,8 @@ use unicode_segmentation::UnicodeSegmentation;
 
 use bson::oid::ObjectId;
 use chrono::Utc;
+use scraper::Html;
+use scraper::Selector;
 use serde::{Deserialize, Serialize};
 use wikipedia::iter::Category;
 
@@ -117,7 +119,10 @@ pub fn tag_news(client: Arc<Client>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
-    let options = FindOptions::builder().limit(700).build();
+    let options = FindOptions::builder()
+        .sort(doc! {"date" : 1})
+        .limit(3)
+        .build();
     let news = news_collection
         .find(
             Some(doc! {
@@ -208,14 +213,16 @@ pub fn tag_news(client: Arc<Client>) {
 
         pub type Wiki = wikipedia::Wikipedia<wikipedia::http::default::Client>;
 
+        let first_sentence_re = regex::Regex::new(r"— (?P<sentence>.*?)\.").unwrap();
         let brackets_re = regex::Regex::new(r"\(.*?\)").unwrap();
+        let square_brackets_re = regex::Regex::new(r"\[.*?\]").unwrap();
         let mut tags = vec![];
         let mut already_searched = vec![];
 
         let comparator = ThreeSetCompare::new();
 
         for pair in &passed_words {
-            let word = &pair.0;
+            let mut word = &pair.0;
             let tag = &pair.1;
 
             // let helper = TAG_TO_DESC.get(tag.as_str()).unwrap_or(&"");
@@ -225,34 +232,48 @@ pub fn tag_news(client: Arc<Client>) {
             //     format!("{} {}", word, helper)
             // };
 
-            if already_searched.contains(&word) {
+            if already_searched.contains(word) {
                 continue;
             }
 
+            let word = normal_form(word).unwrap_or(word.to_string());
             println!("Search wiki for: {}; {}", word, tag);
             let search_result = wiki.search(&word).unwrap();
+
             if let Some(found) = search_result.first() {
                 let mut found = found.to_owned();
+                let original_found = found.to_owned();
+
                 found = found.replace(",", "");
                 found = brackets_re.replace_all(&found, "").to_string();
                 println!("Found: {}; Original: {}", found, word);
-                let similarity = comparator.similarity(&found, word);
-                // dbg!(similarity);
-                // println!("---------");
+                let similarity = comparator.similarity(&found, &word);
+                dbg!(similarity);
 
                 if similarity > 0.5 {
-                    // Don't take normal form for places
-                    let normal = if found.contains(" ") {
-                        Some(found)
-                    } else {
-                        normal_form(&found)
-                    };
+                    // Get summary for this tag in wikipedia
+                    let page = wiki.page_from_title(original_found);
 
-                    if let Some(normal) = normal {
-                        let normal = normal.trim().to_lowercase();
-                        if !tags.contains(&normal) {
-                            tags.push(normal);
-                        }
+                    let wiki_html = page.get_html_content().unwrap();
+                    let document = Html::parse_document(&wiki_html);
+                    let selector = Selector::parse(".infobox-image img").unwrap();
+                    for element in document.select(&selector) {
+                        let src = element.value().attr("src").unwrap_or("");
+                        dbg!(src);
+                        break;
+                    }
+
+                    let mut summary = page.get_summary().unwrap();
+                    summary = square_brackets_re.replace_all(&summary, "").to_string();
+                    summary = brackets_re.replace_all(&summary, "").to_string();
+                    let caps = first_sentence_re.captures(&summary).unwrap();
+                    dbg!(&summary);
+                    dbg!(&caps["sentence"]);
+                    println!("---------");
+
+                    let found = found.trim().to_lowercase();
+                    if !tags.contains(&found) {
+                        tags.push(found);
                     }
                 }
             }
@@ -262,15 +283,15 @@ pub fn tag_news(client: Arc<Client>) {
 
         dbg!(&tags);
 
-        news_collection.update_one(
-            doc! {
-                "_id" : _id
-            },
-            doc! {
-                "$set" : doc!{ "tags" : tags, "tagged" : true }
-            },
-            None,
-        );
+        // news_collection.update_one(
+        //     doc! {
+        //         "_id" : _id
+        //     },
+        //     doc! {
+        //         "$set" : doc!{ "tags" : tags, "tagged" : true }
+        //     },
+        //     None,
+        // );
 
         // dbg!(model_response);
         // break;
