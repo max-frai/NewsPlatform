@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    "news_general",
     "news_parser",
     "news_server",
 ]

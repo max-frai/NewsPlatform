@@ -11,12 +11,17 @@ use rsmorphy::Source;
 use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru};
 use serde_json::{json, Value};
 use slug::slugify;
-use std::env;
 use std::io::Write;
 use std::process::{Command, Stdio};
+use std::str::FromStr;
 use std::{collections::HashMap, sync::Arc};
+use std::{env, sync::Mutex};
+use strum::IntoEnumIterator;
+use strum_macros::EnumString;
 use three_set_compare::ThreeSetCompare;
 use unicode_segmentation::UnicodeSegmentation;
+
+use news_general::tag::*;
 
 use bson::oid::ObjectId;
 use chrono::Utc;
@@ -24,6 +29,8 @@ use scraper::Html;
 use scraper::Selector;
 use serde::{Deserialize, Serialize};
 use wikipedia::iter::Category;
+
+use news_general;
 
 #[derive(Serialize, Deserialize)]
 struct ClusteringItem {
@@ -41,10 +48,6 @@ struct ClusteringItem {
 pub struct ClusteringThread {
     pub articles: Vec<String>,
     pub category: String,
-}
-
-lazy_static! {
-    static ref MORPH: MorphAnalyzer = MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH);
 }
 
 fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
@@ -81,47 +84,13 @@ fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     _ner(chunks)
 }
 
-fn normal_form(word: &str) -> Option<String> {
-    let parsed = MORPH.parse(word);
-    if !parsed.is_empty() {
-        let lex = parsed[0].lex.clone();
-        if let Some(part) = lex.get_tag(&MORPH).pos {
-            return if part == Noun {
-                Some(lex.get_normal_form(&MORPH).to_string())
-            } else {
-                None
-            };
-        }
-    }
-
-    None
-}
-
-lazy_static! {
-    static ref OK_TAGS: Vec<&'static str> = vec![
-        "person",
-        "norp",
-        "organization",
-        "gpe",
-        "event",
-        // "law",
-        "product",
-        "facility",
-    ];
-    // static ref TAG_TO_DESC: HashMap<&'static str, &'static str> = hashmap! {
-    //     "gpe" => "страна",
-    //     "person" => "человек",
-    //     "organization" => "организация"
-    // };
-}
-
-pub fn tag_news(client: Arc<Client>) {
+pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
     let db = client.database("news");
     let news_collection = db.collection("news");
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
-        .limit(3)
+        .limit(1)
         .build();
     let news = news_collection
         .find(
@@ -182,8 +151,8 @@ pub fn tag_news(client: Arc<Client>) {
 
             // println!("{} - {}", word, tag);
 
-            for ok in OK_TAGS.iter() {
-                if tag.ends_with(&format!("-{}", ok)) {
+            for ok_tag in TagKind::iter() {
+                if tag.ends_with(&format!("-{}", ok_tag.to_string().to_lowercase())) {
                     if tag.starts_with("b-") {
                         if !current_word.is_empty() {
                             if current_word.chars().count() > 3 {
@@ -207,81 +176,19 @@ pub fn tag_news(client: Arc<Client>) {
 
         // dbg!(passed_words);
 
-        let mut wiki = Wiki::default();
-        wiki.language = "ru".to_owned();
-        wiki.search_results = 1;
-
-        pub type Wiki = wikipedia::Wikipedia<wikipedia::http::default::Client>;
-
-        let first_sentence_re = regex::Regex::new(r"— (?P<sentence>.*?)\.").unwrap();
-        let brackets_re = regex::Regex::new(r"\(.*?\)").unwrap();
-        let square_brackets_re = regex::Regex::new(r"\[.*?\]").unwrap();
-        let mut tags = vec![];
-        let mut already_searched = vec![];
-
-        let comparator = ThreeSetCompare::new();
+        // let mut final_tags = vec![];
 
         for pair in &passed_words {
             let mut word = &pair.0;
-            let tag = &pair.1;
+            dbg!(&pair.1);
+            let kind = TagKind::from_str(&pair.1).unwrap();
 
-            // let helper = TAG_TO_DESC.get(tag.as_str()).unwrap_or(&"");
-            // let query = if helper.is_empty() {
-            //     word.to_owned()
-            // } else {
-            //     format!("{} {}", word, helper)
-            // };
-
-            if already_searched.contains(word) {
-                continue;
-            }
-
-            let word = normal_form(word).unwrap_or(word.to_string());
-            println!("Search wiki for: {}; {}", word, tag);
-            let search_result = wiki.search(&word).unwrap();
-
-            if let Some(found) = search_result.first() {
-                let mut found = found.to_owned();
-                let original_found = found.to_owned();
-
-                found = found.replace(",", "");
-                found = brackets_re.replace_all(&found, "").to_string();
-                println!("Found: {}; Original: {}", found, word);
-                let similarity = comparator.similarity(&found, &word);
-                dbg!(similarity);
-
-                if similarity > 0.5 {
-                    // Get summary for this tag in wikipedia
-                    let page = wiki.page_from_title(original_found);
-
-                    let wiki_html = page.get_html_content().unwrap();
-                    let document = Html::parse_document(&wiki_html);
-                    let selector = Selector::parse(".infobox-image img").unwrap();
-                    for element in document.select(&selector) {
-                        let src = element.value().attr("src").unwrap_or("");
-                        dbg!(src);
-                        break;
-                    }
-
-                    let mut summary = page.get_summary().unwrap();
-                    summary = square_brackets_re.replace_all(&summary, "").to_string();
-                    summary = brackets_re.replace_all(&summary, "").to_string();
-                    let caps = first_sentence_re.captures(&summary).unwrap();
-                    dbg!(&summary);
-                    dbg!(&caps["sentence"]);
-                    println!("---------");
-
-                    let found = found.trim().to_lowercase();
-                    if !tags.contains(&found) {
-                        tags.push(found);
-                    }
-                }
-            }
-
-            already_searched.push(word);
+            let mut tags_manager_mut = tags_manager.lock().unwrap();
+            let tag = tags_manager_mut.search_for_tag(word, kind);
+            dbg!(&tag);
         }
 
-        dbg!(&tags);
+        // dbg!(&tags);
 
         // news_collection.update_one(
         //     doc! {

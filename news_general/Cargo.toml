@@ -1,0 +1,22 @@
+[package]
+name = "news_general"
+version = "0.1.0"
+authors = ["Max Frai"]
+edition = "2018"
+
+[dependencies]
+serde = "1.0"
+config = "0.10"
+strum = "0.18"
+strum_macros = "0.18"
+wikipedia = "0.3"
+three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
+rsmorphy = "0.4"
+scraper = "0.12.0"
+regex = "1.4"
+lazy_static = "1.4"
+
+[dependencies.mongodb]
+version = "1.1"
+default-features = false
+features = ["sync"]
