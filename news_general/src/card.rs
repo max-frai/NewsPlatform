@@ -1,6 +1,8 @@
 use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
+use crate::tag::Tag;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Card {
     pub _id: ObjectId,
@@ -19,7 +21,8 @@ pub struct Card {
     pub country: String,
     pub category: String,
     pub marks: Vec<String>,
-    pub tags: Vec<String>,
+    pub tags: Vec<ObjectId>,
+    pub filled_tags: Vec<Tag>,
 
     pub rewritten: bool,
     pub categorised: bool,

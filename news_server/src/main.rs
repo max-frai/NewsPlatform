@@ -22,6 +22,7 @@ use tailwind::process_tailwind;
 
 pub mod card_fetcher;
 pub mod card_queries;
+pub mod indecies;
 pub mod modules;
 pub mod routes;
 pub mod state;
@@ -57,21 +58,22 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to connect mongodb");
 
-    let news = client
-        .database(&constants.database_name)
-        .collection(&constants.cards_collection_name);
+    let db = client.database(&constants.database_name);
 
-    let tags = client
-        .database(&constants.database_name)
-        .collection(&constants.tags_collection_name);
+    indecies::ensure_indecies(db.clone(), constants.clone()).await;
+
+    let news = db.collection(&constants.cards_collection_name);
+    let tags = db.collection(&constants.tags_collection_name);
+
+    // TODO: Autoreload tags time from time !!!!!!!!
+    let tags_manager = Arc::new(TagsManager::new(tags).await);
 
     let fetcher = Arc::new(CardFetcher::new(
         news,
+        tags_manager.clone(),
         constants.queries_cache_size,
         constants.exact_card_cache_size,
     ));
-
-    let tags_manager = Arc::new(TagsManager::new(tags).await);
 
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),

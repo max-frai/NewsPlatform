@@ -1,4 +1,4 @@
-use crate::tag::bson::oid::ObjectId;
+use crate::{card::Card, tag::bson::oid::ObjectId};
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use mongodb::bson;
@@ -51,8 +51,7 @@ impl Tag {
 }
 
 pub struct TagsManager {
-    // (Kind, Title) -> Tag
-    tags: HashMap<(TagKind, String), Tag>,
+    tags: HashMap<ObjectId, Tag>,
 }
 
 pub struct TagsManagerWriter {
@@ -71,29 +70,39 @@ lazy_static! {
     static ref SQUARE_BRACKETS_RE: Regex = Regex::new(r"\[.*?\]").unwrap();
 }
 
-async fn preload_tags(tags_col: Collection) -> HashMap<(TagKind, String), Tag> {
-    let mut tags = tags_col.find(None, None).await.unwrap();
-    let mut res = HashMap::new();
-
-    while let Some(tag) = tags.next().await {
-        let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
-        res.insert((tag.kind.clone(), tag.title.to_owned()), tag);
-    }
-
-    res
-}
-
 impl TagsManager {
     pub async fn new(tags_col: Collection) -> Self {
-        let tags = preload_tags(tags_col.clone()).await;
+        let mut raw_tags = tags_col.find(None, None).await.unwrap();
+        let mut tags = HashMap::new();
+
+        while let Some(tag) = raw_tags.next().await {
+            let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
+            tags.insert(tag._id.to_owned(), tag);
+        }
 
         Self { tags }
+    }
+
+    pub async fn fill_card_tags(&self, card: &mut Card) {
+        card.filled_tags = vec![];
+
+        for _id in &card.tags {
+            if let Some(tag) = self.tags.get(&_id) {
+                card.filled_tags.push(tag.clone());
+            }
+        }
     }
 }
 
 impl TagsManagerWriter {
     pub async fn new(tags_col: Collection) -> Self {
-        let tags = preload_tags(tags_col.clone()).await;
+        let mut raw_tags = tags_col.find(None, None).await.unwrap();
+        let mut tags = HashMap::new();
+
+        while let Some(tag) = raw_tags.next().await {
+            let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
+            tags.insert((tag.kind.clone(), tag.title.to_owned()), tag);
+        }
 
         let mut wiki = Wiki::default();
         wiki.language = "ru".to_owned();
