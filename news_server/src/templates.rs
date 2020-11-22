@@ -8,6 +8,7 @@ use news_general::card::*;
 fn category2name_internal(category: &str) -> String {
     match category {
         "society" => "Общество",
+        "entertainment" => "Развлечения",
         _ => "",
     }
     .to_string()

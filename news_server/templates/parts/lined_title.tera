@@ -1,9 +1,9 @@
 {% macro generate(title) %}
 <div class="flex items-center">
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
+    <div class="height1px w-full flex-grow bg-gray-300"> </div>
     <div class="flex flex-shrink-0 items-center px-2 text-gray-600 tracking-wider">
         {{ title | safe }}
     </div>
-    <div class="height1px w-full flex-grow bg-gray-400"> </div>
+    <div class="height1px w-full flex-grow bg-gray-300"> </div>
 </div>
 {% endmacro generate %}

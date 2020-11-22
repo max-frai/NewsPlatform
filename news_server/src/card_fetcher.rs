@@ -9,6 +9,7 @@ use lru_cache::LruCache;
 use mongodb::options::FindOptions;
 use mongodb::Collection;
 use news_general::{card::*, tag::TagsManager};
+use std::time::{Duration, Instant};
 
 pub struct CardFetcher {
     collection: Collection,
@@ -37,12 +38,6 @@ impl CardFetcher {
 
     pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {
         let query_hash = query.to_string();
-        dbg!(&query_hash);
-
-        // This added after query hash
-        query.query.insert("rewritten", true);
-        query.query.insert("categorised", true);
-        query.query.insert("tagged", true);
 
         if let Ok(mut cache) = self.cache.lock() {
             if let Some((cards, timeouts)) = cache.get_mut(&query_hash) {
@@ -54,6 +49,11 @@ impl CardFetcher {
                 }
             }
         }
+
+        // This added after query hash
+        query.query.insert("rewritten", true);
+        query.query.insert("categorised", true);
+        query.query.insert("tagged", true);
 
         let options = FindOptions::builder()
             .sort(query.sort)
