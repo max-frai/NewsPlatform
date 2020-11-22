@@ -1,20 +1,22 @@
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
 use std::sync::{Arc, Mutex};
+use tokio::main;
 
 use news_general::constants::*;
 use news_general::tag::*;
 
-pub mod categorise;
-pub mod parse;
-pub mod rewrite;
-pub mod tag;
-pub mod translate;
+// pub mod categorise;
+// pub mod parse;
+// pub mod rewrite;
+// pub mod tag;
+// pub mod translate;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let mut settings = config::Config::default();
     settings
         .merge(config::File::with_name("Config.toml"))
@@ -25,18 +27,20 @@ fn main() {
 
     println!("Connect to mongodb");
     let client = Arc::new(
-        Client::with_uri_str("mongodb://127.0.0.1:27017").expect("Failed to connect mongodb"),
+        Client::with_uri_str(&constants.mongodb_url)
+            .await
+            .expect("Failed to connect mongodb"),
     );
 
     let db = client.database(&constants.database_name);
     let tags_col = db.collection(&constants.tags_collection_name);
 
-    let tags_manager = Arc::new(Mutex::new(TagsManager::new(tags_col)));
+    let tags_manager = Arc::new(Mutex::new(TagsManagerWriter::new(tags_col).await));
 
     println!("Parse news");
     // crate::parse::parse_news(client);
     // crate::translate::translate_news(client);
     // crate::rewrite::rewrite_news(client);
+    // crate::tag::tag_news(client, tags_manager);
     // crate::categorise::categorise_news(client);
-    crate::tag::tag_news(client, tags_manager);
 }

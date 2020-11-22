@@ -1,7 +1,8 @@
 use crate::tag::bson::oid::ObjectId;
+use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use mongodb::bson;
-use mongodb::sync::Collection;
+use mongodb::Collection;
 use regex::*;
 use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru, Source};
 use scraper::Html;
@@ -50,7 +51,12 @@ impl Tag {
 }
 
 pub struct TagsManager {
-    // (Kind, Wiki Title) -> Tag
+    // (Kind, Title) -> Tag
+    tags: HashMap<(TagKind, String), Tag>,
+}
+
+pub struct TagsManagerWriter {
+    // (Kind, Title) -> Tag
     tags: HashMap<(TagKind, String), Tag>,
     text2wikititle: HashMap<String, String>,
     collection: Collection,
@@ -65,22 +71,36 @@ lazy_static! {
     static ref SQUARE_BRACKETS_RE: Regex = Regex::new(r"\[.*?\]").unwrap();
 }
 
-impl TagsManager {
-    pub fn new(tags_col: Collection) -> Self {
-        let mut tags = tags_col.find(None, None).unwrap();
-        let mut res = HashMap::new();
+async fn preload_tags(tags_col: Collection) -> HashMap<(TagKind, String), Tag> {
+    let mut tags = tags_col.find(None, None).await.unwrap();
+    let mut res = HashMap::new();
 
-        while let Some(tag) = tags.next() {
-            let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
-            res.insert((tag.kind.clone(), tag.title.to_owned()), tag);
-        }
+    while let Some(tag) = tags.next().await {
+        let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
+        res.insert((tag.kind.clone(), tag.title.to_owned()), tag);
+    }
+
+    res
+}
+
+impl TagsManager {
+    pub async fn new(tags_col: Collection) -> Self {
+        let tags = preload_tags(tags_col.clone()).await;
+
+        Self { tags }
+    }
+}
+
+impl TagsManagerWriter {
+    pub async fn new(tags_col: Collection) -> Self {
+        let tags = preload_tags(tags_col.clone()).await;
 
         let mut wiki = Wiki::default();
         wiki.language = "ru".to_owned();
         wiki.search_results = 1;
 
         Self {
-            tags: res,
+            tags,
             text2wikititle: HashMap::new(),
             collection: tags_col,
             morph: MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH),
@@ -89,12 +109,25 @@ impl TagsManager {
         }
     }
 
-    pub fn get_tag(&self, kind: &TagKind, wiki_title: &str) -> Option<&Tag> {
-        self.tags.get(&(kind.clone(), wiki_title.to_owned()))
+    pub fn get_tag(&self, kind: &TagKind, title: &str) -> Option<&Tag> {
+        self.tags.get(&(kind.clone(), title.to_owned()))
     }
 
     pub fn search_for_tag(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
-        let word = self.normal_form(what).unwrap_or(what.to_string());
+        // let word = if what.contains(" ") {
+        //     println!("Search word contains space, split it");
+        //     what.split(" ")
+        //         .map(|subword| {
+        //             println!("\t{}", subword);
+        //             self.normal_form(subword).unwrap_or(subword.to_owned())
+        //         })
+        //         .collect::<Vec<String>>()
+        //         .join(" ")
+        // } else {
+        //     println!("Search word is single word");
+        //     what.to_owned()
+        // };
+        let word = what.to_string();
 
         let wikititle = if let Some(wikititle) = self.text2wikititle.get(&word) {
             println!("Got wikititle from cache");
@@ -118,14 +151,16 @@ impl TagsManager {
         let mut found = wikititle.unwrap();
         let original_found = found.to_owned();
 
+        println!("Wikititle: {}", original_found);
+
+        found = found.to_lowercase().replace(",", "");
+        found = BRACKETS_RE.replace_all(&found, "").to_string();
+
         let found_tag = self.get_tag(&kind, &found);
         if found_tag.is_some() {
-            println!("Got tag from cache");
+            println!("\treturn tag from cache");
             return found_tag.cloned();
         }
-
-        found = found.replace(",", "");
-        found = BRACKETS_RE.replace_all(&found, "").to_string();
 
         let similarity = self.comparator.similarity(&found, &word);
 
@@ -143,24 +178,32 @@ impl TagsManager {
                 break;
             }
 
-            let mut summary = page.get_summary().unwrap();
-            summary = SQUARE_BRACKETS_RE.replace_all(&summary, "").to_string();
-            summary = BRACKETS_RE.replace_all(&summary, "").to_string();
-            let caps = FIRST_SENTENCE_RE.captures(&summary).unwrap();
+            let summary = {
+                let mut result = (None, None);
+                if let Ok(mut summary) = page.get_summary() {
+                    summary = SQUARE_BRACKETS_RE.replace_all(&summary, "").to_string();
+                    summary = BRACKETS_RE.replace_all(&summary, "").to_string();
+                    if let Some(caps) = FIRST_SENTENCE_RE.captures(&summary) {
+                        result = (Some(caps["sentence"].to_owned()), Some(summary));
+                    }
+                }
+
+                result
+            };
 
             let tag = Tag {
                 _id: ObjectId::default(),
                 kind: kind.to_owned(),
-                sentence: caps["sentence"].to_owned(),
-                summary,
+                sentence: summary.0.unwrap_or(String::new()),
+                summary: summary.1.unwrap_or(String::new()),
                 wiki_title: original_found.to_owned(),
-                title: found.trim().to_lowercase(),
+                title: found.to_owned(),
                 image: image_src,
             };
 
-            println!("Write tag to database");
+            // println!("Write tag to database");
             let tag_bson = bson::to_document(&tag).unwrap();
-            self.tags.insert((kind, original_found), tag.clone());
+            self.tags.insert((kind, found), tag.clone());
             self.collection.insert_one(tag_bson, None);
 
             return Some(tag);
@@ -184,5 +227,4 @@ impl TagsManager {
 
         None
     }
-    // pub fn insert_tag(&mut self, )
 }

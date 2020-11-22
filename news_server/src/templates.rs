@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use tera::{from_value, to_value, Tera, Value};
 use tera::{Error, Result};
 
-use crate::card::Card;
+use news_general::card::*;
 
 fn category2name_internal(category: &str) -> String {
     match category {

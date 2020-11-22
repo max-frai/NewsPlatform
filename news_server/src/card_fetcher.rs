@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use crate::{card::Card, card_queries::CardQuery};
+use crate::card_queries::CardQuery;
 use anyhow::Result;
 use bson::{doc, oid::ObjectId};
 use chrono::prelude::*;
@@ -8,6 +8,7 @@ use futures::stream::StreamExt;
 use lru_cache::LruCache;
 use mongodb::options::FindOptions;
 use mongodb::Collection;
+use news_general::card::*;
 
 pub struct CardFetcher {
     collection: Collection,

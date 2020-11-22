@@ -15,8 +15,6 @@ rsmorphy = "0.4"
 scraper = "0.12.0"
 regex = "1.4"
 lazy_static = "1.4"
-
-[dependencies.mongodb]
-version = "1.1"
-default-features = false
-features = ["sync"]
+bson = "1.1"
+mongodb = "1.1"
+futures = "0.3"

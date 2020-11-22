@@ -41,7 +41,5 @@ browser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/browser-rs.git" }
 rss-parser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/rss-parser-rs.git" }
 html2md = { git = "https://github.com/max-frai/html2md.git" }
 
-[dependencies.mongodb]
-version = "1.1"
-default-features = false
-features = ["sync"]
+mongodb = "1.1"
+tokio = { version="0.3", features=["macros", "rt-multi-thread"] }

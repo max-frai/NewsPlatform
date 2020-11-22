@@ -90,7 +90,7 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
-        .limit(1)
+        .limit(100)
         .build();
     let news = news_collection
         .find(
@@ -176,29 +176,30 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
 
         // dbg!(passed_words);
 
-        // let mut final_tags = vec![];
-
+        let mut final_tags = vec![];
         for pair in &passed_words {
             let mut word = &pair.0;
-            dbg!(&pair.1);
             let kind = TagKind::from_str(&pair.1).unwrap();
 
             let mut tags_manager_mut = tags_manager.lock().unwrap();
-            let tag = tags_manager_mut.search_for_tag(word, kind);
-            dbg!(&tag);
+            if let Some(tag) = tags_manager_mut.search_for_tag(word, kind) {
+                if !final_tags.contains(&tag._id) {
+                    final_tags.push(tag._id);
+                }
+            }
         }
 
-        // dbg!(&tags);
+        dbg!(&final_tags);
 
-        // news_collection.update_one(
-        //     doc! {
-        //         "_id" : _id
-        //     },
-        //     doc! {
-        //         "$set" : doc!{ "tags" : tags, "tagged" : true }
-        //     },
-        //     None,
-        // );
+        news_collection.update_one(
+            doc! {
+                "_id" : _id
+            },
+            doc! {
+                "$set" : doc!{ "tags" : final_tags, "tagged" : true }
+            },
+            None,
+        );
 
         // dbg!(model_response);
         // break;

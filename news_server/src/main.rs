@@ -14,15 +14,14 @@ use crate::routes::index::index;
 use crate::routes::test::test;
 
 use config;
-use constants::AppConfig;
 use mongodb::Client;
+use news_general::constants::*;
+use news_general::tag::*;
 use state::State;
 use tailwind::process_tailwind;
 
-pub mod card;
 pub mod card_fetcher;
 pub mod card_queries;
-pub mod constants;
 pub mod modules;
 pub mod routes;
 pub mod state;
@@ -62,16 +61,23 @@ async fn main() -> std::io::Result<()> {
         .database(&constants.database_name)
         .collection(&constants.cards_collection_name);
 
+    let tags = client
+        .database(&constants.database_name)
+        .collection(&constants.tags_collection_name);
+
     let fetcher = Arc::new(CardFetcher::new(
         news,
         constants.queries_cache_size,
         constants.exact_card_cache_size,
     ));
 
+    let tags_manager = Arc::new(TagsManager::new(tags).await);
+
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
         tera: tera.clone(),
+        tags_manager,
     });
 
     println!("Create server");

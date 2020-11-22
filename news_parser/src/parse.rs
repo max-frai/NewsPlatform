@@ -1,6 +1,7 @@
 use browser_rs::Browser;
 use chrono::prelude::*;
 use html2md;
+use news_general::card::*;
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
@@ -37,31 +38,6 @@ pub struct RssItemFull {
     country: Option<String>,
     source_name: Option<String>,
     project: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Card {
-    pub _id: ObjectId,
-    pub source_id: ObjectId,
-    pub og_image: String,
-    pub title: String,
-    pub html: String,
-    pub markdown: String,
-    pub markdown_original: String,
-    pub slug: String,
-    // #[serde(serialize_with = "ts_seconds::serialize")]
-    pub date: bson::DateTime,
-    pub description: String,
-    pub lang: String,
-    pub link: String,
-    pub country: String,
-    pub category: String,
-    pub marks: Vec<String>,
-    pub tags: Vec<String>,
-
-    pub rewritten: bool,
-    pub categorised: bool,
-    pub tagged: bool,
 }
 
 impl Default for RssItemFull {
