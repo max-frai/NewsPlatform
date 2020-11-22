@@ -12,8 +12,8 @@ use news_general::tag::*;
 pub mod categorise;
 pub mod parse;
 pub mod rewrite;
+pub mod tag;
 pub mod translate;
-// pub mod tag;
 
 #[tokio::main]
 async fn main() {
@@ -41,6 +41,6 @@ async fn main() {
     // crate::parse::parse_news(client, constants.clone()).await;
     // crate::translate::translate_news(client, constants.clone()).await;
     // crate::rewrite::rewrite_news(client, constants.clone()).await;
-    crate::categorise::categorise_news(client, constants.clone()).await;
-    // crate::tag::tag_news(client, tags_manager);
+    // crate::categorise::categorise_news(client, constants.clone()).await;
+    crate::tag::tag_news(client, constants.clone(), tags_manager).await;
 }

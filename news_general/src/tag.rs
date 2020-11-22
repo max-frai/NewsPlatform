@@ -122,7 +122,7 @@ impl TagsManagerWriter {
         self.tags.get(&(kind.clone(), title.to_owned()))
     }
 
-    pub fn search_for_tag(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
+    pub async fn search_for_tag(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
         //     what.split(" ")
@@ -213,7 +213,10 @@ impl TagsManagerWriter {
             // println!("Write tag to database");
             let tag_bson = bson::to_document(&tag).unwrap();
             self.tags.insert((kind, found), tag.clone());
-            self.collection.insert_one(tag_bson, None);
+            self.collection
+                .insert_one(tag_bson, None)
+                .await
+                .expect("failed to insert tag");
 
             return Some(tag);
         }

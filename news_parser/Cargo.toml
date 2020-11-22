@@ -36,7 +36,7 @@ three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
 rsmorphy = "0.4"
 scraper = "0.12.0"
 
-reqwest = { version = "0.10", features = ["blocking", "json"] }
+reqwest = { version = "0.10", features = ["json"] }
 
 browser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/browser-rs.git" }
 rss-parser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/rss-parser-rs.git" }

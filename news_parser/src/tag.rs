@@ -4,7 +4,7 @@ use maplit::hashmap;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
 use regex::Regex;
 use rsmorphy::Source;
@@ -25,6 +25,8 @@ use news_general::tag::*;
 
 use bson::oid::ObjectId;
 use chrono::Utc;
+use futures::stream::StreamExt;
+use news_general::constants::AppConfig;
 use scraper::Html;
 use scraper::Selector;
 use serde::{Deserialize, Serialize};
@@ -50,15 +52,19 @@ pub struct ClusteringThread {
     pub category: String,
 }
 
-fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    let client = reqwest::blocking::Client::new();
+async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+    let client = reqwest::Client::new();
     let result = client
         .post("http://localhost:5555/model")
         .json(&maplit::hashmap! {
             "x" => chunks
         })
-        .send()?
-        .json::<Vec<Vec<Vec<String>>>>()?;
+        .send()
+        .await
+        .unwrap()
+        .json::<Vec<Vec<Vec<String>>>>()
+        .await
+        .unwrap();
 
     let mut final_words = vec![];
     let mut final_tags = vec![];
@@ -71,7 +77,7 @@ fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     Ok((final_words, final_tags))
 }
 
-fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+async fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     let chars =
         unicode_segmentation::UnicodeSegmentation::graphemes(text, true).collect::<Vec<&str>>();
 
@@ -81,18 +87,23 @@ fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
         chunks.push(chunk.iter().map(|i| i.to_string()).collect());
     }
 
-    _ner(chunks)
+    _ner(chunks).await
 }
 
-pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
-    let db = client.database("news");
-    let news_collection = db.collection("news");
+pub async fn tag_news(
+    client: Arc<Client>,
+    constants: Arc<AppConfig>,
+    tags_manager: Arc<Mutex<TagsManagerWriter>>,
+) {
+    let db = client.database(&constants.database_name);
+    let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
         .limit(100)
         .build();
-    let news = news_collection
+
+    let news_cursor = news_collection
         .find(
             Some(doc! {
                 "rewritten" : true,
@@ -101,9 +112,17 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
             Some(options),
             // None,
         )
-        .unwrap()
-        .filter_map(|item| item.ok())
-        .collect::<Vec<Document>>();
+        .await
+        .unwrap();
+
+    let news_docs = news_cursor
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await;
+
+    let news = news_docs
+        .iter()
+        .filter_map(|item| item.as_ref().ok())
+        .collect::<Vec<&Document>>();
 
     if news.is_empty() {
         println!("News to tag is empty, return....");
@@ -111,8 +130,6 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
     }
 
     println!("News found to tag: {}", news.len());
-
-    let client = reqwest::blocking::Client::new();
 
     for item in news {
         let text = item
@@ -127,7 +144,7 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
 
         // println!("Text:\n{}", text.trim());
 
-        let (words, tags) = ner(&text.trim()).unwrap_or((vec![], vec![]));
+        let (words, tags) = ner(&text.trim()).await.unwrap_or((vec![], vec![]));
 
         if words.is_empty() {
             println!("No ner words, skip");
@@ -182,7 +199,7 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
             let kind = TagKind::from_str(&pair.1).unwrap();
 
             let mut tags_manager_mut = tags_manager.lock().unwrap();
-            if let Some(tag) = tags_manager_mut.search_for_tag(word, kind) {
+            if let Some(tag) = tags_manager_mut.search_for_tag(word, kind).await {
                 if !final_tags.contains(&tag._id) {
                     final_tags.push(tag._id);
                 }
@@ -191,15 +208,18 @@ pub fn tag_news(client: Arc<Client>, tags_manager: Arc<Mutex<TagsManager>>) {
 
         dbg!(&final_tags);
 
-        news_collection.update_one(
-            doc! {
-                "_id" : _id
-            },
-            doc! {
-                "$set" : doc!{ "tags" : final_tags, "tagged" : true }
-            },
-            None,
-        );
+        news_collection
+            .update_one(
+                doc! {
+                    "_id" : _id
+                },
+                doc! {
+                    "$set" : doc!{ "tags" : final_tags, "tagged" : true }
+                },
+                None,
+            )
+            .await
+            .expect("Failed to set tags");
 
         // dbg!(model_response);
         // break;
