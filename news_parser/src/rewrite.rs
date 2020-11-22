@@ -1,10 +1,12 @@
 use duct::*;
+use futures::stream::StreamExt;
 use maplit::hashmap;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
+use news_general::constants::AppConfig;
 use regex::Regex;
 use serde_json::{json, Value};
 use slug::slugify;
@@ -24,15 +26,16 @@ fn uppercase_first_letter(s: &str) -> String {
     }
 }
 
-pub fn rewrite_news(client: Arc<Client>) {
-    let db = client.database("news");
-    let news_collection = db.collection("news");
+pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
+    let db = client.database(&constants.database_name);
+    let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
         .sort(doc! { "date" : 1 })
         .limit(200)
         .build();
-    let news = news_collection
+
+    let news_cursor = news_collection
         .find(
             Some(doc! {
                 "lang" : "rus",
@@ -41,9 +44,17 @@ pub fn rewrite_news(client: Arc<Client>) {
             Some(options),
             // None,
         )
-        .unwrap()
-        .filter_map(|item| item.ok())
-        .collect::<Vec<Document>>();
+        .await
+        .unwrap();
+
+    let news_docs = news_cursor
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await;
+
+    let news = news_docs
+        .iter()
+        .filter_map(|item| item.as_ref().ok())
+        .collect::<Vec<&Document>>();
 
     if news.is_empty() {
         println!("News to rewrite is empty, return....");
@@ -143,21 +154,24 @@ pub fn rewrite_news(client: Arc<Client>) {
 
             // dbg!(&rewritten_title);
 
-            news_collection.find_one_and_update(
-                doc! {
-                    "_id": &object_id
-                },
-                doc! {
-                    "$set" : {
-                        // "title" : rewritten_title.to_owned(),
-                        // "slug" : rewritten_slug,
-                        "markdown" : rewritten_text.to_owned(),
-                        "service_markdown" : service_text.to_owned(),
-                        "rewritten" : true,
-                    }
-                },
-                None,
-            );
+            news_collection
+                .find_one_and_update(
+                    doc! {
+                        "_id": &object_id
+                    },
+                    doc! {
+                        "$set" : {
+                            // "title" : rewritten_title.to_owned(),
+                            // "slug" : rewritten_slug,
+                            "markdown" : rewritten_text.to_owned(),
+                            "service_markdown" : service_text.to_owned(),
+                            "rewritten" : true,
+                        }
+                    },
+                    None,
+                )
+                .await
+                .expect("Failed to rewrite in db");
         }
     } else {
         println!("Failed to parse json result from rewrite");

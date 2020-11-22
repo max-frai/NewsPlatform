@@ -1,10 +1,12 @@
 use duct::*;
+use futures::stream::StreamExt;
 use maplit::hashmap;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
+use news_general::constants::AppConfig;
 use regex::Regex;
 use serde_json::{json, Value};
 use slug::slugify;
@@ -36,15 +38,16 @@ pub struct ClusteringThread {
     pub category: String,
 }
 
-pub fn categorise_news(client: Arc<Client>) {
-    let db = client.database("news");
-    let news_collection = db.collection("news");
+pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
+    let db = client.database(&constants.database_name);
+    let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
         .limit(500)
         .build();
-    let news = news_collection
+
+    let news_cursor = news_collection
         .find(
             Some(doc! {
                 "rewritten" : true,
@@ -53,9 +56,17 @@ pub fn categorise_news(client: Arc<Client>) {
             Some(options),
             // None,
         )
-        .unwrap()
-        .filter_map(|item| item.ok())
-        .collect::<Vec<Document>>();
+        .await
+        .unwrap();
+
+    let news_docs = news_cursor
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await;
+
+    let news = news_docs
+        .iter()
+        .filter_map(|item| item.as_ref().ok())
+        .collect::<Vec<&Document>>();
 
     if news.is_empty() {
         println!("News to categorise is empty, return....");
@@ -105,15 +116,18 @@ pub fn categorise_news(client: Arc<Client>) {
                 .map(|_id| ObjectId::with_string(_id).unwrap())
                 .collect();
 
-            news_collection.update_many(
-                doc! {
-                    "_id" : doc!{ "$in" : articles_ids }
-                },
-                doc! {
-                    "$set" : doc!{ "category" : thread.category, "categorised" : true }
-                },
-                None,
-            );
+            news_collection
+                .update_many(
+                    doc! {
+                        "_id" : doc!{ "$in" : articles_ids }
+                    },
+                    doc! {
+                        "$set" : doc!{ "category" : thread.category, "categorised" : true }
+                    },
+                    None,
+                )
+                .await
+                .expect("Failed to set categories");
         }
     }
 }

@@ -9,10 +9,10 @@ use tokio::main;
 use news_general::constants::*;
 use news_general::tag::*;
 
+pub mod categorise;
 pub mod parse;
+pub mod rewrite;
 pub mod translate;
-// pub mod categorise;
-// pub mod rewrite;
 // pub mod tag;
 
 #[tokio::main]
@@ -39,8 +39,8 @@ async fn main() {
 
     println!("Parse news");
     // crate::parse::parse_news(client, constants.clone()).await;
-    crate::translate::translate_news(client, constants.clone()).await;
-    // crate::rewrite::rewrite_news(client);
+    // crate::translate::translate_news(client, constants.clone()).await;
+    // crate::rewrite::rewrite_news(client, constants.clone()).await;
+    crate::categorise::categorise_news(client, constants.clone()).await;
     // crate::tag::tag_news(client, tags_manager);
-    // crate::categorise::categorise_news(client);
 }
