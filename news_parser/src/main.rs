@@ -10,7 +10,7 @@ use news_general::constants::*;
 use news_general::tag::*;
 
 // pub mod categorise;
-// pub mod parse;
+pub mod parse;
 // pub mod rewrite;
 // pub mod tag;
 // pub mod translate;
@@ -38,7 +38,7 @@ async fn main() {
     let tags_manager = Arc::new(Mutex::new(TagsManagerWriter::new(tags_col).await));
 
     println!("Parse news");
-    // crate::parse::parse_news(client);
+    crate::parse::parse_news(client, constants.clone()).await;
     // crate::translate::translate_news(client);
     // crate::rewrite::rewrite_news(client);
     // crate::tag::tag_news(client, tags_manager);

@@ -1,7 +1,8 @@
 use browser_rs::Browser;
 use chrono::prelude::*;
+use futures::stream::StreamExt;
 use html2md;
-use news_general::card::*;
+use news_general::{card::*, constants::AppConfig};
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
@@ -21,7 +22,7 @@ use duct::*;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
 use serde_json::Value;
 
@@ -120,15 +121,15 @@ fn object_id_from_timestamp(timestamp: u32) -> ObjectId {
     ObjectId::with_bytes(buf)
 }
 
-pub fn parse_news(client: Arc<Client>) {
+pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let browser = Arc::new(Browser::new(
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
         Duration::from_secs(10),
     ));
 
-    let db = client.database("news");
-    let sources_collection = db.collection("sources");
-    let news_collection = db.collection("news");
+    let db = client.database(&constants.database_name);
+    let sources_collection = db.collection(&constants.sources_collection_name);
+    let news_collection = db.collection(&constants.cards_collection_name);
 
     // GET SLUG OF ALREADY LOADED NEWS FOR LAST N HOURS -----------------------------
     let filter_utc: chrono::DateTime<Utc> = Utc::now() - chrono::Duration::hours(100);
@@ -138,9 +139,13 @@ pub fn parse_news(client: Arc<Client>) {
 
     let last_news = news_collection
         .find(Some(filter), None)
+        .await
         .expect("Failed to get news for filtering");
 
     let last_news_slug = last_news
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await
+        .iter()
         .map(|item| extract_bson_string(item.as_ref().unwrap().get("link")).unwrap_or_default())
         .collect::<Vec<String>>();
 
@@ -149,85 +154,86 @@ pub fn parse_news(client: Arc<Client>) {
     println!("Get all sources...");
     // let options = FindOptions::builder().limit(1).build();
     let options = FindOptions::builder().build();
-    let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(1);
+    let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(50);
     // let data_result = sources_collection.find(None, Some(options));
-    let data_result = sources_collection.find(None, None);
 
-    if data_result.is_err() {
-        println!("Failed to get sources: {:?}", data_result.as_ref().err());
-    }
+    let data_result = sources_collection
+        .find(None, None)
+        .await
+        .expect("Failed to get sources");
 
-    if let Ok(cursor) = data_result {
-        println!("Collect sources...");
-        let mut all_sources: Vec<Document> =
-            cursor.filter(|i| i.is_ok()).map(|i| i.unwrap()).collect();
+    println!("Collect sources...");
+    let mut all_sources = data_result
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await
+        .iter()
+        .map(|i| i.as_ref().unwrap().clone())
+        .collect::<Vec<Document>>();
 
-        println!("Sources count: {}", all_sources.len());
-        all_sources.shuffle(&mut rand::thread_rng());
+    println!("Sources count: {}", all_sources.len());
+    all_sources.shuffle(&mut rand::thread_rng());
 
-        for source_chunk in all_sources.chunks(50) {
-            result_rss_items.clear();
+    for source_chunk in all_sources.chunks(50) {
+        result_rss_items.clear();
 
-            result_rss_items = source_chunk
-                .par_iter()
-                .map(|source| {
-                    let rss = RssProcessor::<RssItemFull>::new(ParseMode::Latest(100));
+        result_rss_items = source_chunk
+            .par_iter()
+            .map(|source| {
+                let rss = RssProcessor::<RssItemFull>::new(ParseMode::Latest(100));
 
-                    let rss_link = source.get("rss").unwrap().as_str().unwrap_or_default();
-                    println!("Parse rss: {:?}", rss_link);
+                let rss_link = source.get("rss").unwrap().as_str().unwrap_or_default();
+                println!("Parse rss: {:?}", rss_link);
 
-                    let url = url::Url::parse(rss_link).unwrap();
-                    let xml = browser
-                        .get(url.clone())
-                        .map(|response| response.data)
-                        .unwrap_or(String::default());
+                let url = url::Url::parse(rss_link).unwrap();
+                let xml = browser
+                    .get(url.clone())
+                    .map(|response| response.data)
+                    .unwrap_or(String::default());
 
-                    let mut result_items = rss.process(&xml).unwrap_or(Vec::default());
+                let mut result_items = rss.process(&xml).unwrap_or(Vec::default());
 
-                    let parent_id = extract_bson_string(source.get("_id")).unwrap_or_default();
-                    let parent_country =
-                        extract_bson_string(source.get("country")).unwrap_or_default();
-                    let parent_source_name =
-                        extract_bson_string(source.get("name")).unwrap_or_default();
-                    let project_name =
-                        extract_bson_string(source.get("project")).unwrap_or_default();
+                let parent_id = extract_bson_string(source.get("_id")).unwrap_or_default();
+                let parent_country = extract_bson_string(source.get("country")).unwrap_or_default();
+                let parent_source_name =
+                    extract_bson_string(source.get("name")).unwrap_or_default();
+                let project_name = extract_bson_string(source.get("project")).unwrap_or_default();
 
-                    for child in result_items.iter_mut() {
-                        child.source = Some(parent_id.clone());
-                        child.country = Some(parent_country.clone());
-                        child.source_name = Some(parent_source_name.clone());
-                        child.project = Some(project_name.clone());
-                    }
+                for child in result_items.iter_mut() {
+                    child.source = Some(parent_id.clone());
+                    child.country = Some(parent_country.clone());
+                    child.source_name = Some(parent_source_name.clone());
+                    child.project = Some(project_name.clone());
+                }
 
-                    result_items.clone()
-                })
-                .flat_map(Vec::into_par_iter)
-                .filter(|item| return item.pub_date.is_some())
-                .collect();
+                result_items.clone()
+            })
+            .flat_map(Vec::into_par_iter)
+            .filter(|item| return item.pub_date.is_some())
+            .collect();
 
-            let before = result_rss_items.len() as i32;
-            println!("BEFORE REMOVING: {}", result_rss_items.len());
+        let before = result_rss_items.len() as i32;
+        println!("BEFORE REMOVING: {}", result_rss_items.len());
 
-            if !last_news_slug.is_empty() {
-                result_rss_items.retain(|ref item| {
-                    if let Some(ref url) = item.link.as_ref() {
-                        return !last_news_slug.contains(&url.as_str().to_string());
-                    }
-                    false
-                });
-            }
+        if !last_news_slug.is_empty() {
+            result_rss_items.retain(|ref item| {
+                if let Some(ref url) = item.link.as_ref() {
+                    return !last_news_slug.contains(&url.as_str().to_string());
+                }
+                false
+            });
+        }
 
-            let after = result_rss_items.len() as i32;
-            println!(
-                "AFTER REMOVING. NEWS COUNT TO PARSE: {}",
-                result_rss_items.len()
-            );
-            println!("SKIPPED NEWS: {}", before - after);
+        let after = result_rss_items.len() as i32;
+        println!(
+            "AFTER REMOVING. NEWS COUNT TO PARSE: {}",
+            result_rss_items.len()
+        );
+        println!("SKIPPED NEWS: {}", before - after);
 
-            result_rss_items.shuffle(&mut rand::thread_rng());
+        result_rss_items.shuffle(&mut rand::thread_rng());
 
-            println!("Parsing & inserting...");
-            let models: Vec<Document> = result_rss_items
+        println!("Parsing & inserting...");
+        let models: Vec<Document> = result_rss_items
                 .par_iter()
                 .map(|item| {
                     if item.link.is_none()
@@ -354,6 +360,7 @@ pub fn parse_news(client: Arc<Client>) {
                             markdown_original: markdown.to_string(),
                             marks,
                             tags: vec![],
+                            filled_tags: vec![],
 
                             rewritten: false,
                             categorised: false,
@@ -371,10 +378,11 @@ pub fn parse_news(client: Arc<Client>) {
                 .map(|model| model.unwrap())
                 .collect();
 
-            println!("Models count: {}", models.len());
+        println!("Models count: {}", models.len());
 
-            news_collection
-                .insert_many(models, InsertManyOptions::builder().ordered(false).build());
-        }
+        news_collection
+            .insert_many(models, InsertManyOptions::builder().ordered(false).build())
+            .await
+            .expect("Failed to insert news");
     }
 }
