@@ -1,10 +1,12 @@
 use duct::*;
+use futures::stream::StreamExt;
 use maplit::hashmap;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
-    sync::Client,
+    Client,
 };
+use news_general::constants::AppConfig;
 use regex::Regex;
 use serde_json::{json, Value};
 use slug::slugify;
@@ -16,15 +18,16 @@ use unicode_segmentation::UnicodeSegmentation;
 use bson::oid::ObjectId;
 use chrono::Utc;
 
-pub fn translate_news(client: Arc<Client>) {
-    let db = client.database("news");
-    let news_collection = db.collection("news");
+pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
+    let db = client.database(&constants.database_name);
+    let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
         .limit(100)
         .build();
-    let news = news_collection
+
+    let news_cursor = news_collection
         .find(
             Some(doc! {
                 "rewritten" : false,
@@ -32,9 +35,17 @@ pub fn translate_news(client: Arc<Client>) {
             }),
             Some(options),
         )
-        .unwrap()
-        .filter_map(|item| item.ok())
-        .collect::<Vec<Document>>();
+        .await
+        .unwrap();
+
+    let news_docs = news_cursor
+        .collect::<Vec<Result<Document, mongodb::error::Error>>>()
+        .await;
+
+    let news = news_docs
+        .iter()
+        .filter_map(|item| item.as_ref().ok())
+        .collect::<Vec<&Document>>();
 
     if news.is_empty() {
         println!("News to translate is empty, return....");
@@ -129,20 +140,23 @@ pub fn translate_news(client: Arc<Client>) {
                 println!("\t EMPTY TEXT, skip for now this translate");
             }
 
-            news_collection.find_one_and_update(
-                doc! {
-                    "_id": &object_id
-                },
-                doc! {
-                    "$set" : {
-                        "title" : translated_title,
-                        "markdown" : translated_body,
-                        "slug" : new_slug,
-                        "lang" : "rus"
-                    }
-                },
-                None,
-            );
+            news_collection
+                .find_one_and_update(
+                    doc! {
+                        "_id": &object_id
+                    },
+                    doc! {
+                        "$set" : {
+                            "title" : translated_title,
+                            "markdown" : translated_body,
+                            "slug" : new_slug,
+                            "lang" : "rus"
+                        }
+                    },
+                    None,
+                )
+                .await
+                .expect("Failed to translate");
         }
     } else {
         println!("Failed to parse json result from rewrite");
