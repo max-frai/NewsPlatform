@@ -29,7 +29,7 @@
 </div>
 
 <div class="ArticleContent leading-tight">
-    {{ markdown2html(markdown=markdown) | safe }}
+    {{ html | safe }}
 </div>
 
 <div class="my-4">

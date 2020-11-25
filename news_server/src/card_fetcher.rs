@@ -36,6 +36,12 @@ impl CardFetcher {
         }
     }
 
+    async fn prepare_card(&self, card: &mut Card) {
+        self.tags_manager.fill_card_tags(card).await;
+        card.markdown2html();
+        card.fill_marks();
+    }
+
     pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {
         let query_hash = query.to_string();
 
@@ -65,7 +71,7 @@ impl CardFetcher {
         let mut result = vec![];
         while let Some(card) = cards.next().await {
             let mut card_typed: Card = bson::from_document(card?)?;
-            self.tags_manager.fill_card_tags(&mut card_typed).await;
+            self.prepare_card(&mut card_typed).await;
             result.push(card_typed);
         }
 
@@ -97,7 +103,7 @@ impl CardFetcher {
             .await;
 
         let mut card: Card = bson::from_document(card?.unwrap())?;
-        self.tags_manager.fill_card_tags(&mut card).await;
+        self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache.lock() {
             println!("Get exact card from DB");

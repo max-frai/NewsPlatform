@@ -130,30 +130,6 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 println!("\t EMPTY TEXT, skip for now this rewrite");
             }
 
-            // Fix marks
-            // let marks = &id2marks[tag];
-            // let mark_re = regex::Regex::new(r"\{ ?(\d)+ ?\}").unwrap();
-            // let multi_whitespace_re = regex::Regex::new(r" {2,}").unwrap();
-
-            // rewritten_text = mark_re
-            //     .replace_all(&rewritten_text, |caps: &regex::Captures| {
-            //         if let Ok(index) = caps[1].parse::<usize>() {
-            //             if index > marks.len() {
-            //                 println!("index more than caps");
-            //             }
-            //             marks.get(index).cloned().unwrap_or_default()
-            //         } else {
-            //             String::default()
-            //         }
-            //     })
-            //     .to_string();
-
-            // rewritten_text = multi_whitespace_re
-            //     .replace_all(&rewritten_text, " ")
-            //     .to_string();
-
-            // dbg!(&rewritten_title);
-
             news_collection
                 .find_one_and_update(
                     doc! {
