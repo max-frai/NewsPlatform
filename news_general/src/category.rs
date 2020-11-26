@@ -18,6 +18,7 @@ pub enum Category {
     Sports,
     Science,
     Other,
+    Unknown,
 }
 
 impl Category {
@@ -30,6 +31,7 @@ impl Category {
             Category::Sports => "Спорт",
             Category::Science => "Наука",
             Category::Other => "Общее",
+            Category::Unknown => "",
         }
     }
 }

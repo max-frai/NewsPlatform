@@ -6,21 +6,22 @@ use mongodb::{
     options::{FindOptions, InsertManyOptions},
     Client,
 };
-use news_general::constants::AppConfig;
+use news_general::{category::Category, constants::AppConfig};
 use regex::Regex;
 use serde_json::{json, Value};
 use slug::slugify;
-use std::env;
 use std::io::Write;
 use std::process::{Command, Stdio};
 use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashSet, env};
 use unicode_segmentation::UnicodeSegmentation;
 
 use bson::oid::ObjectId;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct ClusteringItem {
     pub category: String,
     pub timestamp: i64,
@@ -44,7 +45,7 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
-        .limit(500)
+        .limit(400)
         .build();
 
     let news_cursor = news_collection
@@ -76,10 +77,13 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     println!("News found to categorise: {}", news.len());
 
     let mut items = vec![];
+    let mut all_ids = HashSet::new();
     for item in news {
         let title = item.get("title").unwrap().as_str().unwrap().to_string();
         let text = item.get("markdown").unwrap().as_str().unwrap().to_string();
-        let _id = item.get("_id").unwrap().as_object_id().unwrap().to_string();
+        let _id = item.get("_id").unwrap().as_object_id().unwrap();
+
+        all_ids.insert(_id.to_owned());
 
         items.push(ClusteringItem {
             category: String::from(""),
@@ -87,11 +91,13 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             description: text.to_string().replace("*", "").trim().to_string(),
             site_name: String::from(""),
             text,
-            file_name: _id,
+            file_name: _id.to_string(),
             title,
             url: String::from(""),
         });
     }
+
+    // dbg!(&items);
 
     let mut file = std::fs::File::create("categories.json").unwrap();
     let json_str = serde_json::to_string(&items).unwrap();
@@ -107,6 +113,8 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
     let threads = serde_json::from_str::<Vec<ClusteringThread>>(response_json).unwrap();
 
+    dbg!(&threads);
+
     println!("Update threads categories...");
     for thread in threads {
         if !thread.articles.is_empty() {
@@ -116,13 +124,23 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 .map(|_id| ObjectId::with_string(_id).unwrap())
                 .collect();
 
+            let category = Category::from_str(&thread.category).unwrap();
+            let category_bson = bson::to_bson(&category).unwrap();
+
+            println!("Set category for {} articles", articles_ids.len());
+            dbg!(&category);
+
+            for _id in &articles_ids {
+                all_ids.remove(_id);
+            }
+
             news_collection
                 .update_many(
                     doc! {
                         "_id" : doc!{ "$in" : articles_ids }
                     },
                     doc! {
-                        "$set" : doc!{ "category" : thread.category, "categorised" : true }
+                        "$set" : doc!{ "category" : category_bson, "categorised" : true }
                     },
                     None,
                 )
@@ -130,4 +148,19 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 .expect("Failed to set categories");
         }
     }
+
+    println!("Mark left news as not proper: {}", all_ids.len());
+    let unknown_bson = bson::to_bson(&Category::Unknown).unwrap();
+    news_collection
+        .update_many(
+            doc! {
+                "_id" : doc!{ "$in" : all_ids.into_iter().collect::<Vec<ObjectId>>() }
+            },
+            doc! {
+                "$set" : doc!{ "category" : unknown_bson, "categorised" : true }
+            },
+            None,
+        )
+        .await
+        .expect("Failed to set UNKNOWN categories");
 }

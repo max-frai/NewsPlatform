@@ -38,9 +38,9 @@ async fn main() {
     let tags_manager = Arc::new(Mutex::new(TagsManagerWriter::new(tags_col).await));
 
     println!("Parse news");
-    crate::parse::parse_news(client, constants.clone()).await;
+    // crate::parse::parse_news(client, constants.clone()).await;
     // crate::translate::translate_news(client, constants.clone()).await;
     // crate::rewrite::rewrite_news(client, constants.clone()).await;
-    // crate::categorise::categorise_news(client, constants.clone()).await;
+    crate::categorise::categorise_news(client, constants.clone()).await;
     // crate::tag::tag_news(client, constants.clone(), tags_manager).await;
 }

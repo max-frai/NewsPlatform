@@ -2,7 +2,7 @@ use browser_rs::Browser;
 use chrono::prelude::*;
 use futures::stream::StreamExt;
 use html2md;
-use news_general::{card::*, constants::AppConfig};
+use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
@@ -155,12 +155,12 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let options = FindOptions::builder().limit(1).build();
     // let options = FindOptions::builder().build();
     let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(50);
-    let data_result = sources_collection.find(None, Some(options)).await.unwrap();
+    // let data_result = sources_collection.find(None, Some(options)).await.unwrap();
 
-    // let data_result = sources_collection
-    //     .find(None, None)
-    //     .await
-    //     .expect("Failed to get sources");
+    let data_result = sources_collection
+        .find(None, None)
+        .await
+        .expect("Failed to get sources");
 
     println!("Collect sources...");
     let mut all_sources = data_result
@@ -359,7 +359,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                             og_image: og_image.to_owned(),
                             title,
                             slug,
-                            category: news_general::category::Category::Other,
+                            category: Unknown,
                             date: bson::DateTime(date),
                             country,
                             description: description.to_owned(),
