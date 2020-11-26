@@ -5,10 +5,15 @@ use tera::{Error, Result};
 
 use news_general::card::*;
 
-fn category2name_internal(category: &str) -> String {
+pub fn category2name_internal(category: &str) -> String {
     match category {
         "society" => "Общество",
         "entertainment" => "Развлечения",
+        "economy" => "Экономика",
+        "technology" => "Технологии",
+        "sports" => "Спорт",
+        "science" => "наука",
+        "other" => "Общее",
         _ => "",
     }
     .to_string()

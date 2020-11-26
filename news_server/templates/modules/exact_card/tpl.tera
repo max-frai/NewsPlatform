@@ -32,17 +32,17 @@
     {{ html | safe }}
 </div>
 
-<div class="my-4">
+{# <div class="my-4">
 {{ lined_title::generate(title='<img style="height: 16px; width: 16px;" src="/static/media/tags.svg">') }}
-</div>
+</div> #}
 
-<div class="tagWrap mt-5">
+<div class="tagWrap mt-3">
     {% for tag in filled_tags %}
         <div class="tagItem flex items-center">
-            <div class="flex-shrink-0 rounded-full w-12 h-12 shadow-md bg-cover mr-4" style="background-image: url({{ tag.image }})"></div>
+            <div class="flex-shrink-0 rounded-full w-10 h-10 shadow-md bg-cover mr-4" style="background-image: url({{ tag.image }})"></div>
             <div>
                 <h3 class="capitalize">{{ tag.title }}</h3>
-                <div class="text-gray-600">{{ tag.sentence }}</div>
+                <div class="text-gray-700">{{ tag.sentence }}</div>
             </div>
         </div>
     {% endfor %}

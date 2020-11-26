@@ -11,7 +11,7 @@ async fn index(state: web::Data<State>) -> impl Responder {
         .fetcher
         .fetch(CardQuery {
             lifetime: Duration::seconds(60),
-            limit: Some(10),
+            limit: Some(30),
             sort: Some(doc! { "date" : -1 }),
             query: doc! { "country" : "ua" },
         })
