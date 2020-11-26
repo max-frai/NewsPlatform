@@ -1,34 +1,17 @@
-use duct::*;
-use lazy_static::lazy_static;
-use maplit::hashmap;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::{FindOptions, InsertManyOptions},
     Client,
 };
-use regex::Regex;
-use rsmorphy::Source;
-use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru};
-use serde_json::{json, Value};
-use slug::slugify;
-use std::io::Write;
-use std::process::{Command, Stdio};
 use std::str::FromStr;
 use std::{collections::HashMap, sync::Arc};
 use std::{env, sync::Mutex};
 use strum::IntoEnumIterator;
-use strum_macros::EnumString;
-use three_set_compare::ThreeSetCompare;
-use unicode_segmentation::UnicodeSegmentation;
 
 use news_general::tag::*;
 
-use bson::oid::ObjectId;
-use chrono::Utc;
 use futures::stream::StreamExt;
 use news_general::constants::AppConfig;
-use scraper::Html;
-use scraper::Selector;
 use serde::{Deserialize, Serialize};
 use wikipedia::iter::Category;
 
@@ -52,7 +35,7 @@ pub struct ClusteringThread {
     pub category: String,
 }
 
-async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+async fn _ner(chunks: Vec<&str>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     let client = reqwest::Client::new();
     let result = client
         .post("http://localhost:5555/model")
@@ -78,15 +61,16 @@ async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)>
 }
 
 async fn ner(text: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    let chars =
-        unicode_segmentation::UnicodeSegmentation::graphemes(text, true).collect::<Vec<&str>>();
+    // let chars =
+    //     unicode_segmentation::UnicodeSegmentation::graphemes(text, true).collect::<Vec<&str>>();
 
     // TODO: Don't split on words (use commas, dots, newlines)
-    let mut chunks: Vec<String> = vec![];
-    for chunk in chars.chunks(1000) {
-        chunks.push(chunk.iter().map(|i| i.to_string()).collect());
-    }
+    // let mut chunks: Vec<String> = vec![];
+    // for chunk in chars.chunks(1000) {
+    //     chunks.push(chunk.iter().map(|i| i.to_string()).collect());
+    // }
 
+    let chunks = text.split(". ").collect();
     _ner(chunks).await
 }
 
@@ -106,8 +90,9 @@ pub async fn tag_news(
     let news_cursor = news_collection
         .find(
             Some(doc! {
-                "rewritten" : true,
-                "tagged" : false
+                // "rewritten" : true,
+                // "tagged" : false,
+                "slug" : "ispolkom-zhitomirskogo-gorsoveta-razreshil-shkolam-samim-reshat-idti-li-na-karantin"
             }),
             Some(options),
             // None,
@@ -146,6 +131,9 @@ pub async fn tag_news(
 
         let (words, tags) = ner(&text.trim()).await.unwrap_or((vec![], vec![]));
 
+        // dbg!(&words);
+        // dbg!(&tags);
+
         if words.is_empty() {
             println!("No ner words, skip");
             continue;
@@ -170,6 +158,7 @@ pub async fn tag_news(
 
             for ok_tag in TagKind::iter() {
                 if tag.ends_with(&format!("-{}", ok_tag.to_string().to_lowercase())) {
+                    // println!("\t tag ok");
                     if tag.starts_with("b-") {
                         if !current_word.is_empty() {
                             if current_word.chars().count() > 3 {
@@ -195,8 +184,11 @@ pub async fn tag_news(
 
         let mut final_tags = vec![];
         for pair in &passed_words {
-            let mut word = &pair.0;
+            let word = &pair.0;
             let kind = TagKind::from_str(&pair.1).unwrap();
+
+            // dbg!(word);
+            // dbg!(&kind);
 
             let mut tags_manager_mut = tags_manager.lock().unwrap();
             if let Some(tag) = tags_manager_mut.search_for_tag(word, kind).await {

@@ -41,6 +41,6 @@ async fn main() {
     // crate::parse::parse_news(client, constants.clone()).await;
     // crate::translate::translate_news(client, constants.clone()).await;
     // crate::rewrite::rewrite_news(client, constants.clone()).await;
-    crate::categorise::categorise_news(client, constants.clone()).await;
-    // crate::tag::tag_news(client, constants.clone(), tags_manager).await;
+    // crate::categorise::categorise_news(client, constants.clone()).await;
+    crate::tag::tag_news(client, constants.clone(), tags_manager).await;
 }

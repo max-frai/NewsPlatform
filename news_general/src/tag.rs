@@ -26,7 +26,7 @@ pub type Wiki = wikipedia::Wikipedia<wikipedia::http::default::Client>;
 pub enum TagKind {
     Person,
     Norp,
-    Organization,
+    Org,
     Gpe,
     Event,
     Product,
@@ -179,14 +179,17 @@ impl TagsManagerWriter {
 
             let wiki_html = page.get_html_content().unwrap();
             let document = Html::parse_document(&wiki_html);
-            let selector = Selector::parse(".infobox-image img").unwrap();
 
-            let mut image_src = String::new();
-
-            for element in document.select(&selector) {
-                image_src = element.value().attr("src").unwrap_or("").to_string();
-                break;
+            fn get_image(document: &Html, selector: &'static str) -> Option<String> {
+                let selector = Selector::parse(selector).unwrap();
+                for element in document.select(&selector) {
+                    return Some(element.value().attr("src").unwrap_or("").to_string());
+                }
+                None
             }
+
+            let image_src =
+                get_image(&document, ".infobox-image img").or(get_image(&document, ".infobox img"));
 
             let summary = {
                 let mut result = (None, None);
@@ -204,7 +207,7 @@ impl TagsManagerWriter {
                             .unwrap_or("");
 
                         let sentence = crate::helper::uppercase_first_letter(
-                            format!("{}.{}", first, second).trim(),
+                            format!("{}.{}.", first, second).trim(),
                         );
                         result = (Some(sentence), Some(summary));
                     }
@@ -220,7 +223,7 @@ impl TagsManagerWriter {
                 summary: summary.1.unwrap_or(String::new()),
                 wiki_title: original_found.to_owned(),
                 title: found.to_owned(),
-                image: image_src,
+                image: image_src.unwrap_or(String::new()),
             };
 
             // println!("Write tag to database");

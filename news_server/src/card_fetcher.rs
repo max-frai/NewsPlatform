@@ -57,9 +57,16 @@ impl CardFetcher {
         }
 
         // This added after query hash
+        // TODO: Make indecies from this
         query.query.insert("rewritten", true);
         query.query.insert("categorised", true);
         query.query.insert("tagged", true);
+        query.query.insert(
+            "category",
+            doc! {
+                "$ne" : news_general::category::Category::Unknown.to_string()
+            },
+        );
 
         let options = FindOptions::builder()
             .sort(query.sort)
