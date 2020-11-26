@@ -1,5 +1,5 @@
+use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
-use crate::{state::State, templates::category2name_internal};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
@@ -48,7 +48,7 @@ async fn exact(
             lifetime: Duration::seconds(60),
             limit: Some(15),
             sort: Some(doc! { "date" : -1 }),
-            query: doc! { "category" : card.category.to_owned() },
+            query: doc! { "category" : card.category.to_string() },
         })
         .await
         .unwrap();
@@ -58,7 +58,7 @@ async fn exact(
         .render(
             "modules/compact_news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
-                title: Some(category2name_internal(&card.category)),
+                title: Some(card.category.to_description().to_string()),
                 cards: category_cards,
             })
             .unwrap(),

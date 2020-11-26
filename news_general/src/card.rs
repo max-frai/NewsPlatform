@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-use crate::tag::Tag;
+use crate::{category::Category, tag::Tag};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Card {
@@ -22,7 +22,7 @@ pub struct Card {
     pub lang: String,
     pub link: String,
     pub country: String,
-    pub category: String,
+    pub category: Category,
     pub marks: Vec<String>,
     pub tags: Vec<ObjectId>,
     pub filled_tags: Vec<Tag>,

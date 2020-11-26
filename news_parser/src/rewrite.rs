@@ -18,14 +18,6 @@ use unicode_segmentation::UnicodeSegmentation;
 use bson::oid::ObjectId;
 use chrono::Utc;
 
-fn uppercase_first_letter(s: &str) -> String {
-    let mut c = s.chars();
-    match c.next() {
-        None => String::new(),
-        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
-    }
-}
-
 pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let db = client.database(&constants.database_name);
     let news_collection = db.collection(&constants.cards_collection_name);
@@ -122,7 +114,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             let object_id = ObjectId::with_string(&tag).unwrap();
 
             // Fix whitespace in markdown image
-            let mut rewritten_text = uppercase_first_letter(&text);
+            let mut rewritten_text = news_general::helper::uppercase_first_letter(&text);
             // rewritten_title = uppercase_first_letter(&rewritten_title).trim().to_string();
 
             dbg!(&title);

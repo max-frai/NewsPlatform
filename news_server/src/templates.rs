@@ -1,23 +1,10 @@
 use comrak::{format_html, markdown_to_html, parse_document, Arena, ComrakOptions};
+use std::str::FromStr;
 use std::{collections::HashMap, sync::Arc};
 use tera::{from_value, to_value, Tera, Value};
 use tera::{Error, Result};
 
-use news_general::card::*;
-
-pub fn category2name_internal(category: &str) -> String {
-    match category {
-        "society" => "Общество",
-        "entertainment" => "Развлечения",
-        "economy" => "Экономика",
-        "technology" => "Технологии",
-        "sports" => "Спорт",
-        "science" => "наука",
-        "other" => "Общее",
-        _ => "",
-    }
-    .to_string()
-}
+use news_general::{card::*, category::Category};
 
 pub fn make_card_url(args: &HashMap<String, Value>) -> Result<Value> {
     match args.get("card") {
@@ -36,7 +23,10 @@ pub fn make_card_url(args: &HashMap<String, Value>) -> Result<Value> {
 pub fn category_name(args: &HashMap<String, Value>) -> Result<Value> {
     match args.get("category") {
         Some(val) => match from_value::<String>(val.clone()) {
-            Ok(category) => Ok(to_value(category2name_internal(&category)).unwrap()),
+            Ok(category) => {
+                let category = Category::from_str(&category).unwrap_or(Category::Other);
+                Ok(to_value(category).unwrap())
+            }
             Err(_) => Err(Error::msg(
                 "Function `category_name` received `category`, but with wrong type",
             )),

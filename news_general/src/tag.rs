@@ -66,7 +66,7 @@ pub struct TagsManagerWriter {
 
 lazy_static! {
     static ref FIRST_SENTENCE_RE: Regex =
-        Regex::new(r"— (?P<sentence>.*?)\.((?P<sentence2>.*?)\.)?").unwrap();
+        Regex::new(r"— (?P<sentence1>.*?)\.((?P<sentence2>.*?)\.)?").unwrap();
     static ref BRACKETS_RE: Regex = Regex::new(r"\(.*?\)").unwrap();
     static ref SQUARE_BRACKETS_RE: Regex = Regex::new(r"\[.*?\]").unwrap();
 }
@@ -203,7 +203,9 @@ impl TagsManagerWriter {
                             .map(|group| group.as_str())
                             .unwrap_or("");
 
-                        let sentence = format!("{}.{}", first, second);
+                        let sentence = crate::helper::uppercase_first_letter(
+                            format!("{}.{}", first, second).trim(),
+                        );
                         result = (Some(sentence), Some(summary));
                     }
                 }

@@ -152,15 +152,15 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     println!("Last news slug length: {}", last_news_slug.len());
 
     println!("Get all sources...");
-    // let options = FindOptions::builder().limit(1).build();
-    let options = FindOptions::builder().build();
+    let options = FindOptions::builder().limit(1).build();
+    // let options = FindOptions::builder().build();
     let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(50);
-    // let data_result = sources_collection.find(None, Some(options));
+    let data_result = sources_collection.find(None, Some(options)).await.unwrap();
 
-    let data_result = sources_collection
-        .find(None, None)
-        .await
-        .expect("Failed to get sources");
+    // let data_result = sources_collection
+    //     .find(None, None)
+    //     .await
+    //     .expect("Failed to get sources");
 
     println!("Collect sources...");
     let mut all_sources = data_result
@@ -286,18 +286,27 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                         let og_image = json.get("og_image").unwrap().as_str().unwrap();
 
                         let mark_regex = vec![
-                            regex::Regex::new(r"(<table>.*?</table>)").unwrap(), // HTML table
-                            regex::Regex::new(r"(<img.*?>)").unwrap(),           // HTML image
-                            regex::Regex::new(r"(<iframe>.*?</iframe>)").unwrap(), // HTML table
-                            regex::Regex::new(r"(<iframe.*?/>)").unwrap(), // HTML table
+                            regex::Regex::new(r"(<table>.*?</table>)").unwrap(),
+                            regex::Regex::new(r"(<iframe.*?</iframe>)").unwrap(),
+                            regex::Regex::new(r"(<iframe.*?/>)").unwrap(),
+                            regex::Regex::new(r"(<figure.*?</figure>)").unwrap(),
+                            regex::Regex::new(r"(<img.*?>)").unwrap(),
+
+                            // URL should be the last regex!
+                            regex::RegexBuilder::new(r"(([\w]+:)?//)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,63}(:[\d]+)?(/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?").size_limit(50 * (1 << 20)).build().unwrap()
                         ];
+
+                        // println!("================================");
+                        // dbg!(&html);
+                        // println!("================================");
 
                         let mut marks = vec![];
                         for re in mark_regex {
                             html = re
                                 .replace_all(&html, |caps: &regex::Captures| {
                                     let mark_content = caps
-                                        .get(1)
+                                        .get(0)
+                                        .or(caps.get(1))
                                         .or(caps.get(2))
                                         .map(|i| i.as_str())
                                         .unwrap_or_default()
@@ -350,7 +359,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                             og_image: og_image.to_owned(),
                             title,
                             slug,
-                            category: String::from(""),
+                            category: news_general::category::Category::Other,
                             date: bson::DateTime(date),
                             country,
                             description: description.to_owned(),
