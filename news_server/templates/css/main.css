@@ -698,6 +698,12 @@ img {
   color: rgba(5, 150, 105, var(--tw-text-opacity));
 }
 
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .capitalize {
   text-transform: capitalize;
 }
@@ -990,6 +996,10 @@ select:focus {
   margin: 0 auto;
   border-radius: 5px;
   /*display: none;*/
+}
+
+.ArticleContent table {
+  width: 100%;
 }
 
 .ArticleContent blockquote,

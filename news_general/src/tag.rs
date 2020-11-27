@@ -120,6 +120,7 @@ impl TagsManagerWriter {
     }
 
     pub fn get_tag(&self, kind: &TagKind, title: &str) -> Option<&Tag> {
+        // println!("Get tag: {}; {}", kind, title);
         self.tags.get(&(kind.clone(), title.to_owned()))
     }
 
@@ -188,8 +189,13 @@ impl TagsManagerWriter {
                 None
             }
 
-            let image_src =
-                get_image(&document, ".infobox-image img").or(get_image(&document, ".infobox img"));
+            let image_src = get_image(&document, ".infobox-image img")
+                .or(get_image(&document, ".infobox img"))
+                .or(get_image(&document, "img.thumbimage"));
+
+            if image_src.is_none() {
+                return None;
+            }
 
             let summary = {
                 let mut result = (None, None);
@@ -223,7 +229,7 @@ impl TagsManagerWriter {
                 summary: summary.1.unwrap_or(String::new()),
                 wiki_title: original_found.to_owned(),
                 title: found.to_owned(),
-                image: image_src.unwrap_or(String::new()),
+                image: image_src.unwrap(), // Safe
             };
 
             // println!("Write tag to database");
