@@ -124,7 +124,7 @@ impl TagsManagerWriter {
         self.tags.get(&(kind.clone(), title.to_owned()))
     }
 
-    pub async fn search_for_tag(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
+    pub async fn search_for_tag_in_wiki(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
         //     what.split(" ")

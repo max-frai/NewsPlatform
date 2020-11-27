@@ -16,7 +16,6 @@ use news_general::constants::AppConfig;
 use serde::{Deserialize, Serialize};
 use wikipedia::iter::Category;
 
-use itertools::Itertools;
 use news_general;
 
 #[derive(Serialize, Deserialize)]
@@ -35,92 +34,6 @@ struct ClusteringItem {
 pub struct ClusteringThread {
     pub articles: Vec<String>,
     pub category: String,
-}
-
-async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    let client = reqwest::Client::new();
-    let result = client
-        .post("http://localhost:5555/model")
-        .json(&maplit::hashmap! {
-            "x" => chunks
-        })
-        .send()
-        .await
-        .unwrap()
-        .json::<Vec<Vec<Vec<String>>>>()
-        .await
-        .unwrap();
-
-    let mut final_words = vec![];
-    let mut final_tags = vec![];
-
-    for pairs in result.iter() {
-        final_words.append(&mut pairs[0].to_owned());
-        final_tags.append(&mut pairs[1].to_owned());
-    }
-
-    Ok((final_words, final_tags))
-}
-
-async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    text = text.replace(">", " ").replace("\n", " ");
-    text = format!("{}{}{}", text, text, text); // ? We get more tags with this
-
-    let chars = unicode_segmentation::UnicodeSegmentation::graphemes(text.as_str(), true)
-        .collect::<Vec<&str>>();
-
-    let mut chunks = vec![];
-    for chunk in &chars.into_iter().chunks(1500) {
-        chunks.push(chunk.collect::<Vec<&str>>().concat());
-    }
-
-    // while consumed < chars.len() {
-    //     println!("Iteration ----------------");
-    //     if chars.len() >= MAX_CHUNK_LEN {
-    //         let (local_index, symbol) = chars
-    //             .iter()
-    //             .enumerate()
-    //             .skip(consumed + MAX_CHUNK_LEN)
-    //             .rev()
-    //             .take_while(|(index, letter)| **letter == ".")
-    //             .next()
-    //             .unwrap();
-
-    //         index = local_index;
-    //     }
-
-    //     dbg!(index);
-
-    //     let chunk = chars
-    //         .iter()
-    //         .skip(consumed)
-    //         .take(index)
-    //         .cloned()
-    //         .collect::<Vec<&str>>();
-
-    //     consumed += chunk.len();
-    //     dbg!(consumed);
-    //     chunks.push(chunk.concat());
-    // }
-
-    // if chars_iter.len() <= MAX_CHUNK_LEN {
-    //     chunks.push(chars_iter.map(|s| *s).collect::<Vec<&str>>().concat());
-    // } else {
-    //     let chunk: Vec<&str> = chars_iter
-    //         .skip(MAX_CHUNK_LEN)
-    //         .rev()
-    //         .take_while(|letter| **letter == ".")
-    //         .map(|s| *s)
-    //         .collect::<Vec<&str>>();
-
-    //     chunks.push(chunk.concat());
-    //     chars_iter.drain(0..chunk.len());
-    //     chars_iter.
-    // }
-    // }
-
-    // dbg!(&chunks);
-    _ner(chunks).await
 }
 
 pub async fn tag_news(
@@ -178,76 +91,20 @@ pub async fn tag_news(
 
         // println!("Text:\n{}", text.trim());
 
-        let (words, tags) = ner(text.trim().to_owned())
-            .await
-            .unwrap_or((vec![], vec![]));
-
-        // dbg!(&words);
-        // dbg!(&tags);
-
-        if words.is_empty() {
-            println!("No ner words, skip");
-            continue;
-        }
-
-        let mut words = words.iter();
-        let mut tags = tags.iter();
-
-        let mut current_word = String::new();
-        let mut passed_words = vec![];
-        let mut previous_tag = String::new();
-
-        while let Some(word) = words.next() {
-            let word = word.as_str().to_lowercase();
-            let tag = tags.next().unwrap().as_str().to_lowercase();
-
-            // println!("{} - {}", word, tag);
-
-            if tag == "o" {
-                if current_word.chars().count() > 4 {
-                    passed_words.push((current_word.to_owned(), previous_tag.to_owned()));
-                    current_word = String::new();
-                }
-                continue;
-            }
-
-            for ok_tag in TagKind::iter() {
-                if tag.ends_with(&format!("-{}", ok_tag.to_string().to_lowercase())) {
-                    // println!("\t tag ok");
-                    if tag.starts_with("b-") {
-                        if !current_word.is_empty() {
-                            // println!("\tCurrent word is not empty, append");
-                            if current_word.chars().count() > 4 {
-                                passed_words.push((current_word, previous_tag));
-                            }
-                            current_word = String::new();
-                        }
-                        current_word = word.to_owned();
-                    } else if tag.starts_with("i-") && !current_word.is_empty() {
-                        current_word = format!("{} {}", current_word, word);
-                        dbg!(&current_word);
-                    }
-
-                    previous_tag = tag.replace("i-", "").replace("b-", "");
-                    break;
-                }
-            }
-        }
-
-        // dbg!(&passed_words);
-
         let mut final_tags = vec![];
-        for pair in &passed_words {
-            let word = &pair.0;
-            let kind = TagKind::from_str(&pair.1).unwrap();
+        if let Some(ner_tags) = news_general::ner::ner_tags(text).await {
+            for pair in &ner_tags {
+                let word = &pair.0;
+                let kind = pair.1.to_owned();
 
-            // dbg!(word);
-            // dbg!(&kind);
+                // dbg!(word);
+                // dbg!(&kind);
 
-            let mut tags_manager_mut = tags_manager.lock().unwrap();
-            if let Some(tag) = tags_manager_mut.search_for_tag(word, kind).await {
-                if !final_tags.contains(&tag._id) {
-                    final_tags.push(tag._id);
+                let mut tags_manager_mut = tags_manager.lock().unwrap();
+                if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
+                    if !final_tags.contains(&tag._id) {
+                        final_tags.push(tag._id);
+                    }
                 }
             }
         }
