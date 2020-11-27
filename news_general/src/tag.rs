@@ -124,6 +124,23 @@ impl TagsManagerWriter {
         self.tags.get(&(kind.clone(), title.to_owned()))
     }
 
+    async fn verify_found_wikititle_ok_by_tag(
+        &self,
+        summary: &str,
+        should_be_tag: TagKind,
+    ) -> Option<()> {
+        if let Some(tags) = crate::ner::ner_tags(summary.to_owned()).await {
+            if !tags.is_empty() {
+                // println!("Check: {} == {}", should_be_tag, tags.first().unwrap().1);
+                if should_be_tag == tags.first().unwrap().1 {
+                    return Some(());
+                }
+            }
+        }
+
+        None
+    }
+
     pub async fn search_for_tag_in_wiki(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
@@ -141,7 +158,7 @@ impl TagsManagerWriter {
         let word = what.to_string();
 
         let wikititle = if let Some(wikititle) = self.text2wikititle.get(&word) {
-            println!("Got wikititle from cache");
+            // println!("Got wikititle from cache");
             Some(wikititle.to_owned())
         } else {
             println!("Search wiki for: {}; {}", word, kind);
@@ -169,7 +186,7 @@ impl TagsManagerWriter {
 
         let found_tag = self.get_tag(&kind, &found);
         if found_tag.is_some() {
-            println!("\treturn tag from cache");
+            // println!("\treturn tag from cache");
             return found_tag.cloned();
         }
 
@@ -198,7 +215,7 @@ impl TagsManagerWriter {
             }
 
             let summary = {
-                let mut result = (None, None);
+                let mut result = (String::new(), String::new());
                 if let Ok(mut summary) = page.get_summary() {
                     summary = SQUARE_BRACKETS_RE.replace_all(&summary, "").to_string();
                     summary = BRACKETS_RE.replace_all(&summary, "").to_string();
@@ -215,18 +232,30 @@ impl TagsManagerWriter {
                         let sentence = crate::helper::uppercase_first_letter(
                             format!("{}.{}.", first, second).trim(),
                         );
-                        result = (Some(sentence), Some(summary));
+                        result = (sentence, summary);
                     }
                 }
 
                 result
             };
 
+            // println!("Verify summary is found as: {}", kind);
+            // println!("{}", summary.1);
+
+            if self
+                .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
+                .await
+                .is_none()
+            {
+                println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
+                return None;
+            }
+
             let tag = Tag {
                 _id: ObjectId::default(),
                 kind: kind.to_owned(),
-                sentence: summary.0.unwrap_or(String::new()),
-                summary: summary.1.unwrap_or(String::new()),
+                sentence: summary.0,
+                summary: summary.1,
                 wiki_title: original_found.to_owned(),
                 title: found.to_owned(),
                 image: image_src.unwrap(), // Safe

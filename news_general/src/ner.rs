@@ -30,7 +30,13 @@ async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)>
 }
 
 async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
-    text = text.replace(">", " ").replace("\n", " ");
+    text = text
+        .replace(">", " ")
+        .replace("\n", " ")
+        .replace("\u{301}", "");
+
+    dbg!(&text);
+
     text = format!("{}{}{}", text, text, text); // ? We get more tags with this
 
     let chars = unicode_segmentation::UnicodeSegmentation::graphemes(text.as_str(), true)
