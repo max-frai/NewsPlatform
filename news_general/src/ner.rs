@@ -35,7 +35,7 @@ async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
         .replace("\n", " ")
         .replace("\u{301}", "");
 
-    dbg!(&text);
+    // dbg!(&text);
 
     text = format!("{}{}{}", text, text, text); // ? We get more tags with this
 

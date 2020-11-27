@@ -102,7 +102,11 @@ select:focus {
 }
 
 .tagItem {
-    @apply mr-1 w-full rounded-md px-2 py-2 mb-1 transition;
+    @apply mr-1 w-full rounded-md px-2 py-2 mb-1 transition flex items-center;
+}
+
+.tagImage {
+    @apply flex-shrink-0 rounded-lg w-10 h-10 shadow-lg bg-cover mr-4 border border-gray-200;
 }
 
 .tagItem:hover {

@@ -66,7 +66,10 @@ pub struct TagsManagerWriter {
 
 lazy_static! {
     static ref FIRST_SENTENCE_RE: Regex =
-        Regex::new(r"— (?P<sentence1>.*?)\.((?P<sentence2>.*?)\.)?").unwrap();
+        RegexBuilder::new(r"— (?P<sentence1>.*?)\.((?P<sentence2>.*?)\.)?")
+            .multi_line(true)
+            .build()
+            .unwrap();
     static ref BRACKETS_RE: Regex = Regex::new(r"\(.*?\)").unwrap();
     static ref SQUARE_BRACKETS_RE: Regex = Regex::new(r"\[.*?\]").unwrap();
 }
@@ -219,7 +222,13 @@ impl TagsManagerWriter {
                 if let Ok(mut summary) = page.get_summary() {
                     summary = SQUARE_BRACKETS_RE.replace_all(&summary, "").to_string();
                     summary = BRACKETS_RE.replace_all(&summary, "").to_string();
+                    summary = summary.replace("\n", " ");
+                    // dbg!(&summary);
                     if let Some(caps) = FIRST_SENTENCE_RE.captures(&summary) {
+                        let mut sentences = vec![];
+
+                        // dbg!(&caps);
+
                         let first = caps
                             .name("sentence1")
                             .map(|group| group.as_str())
@@ -229,9 +238,19 @@ impl TagsManagerWriter {
                             .map(|group| group.as_str())
                             .unwrap_or("");
 
-                        let sentence = crate::helper::uppercase_first_letter(
-                            format!("{}.{}.", first, second).trim(),
-                        );
+                        // dbg!(&first);
+                        // dbg!(&second);
+
+                        // Sentence too long, so there is some meta information
+                        if first.chars().count() < 250 {
+                            sentences.push(first);
+                        }
+                        if second.chars().count() < 250 {
+                            sentences.push(second);
+                        }
+
+                        let sentence =
+                            crate::helper::uppercase_first_letter(sentences.join(". ").trim());
                         result = (sentence, summary);
                     }
                 }

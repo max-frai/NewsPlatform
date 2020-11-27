@@ -54,7 +54,7 @@ pub async fn tag_news(
             Some(doc! {
                 // "rewritten" : true,
                 // "tagged" : false,
-                "slug" : "zhitomirskii-raisovet-soberetsia-na-pervoe-zasedanie-uzhe-1-dekabria"
+                "slug" : "utrom-pod-zhitomirom-perevernulsia-benzovoz"
             }),
             Some(options),
             // None,
