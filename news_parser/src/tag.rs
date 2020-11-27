@@ -54,7 +54,7 @@ pub async fn tag_news(
             Some(doc! {
                 // "rewritten" : true,
                 // "tagged" : false,
-                "slug" : "utrom-pod-zhitomirom-perevernulsia-benzovoz"
+                "slug" : "politsiia-usilit-kontrol-za-sem-iami-v-slozhnykh-zhiznennykh-obstoiatel-stvakh"
             }),
             Some(options),
             // None,
@@ -79,6 +79,7 @@ pub async fn tag_news(
     println!("News found to tag: {}", news.len());
 
     for item in news {
+        let title = item.get("title").unwrap().as_str().unwrap();
         let text = item
             .get("markdown")
             .unwrap()
@@ -92,7 +93,7 @@ pub async fn tag_news(
         // println!("Text:\n{}", text.trim());
 
         let mut final_tags = vec![];
-        if let Some(ner_tags) = news_general::ner::ner_tags(text).await {
+        if let Some(ner_tags) = news_general::ner::ner_tags(format!("{}. {}", title, text)).await {
             for pair in &ner_tags {
                 let word = &pair.0;
                 let kind = pair.1.to_owned();

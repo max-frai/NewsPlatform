@@ -194,8 +194,9 @@ impl TagsManagerWriter {
         }
 
         let similarity = self.comparator.similarity(&found, &word);
+        // dbg!(similarity);
 
-        if similarity > 0.5 {
+        if similarity >= 0.4 {
             let page = self.wiki.page_from_title(original_found.to_owned());
 
             let wiki_html = page.get_html_content().unwrap();

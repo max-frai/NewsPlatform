@@ -43,7 +43,7 @@ async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
         .collect::<Vec<&str>>();
 
     let mut chunks = vec![];
-    for chunk in &chars.into_iter().chunks(1500) {
+    for chunk in &chars.into_iter().chunks(1100) {
         chunks.push(chunk.collect::<Vec<&str>>().concat());
     }
 
