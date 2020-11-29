@@ -38,14 +38,6 @@
 
 <div class="tagWrap mt-3">
     {% for tag in filled_tags %}
-        <a href="/tags/{{ tag.kind | lower }}/{{ tag.title }}" class="block w-full">
-        <div class="tagItem">
-            <div class="tagImage" style="background-image: url({{ tag.image }})"></div>
-            <div>
-                <h3 class="capitalize">{{ tag.title }}</h3>
-                <div class="text-gray-700">{{ tag.sentence | truncate(length=260) }}</div>
-            </div>
-        </div>
-        </a>
+        {% include "modules/tag_item/tpl.tera" %}
     {% endfor %}
 </div>

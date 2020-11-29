@@ -11,7 +11,7 @@ use tera::Context;
 #[get("/categories/{category}")]
 async fn exact_category(
     state: web::Data<State>,
-    web::Path((category)): web::Path<(String)>,
+    web::Path(category): web::Path<String>,
 ) -> impl Responder {
     let category = Category::from_str(&category).unwrap_or(Category::Other);
     let category_str = format!("{:?}", category);
