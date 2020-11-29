@@ -3,7 +3,9 @@
         <div class="tagImage" style="background-image: url({{ tag.image }})"></div>
         <div>
             <h3 class="capitalize">{{ tag.title }}</h3>
+            {% if compactTag is undefined %}
             <div class="text-gray-700">{{ tag.sentence | truncate(length=260) }}</div>
+            {% endif %}
         </div>
     </div>
 </a>

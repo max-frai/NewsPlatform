@@ -1,4 +1,5 @@
 use crate::{card::Card, tag::bson::oid::ObjectId};
+use bson::doc;
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use maplit::hashmap;
@@ -52,6 +53,7 @@ impl Tag {
 }
 
 pub struct TagsManager {
+    news_col: Collection,
     tags: HashMap<ObjectId, Tag>,
     // (Kind, Title) -> Tag
     tags_lookup: HashMap<(TagKind, String), Tag>,
@@ -78,7 +80,7 @@ lazy_static! {
 }
 
 impl TagsManager {
-    pub async fn new(tags_col: Collection) -> Self {
+    pub async fn new(tags_col: Collection, news_col: Collection) -> Self {
         let mut raw_tags = tags_col.find(None, None).await.unwrap();
         let mut tags = HashMap::new();
         let mut tags_lookup = HashMap::new();
@@ -89,7 +91,11 @@ impl TagsManager {
             tags_lookup.insert((tag.kind.clone(), tag.title.to_owned()), tag);
         }
 
-        Self { tags, tags_lookup }
+        Self {
+            news_col,
+            tags,
+            tags_lookup,
+        }
     }
 
     pub async fn find(&self, kind: TagKind, title: &str) -> Option<&Tag> {
@@ -103,6 +109,32 @@ impl TagsManager {
                 card.filled_tags.push(tag.clone());
             }
         }
+    }
+
+    pub async fn get_popular_by_kind(&self, kind: TagKind) -> Vec<Tag> {
+        let mut tags = vec![];
+        for (_, tag) in &self.tags {
+            if tag.kind == kind {
+                let count = self
+                    .news_col
+                    .count_documents(
+                        doc! {
+                            "tags" : tag._id.clone()
+                        },
+                        None,
+                    )
+                    .await
+                    .unwrap();
+
+                tags.push((tag, count));
+            }
+        }
+
+        tags.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+        tags.iter()
+            .take(4)
+            .map(|item| item.0.to_owned())
+            .collect::<Vec<Tag>>()
     }
 }
 

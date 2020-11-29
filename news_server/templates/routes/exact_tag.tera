@@ -5,10 +5,12 @@
 <h1>{{ title }}</h1>
 
 <div class="mb-4">
-    <div class="w-24 h-24 bg-cover bg-center shadow-lg border border-gray-200 rounded-lg float-left inline-block mr-4 mb-0.5" style="background-image: url({{ tag.image }})">
+    <div class="w-24 h-24 bg-cover bg-center shadow-lg border border-gray-200 rounded-lg float-left inline-block mr-4" style="background-image: url({{ tag.image }})">
     </div>
     <span class="text-gray-700 leading-none text-sm">{{ tag.summary | truncate(length=600) }}</span>
 </div>
+
+<div class="clear-both"></div>
 
 {% if center_content %}
 {{ center_content | safe }}

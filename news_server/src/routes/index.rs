@@ -32,6 +32,8 @@ async fn index(state: web::Data<State>) -> impl Responder {
 
     let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
+    context.insert("top_persons", &state.top_persons);
+    context.insert("top_organizations", &state.top_organizations);
 
     HttpResponse::Ok()
         .content_type("text/html")

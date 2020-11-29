@@ -1,5 +1,5 @@
 {% if title %}
-<h1 class="text-lg mb-2">{{ title }}</h1>
+<h1 class="mb-2">{{ title }}</h1>
 {% endif %}
 
 <div class="GrayBorder text-sm md:p-3 md:px-4">

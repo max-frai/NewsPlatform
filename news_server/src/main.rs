@@ -69,7 +69,12 @@ async fn main() -> std::io::Result<()> {
     let tags = db.collection(&constants.tags_collection_name);
 
     // TODO: Autoreload tags time from time !!!!!!!!
-    let tags_manager = Arc::new(TagsManager::new(tags).await);
+    let tags_manager = Arc::new(TagsManager::new(tags, news.clone()).await);
+
+    println!("Count person news");
+    let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
+    println!("Count top organizations");
+    let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
 
     let fetcher = Arc::new(CardFetcher::new(
         news,
@@ -83,6 +88,8 @@ async fn main() -> std::io::Result<()> {
         constants: constants.clone(),
         tera: tera.clone(),
         tags_manager,
+        top_persons,
+        top_organizations,
     });
 
     println!("Create server");
