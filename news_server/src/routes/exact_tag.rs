@@ -3,40 +3,40 @@ use crate::{card_queries::CardQuery, modules};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
-use news_general::category::Category;
+use news_general::{category::Category, tag::TagKind};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;
 
-#[get("/categories/{category}")]
-async fn exact_category(
+#[get("/tags/{kind}/{title}")]
+async fn exact_tag(
     state: web::Data<State>,
-    web::Path((category)): web::Path<(String)>,
+    web::Path((kind, title)): web::Path<(String, String)>,
 ) -> impl Responder {
-    let category = Category::from_str(&category).unwrap_or(Category::Other);
-    let category_str = format!("{:?}", category);
+    let kind = TagKind::from_str(&kind).unwrap();
+    let tag = state.tags_manager.find(kind, &title).await.unwrap();
 
-    let category_cards = state
+    let tag_cards = state
         .fetcher
         .fetch(CardQuery {
             lifetime: Duration::seconds(60),
             limit: Some(15),
             sort: Some(doc! { "date" : -1 }),
             query: doc! {
-                "category" : category_str,
+                "tags" : tag._id.to_owned()
             },
         })
         .await
         .unwrap();
 
-    let title = format!("{}: все новости", category.to_description());
+    let title = format!("{}: все новости", tag.wiki_title);
     let news_list_tpl = state
         .tera
         .render(
             "modules/news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
-                title: Some(title),
-                cards: category_cards,
+                title: None,
+                cards: tag_cards,
             })
             .unwrap(),
         )
@@ -44,11 +44,13 @@ async fn exact_category(
 
     let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
+    context.insert("tag", tag);
+    context.insert("title", &title);
 
     HttpResponse::Ok().content_type("text/html").body(
         state
             .tera
-            .render("routes/exact_category.tera", &context)
+            .render("routes/exact_tag.tera", &context)
             .unwrap(),
     )
 }

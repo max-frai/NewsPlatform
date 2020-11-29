@@ -38,6 +38,7 @@
 
 <div class="tagWrap mt-3">
     {% for tag in filled_tags %}
+        <a href="/tags/{{ tag.kind | lower }}/{{ tag.title }}" class="block w-full">
         <div class="tagItem">
             <div class="tagImage" style="background-image: url({{ tag.image }})"></div>
             <div>
@@ -45,5 +46,6 @@
                 <div class="text-gray-700">{{ tag.sentence | truncate(length=260) }}</div>
             </div>
         </div>
+        </a>
     {% endfor %}
 </div>

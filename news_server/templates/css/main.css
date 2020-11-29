@@ -191,6 +191,10 @@ Interactive
 Add the correct display in Chrome and Safari.
 */
 
+summary {
+  display: list-item;
+}
+
 /**
  * Manually forked from SUIT CSS Base: https://github.com/suitcss/base
  * A thin layer on top of normalize.css that provides a starting point more
@@ -404,8 +408,17 @@ img {
   background-color: rgba(203, 213, 225, var(--tw-bg-opacity));
 }
 
+.bg-center {
+  background-position: center;
+}
+
 .bg-cover {
   background-size: cover;
+}
+
+.border-gray-200 {
+  --tw-border-opacity: 1;
+  border-color: rgba(226, 232, 240, var(--tw-border-opacity));
 }
 
 .border-gray-300 {
@@ -413,8 +426,16 @@ img {
   border-color: rgba(203, 213, 225, var(--tw-border-opacity));
 }
 
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
 .rounded-xl {
   border-radius: 0.75rem;
+}
+
+.rounded-3xl {
+  border-radius: 1.5rem;
 }
 
 .border {
@@ -477,6 +498,10 @@ img {
   flex-shrink: 0;
 }
 
+.float-left {
+  float: left;
+}
+
 .font-medium {
   font-weight: 500;
 }
@@ -495,6 +520,14 @@ img {
 
 .h-10 {
   height: 2.5rem;
+}
+
+.h-24 {
+  height: 6rem;
+}
+
+.h-32 {
+  height: 8rem;
 }
 
 .h-full {
@@ -521,6 +554,10 @@ img {
   line-height: 2rem;
 }
 
+.leading-none {
+  line-height: 1;
+}
+
 .leading-tight {
   line-height: 1.25;
 }
@@ -543,6 +580,10 @@ img {
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
 }
 
 .mr-1 {
@@ -571,6 +612,14 @@ img {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 .mb-5 {
@@ -670,6 +719,11 @@ img {
   --tw-shadow: 0 0 #0000;
 }
 
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-2xl {
   --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
@@ -736,6 +790,10 @@ img {
 
 .w-6 {
   width: 1.5rem;
+}
+
+.w-24 {
+  width: 6rem;
 }
 
 .w-1\/2 {
@@ -870,6 +928,19 @@ select:focus {
   font-style: normal;
 }
 
+h1,
+h2,
+h3 {
+  font-family: "ysans-serif" !important;
+}
+
+h1 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
 .leftMenuItemActive,
 .leftMenuItem:hover {
   background-color: rgba(32, 35, 51, 0.07);
@@ -930,6 +1001,7 @@ select:focus {
   flex-wrap: wrap;
   font-size: 0.75rem;
   line-height: 1rem;
+  width: 100%;
 }
 
 .tagItem {
@@ -1098,15 +1170,6 @@ select:focus {
 
 .h-68 {
   height: 20rem;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-strong {
-  font-family: "ysans-serif" !important;
 }
 
 .ArticlePreview {

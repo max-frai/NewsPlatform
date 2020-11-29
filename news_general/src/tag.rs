@@ -53,6 +53,8 @@ impl Tag {
 
 pub struct TagsManager {
     tags: HashMap<ObjectId, Tag>,
+    // (Kind, Title) -> Tag
+    tags_lookup: HashMap<(TagKind, String), Tag>,
 }
 
 pub struct TagsManagerWriter {
@@ -79,15 +81,20 @@ impl TagsManager {
     pub async fn new(tags_col: Collection) -> Self {
         let mut raw_tags = tags_col.find(None, None).await.unwrap();
         let mut tags = HashMap::new();
+        let mut tags_lookup = HashMap::new();
 
         while let Some(tag) = raw_tags.next().await {
             let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
-            tags.insert(tag._id.to_owned(), tag);
+            tags.insert(tag._id.to_owned(), tag.to_owned());
+            tags_lookup.insert((tag.kind.clone(), tag.title.to_owned()), tag);
         }
 
-        Self { tags }
+        Self { tags, tags_lookup }
     }
 
+    pub async fn find(&self, kind: TagKind, title: &str) -> Option<&Tag> {
+        self.tags_lookup.get(&(kind, title.to_owned()))
+    }
     pub async fn fill_card_tags(&self, card: &mut Card) {
         card.filled_tags = vec![];
 
@@ -207,7 +214,11 @@ impl TagsManagerWriter {
             Some(wikititle.to_owned())
         } else {
             println!("Search wiki for: {}; {}", word, kind);
-            let search_result = self.wiki.search(&word).unwrap();
+            let mut search_result = self.wiki.search(&word).unwrap();
+            // dbg!(&search_result);
+            // search_result
+            //     .sort_by(|a, b| a.chars().count().partial_cmp(&b.chars().count()).unwrap());
+
             let found = search_result.first().cloned();
             if let Some(ref found_wiki_title) = found {
                 self.save_text2wikititle(&word, found_wiki_title);

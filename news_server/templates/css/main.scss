@@ -69,6 +69,20 @@ select:focus {
     font-style: normal;
 }
 
+
+h1,
+h2,
+h3,
+h4,
+h5,
+strong {
+    font-family: "ysans-serif" !important;
+}
+
+h1 {
+    @apply text-xl my-3;
+}
+
 .leftMenuItemActive,
 .leftMenuItem:hover {
     background-color: rgba(32, 35, 51, 0.07);
@@ -98,7 +112,7 @@ select:focus {
 }
 
 .tagWrap {
-    @apply flex flex-wrap text-xs;
+    @apply flex flex-wrap text-xs w-full;
 }
 
 .tagItem {

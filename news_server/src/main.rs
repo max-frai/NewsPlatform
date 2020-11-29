@@ -12,6 +12,7 @@ use listenfd::ListenFd;
 use crate::routes::categories::categories;
 use crate::routes::exact::exact;
 use crate::routes::exact_category::exact_category;
+use crate::routes::exact_tag::exact_tag;
 use crate::routes::index::index;
 use crate::routes::test::test;
 
@@ -96,6 +97,7 @@ async fn main() -> std::io::Result<()> {
             .service(test)
             .service(categories)
             .service(exact_category)
+            .service(exact_tag)
             .service(Files::new("/static", "./templates/"))
     });
 

@@ -94,7 +94,7 @@ pub async fn tag_news(
         let mut final_tags = vec![];
         if let Some(ner_tags) = news_general::ner::ner_tags(format!("{}. {}", title, text)).await {
             for pair in &ner_tags {
-                let word = &pair.0;
+                let word = pair.0.trim();
                 let kind = pair.1.to_owned();
 
                 // dbg!(word);
