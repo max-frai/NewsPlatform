@@ -2,7 +2,9 @@
 
 {% block center_column %}
 
-<div style="background-image: url(/static/media/society.jpg)" class="w-full h-32 bg-cover bg-center rounded-3xl my-3"></div>
+<h1>{{ title }}</h1>
+
+<div style="background-image: url(/static/media/{{ category }}.jpg)" class="w-full h-48 bg-cover bg-center rounded-3xl my-3"></div>
 
 {% if center_content %}
 {{ center_content | safe }}

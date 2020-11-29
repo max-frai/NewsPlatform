@@ -35,7 +35,7 @@ async fn exact_category(
         .render(
             "modules/news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
-                title: Some(title),
+                title: None,
                 cards: category_cards,
             })
             .unwrap(),
@@ -44,6 +44,8 @@ async fn exact_category(
 
     let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
+    context.insert("category", &category.to_string());
+    context.insert("title", &title);
 
     HttpResponse::Ok().content_type("text/html").body(
         state

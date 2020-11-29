@@ -42,13 +42,14 @@ async fn exact(
         )
         .unwrap();
 
+    let card_category = format!("{:?}", card.category);
     let category_cards = state
         .fetcher
         .fetch(CardQuery {
             lifetime: Duration::seconds(60),
             limit: Some(15),
             sort: Some(doc! { "date" : -1 }),
-            query: doc! { "category" : card.category.to_string() },
+            query: doc! { "category" : card_category },
         })
         .await
         .unwrap();
