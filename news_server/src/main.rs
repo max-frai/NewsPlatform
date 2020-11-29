@@ -9,7 +9,9 @@ use actix_web::{middleware, web, App, HttpServer};
 use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
+use crate::routes::categories::categories;
 use crate::routes::exact::exact;
+use crate::routes::exact_category::exact_category;
 use crate::routes::index::index;
 use crate::routes::test::test;
 
@@ -92,6 +94,8 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(exact)
             .service(test)
+            .service(categories)
+            .service(exact_category)
             .service(Files::new("/static", "./templates/"))
     });
 

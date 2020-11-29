@@ -24,4 +24,6 @@ anyhow = "1.0"
 config = "0.10"
 listenfd = "0.3"
 comrak = "0.9"
+strum = "0.18"
+strum_macros = "0.18"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }

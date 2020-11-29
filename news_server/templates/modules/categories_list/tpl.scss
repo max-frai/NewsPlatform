@@ -1,0 +1,8 @@
+.categoriesItem {
+    @apply w-full h-40 bg-cover bg-center rounded-3xl text-3xl text-white flex shadow-md relative transition duration-300 transform hover:scale-105 hover:shadow-2xl select-none;
+}
+
+.categoriesItemFade {
+    @apply absolute w-full h-full left-0 top-0 rounded-3xl items-center justify-center flex;
+    background: rgba(0, 0, 0, 0.25);
+}

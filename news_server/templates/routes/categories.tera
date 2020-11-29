@@ -1,0 +1,13 @@
+{% extends "layouts/layout.tera" %}
+
+{% block center_column %}
+{% if center_content %}
+{{ center_content | safe }}
+{% endif %}
+{% endblock %}
+
+{% block right_column %}
+{% if right_content %}
+{{ right_content | safe }}
+{% endif %}
+{% endblock %}

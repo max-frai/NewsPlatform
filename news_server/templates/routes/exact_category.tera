@@ -1,0 +1,7 @@
+{% extends "layouts/layout.tera" %}
+
+{% block center_column %}
+{% if center_content %}
+{{ center_content | safe }}
+{% endif %}
+{% endblock %}

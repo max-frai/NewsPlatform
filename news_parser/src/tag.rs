@@ -52,9 +52,8 @@ pub async fn tag_news(
     let news_cursor = news_collection
         .find(
             Some(doc! {
-                // "rewritten" : true,
-                // "tagged" : false,
-                "slug" : "politsiia-usilit-kontrol-za-sem-iami-v-slozhnykh-zhiznennykh-obstoiatel-stvakh"
+                "rewritten" : true,
+                "tagged" : false,
             }),
             Some(options),
             // None,

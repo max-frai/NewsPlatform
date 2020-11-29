@@ -1,6 +1,7 @@
 use crate::{card::Card, tag::bson::oid::ObjectId};
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
+use maplit::hashmap;
 use mongodb::bson;
 use mongodb::Collection;
 use regex::*;
@@ -8,9 +9,9 @@ use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_
 use scraper::Html;
 use scraper::Selector;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::str::FromStr;
 use std::string::ToString;
+use std::{collections::HashMap, fs::File};
 use strum::IntoEnumIterator;
 use strum_macros::Display;
 use strum_macros::EnumIter;
@@ -114,7 +115,7 @@ impl TagsManagerWriter {
 
         Self {
             tags,
-            text2wikititle: HashMap::new(),
+            text2wikititle: Self::load_text2wikititle(),
             collection: tags_col,
             morph: MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH),
             wiki,
@@ -144,6 +145,47 @@ impl TagsManagerWriter {
         None
     }
 
+    fn load_text2wikititle() -> HashMap<String, String> {
+        use std::io::Read;
+
+        let mut file = File::open("text2wikititle").unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+
+        let mut result = hashmap! {};
+        for line in contents.split("\n") {
+            if line.trim() == "" {
+                continue;
+            }
+
+            let mut split = line.split("=");
+            let word = split.next().unwrap();
+            let wiki = split.next().unwrap();
+
+            result.insert(word.to_owned(), wiki.to_owned());
+        }
+
+        dbg!(&result);
+
+        result
+    }
+
+    fn save_text2wikititle(&mut self, text: &str, wikititle: &str) {
+        use std::io::prelude::*;
+
+        self.text2wikititle
+            .insert(text.to_owned(), wikititle.to_owned());
+
+        let mut f = File::with_options()
+            .append(true)
+            .create(true)
+            .open("text2wikititle")
+            .unwrap();
+
+        let result = format!("{}={}\n", text, wikititle);
+        f.write_all(result.as_bytes()).unwrap();
+    }
+
     pub async fn search_for_tag_in_wiki(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
@@ -168,8 +210,7 @@ impl TagsManagerWriter {
             let search_result = self.wiki.search(&word).unwrap();
             let found = search_result.first().cloned();
             if let Some(ref found_wiki_title) = found {
-                self.text2wikititle
-                    .insert(word.to_owned(), found_wiki_title.to_owned());
+                self.save_text2wikititle(&word, found_wiki_title);
             }
 
             found

@@ -25,7 +25,7 @@ pub fn category_name(args: &HashMap<String, Value>) -> Result<Value> {
         Some(val) => match from_value::<String>(val.clone()) {
             Ok(category) => {
                 let category = Category::from_str(&category).unwrap_or(Category::Other);
-                Ok(to_value(category).unwrap())
+                Ok(to_value(category.to_description()).unwrap())
             }
             Err(_) => Err(Error::msg(
                 "Function `category_name` received `category`, but with wrong type",

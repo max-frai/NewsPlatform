@@ -15,8 +15,7 @@ async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)>
         .await
         .unwrap()
         .json::<Vec<Vec<Vec<String>>>>()
-        .await
-        .unwrap();
+        .await?;
 
     let mut final_words = vec![];
     let mut final_tags = vec![];

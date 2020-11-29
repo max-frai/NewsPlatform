@@ -61,12 +61,17 @@ impl CardFetcher {
         query.query.insert("rewritten", true);
         query.query.insert("categorised", true);
         query.query.insert("tagged", true);
-        query.query.insert(
-            "category",
-            doc! {
-                "$ne" : news_general::category::Category::Unknown.to_string()
-            },
-        );
+
+        if !query.query.contains_key("category") {
+            query.query.insert(
+                "category",
+                doc! {
+                    "$ne" : news_general::category::Category::Unknown.to_string()
+                },
+            );
+        }
+
+        // dbg!(&query);
 
         let options = FindOptions::builder()
             .sort(query.sort)
