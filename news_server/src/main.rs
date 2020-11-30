@@ -14,6 +14,7 @@ use crate::routes::exact::exact;
 use crate::routes::exact_category::exact_category;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::index::index;
+use crate::routes::robots::robots;
 use crate::routes::test::test;
 
 use config;
@@ -105,6 +106,7 @@ async fn main() -> std::io::Result<()> {
             .service(categories)
             .service(exact_category)
             .service(exact_tag)
+            .service(robots)
             .service(Files::new("/static", "./templates/"))
     });
 
