@@ -952,6 +952,12 @@ h1 {
   --tw-scale-y: .95;
 }
 
+a:active {
+  opacity: 0.75;
+  --tw-scale-x: .95;
+  --tw-scale-y: .95;
+}
+
 .leftMenuItem {
   border-radius: 9999px;
   cursor: pointer;

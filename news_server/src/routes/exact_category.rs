@@ -8,7 +8,7 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;
 
-#[get("/categories/{category}")]
+#[get("/{category}/")]
 async fn exact_category(
     state: web::Data<State>,
     web::Path(category): web::Path<String>,

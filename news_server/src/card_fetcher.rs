@@ -96,9 +96,9 @@ impl CardFetcher {
         Ok(result)
     }
 
-    pub async fn fetch_exact(&self, id: String) -> Result<Card> {
+    pub async fn fetch_exact(&self, slug: String) -> Result<Card> {
         if let Ok(mut cache) = self.exact_cache.lock() {
-            if let Some(card) = cache.get_mut(&id) {
+            if let Some(card) = cache.get_mut(&slug) {
                 println!("Return exact card from cache");
                 return Ok(card.clone());
             }
@@ -108,7 +108,7 @@ impl CardFetcher {
             .collection
             .find_one(
                 doc! {
-                    "_id" : ObjectId::with_string(&id).unwrap()
+                    "slug" : &slug
                 },
                 None,
             )
@@ -119,7 +119,7 @@ impl CardFetcher {
 
         if let Ok(mut cache) = self.exact_cache.lock() {
             println!("Get exact card from DB");
-            cache.insert(id, card.clone());
+            cache.insert(slug, card.clone());
         }
 
         Ok(card)

@@ -42,6 +42,7 @@ pub struct Tag {
     pub summary: String,
     pub sentence: String,
     pub wiki_title: String,
+    pub slug: String,
     pub title: String,
     pub image: String,
 }
@@ -55,7 +56,7 @@ impl Tag {
 pub struct TagsManager {
     news_col: Collection,
     tags: HashMap<ObjectId, Tag>,
-    // (Kind, Title) -> Tag
+    // (Kind, slug) -> Tag
     tags_lookup: HashMap<(TagKind, String), Tag>,
 }
 
@@ -88,7 +89,7 @@ impl TagsManager {
         while let Some(tag) = raw_tags.next().await {
             let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
             tags.insert(tag._id.to_owned(), tag.to_owned());
-            tags_lookup.insert((tag.kind.clone(), tag.title.to_owned()), tag);
+            tags_lookup.insert((tag.kind.clone(), tag.slug.to_owned()), tag);
         }
 
         Self {
@@ -98,8 +99,8 @@ impl TagsManager {
         }
     }
 
-    pub async fn find(&self, kind: TagKind, title: &str) -> Option<&Tag> {
-        self.tags_lookup.get(&(kind, title.to_owned()))
+    pub async fn find(&self, kind: TagKind, slug: &str) -> Option<&Tag> {
+        self.tags_lookup.get(&(kind, slug.to_owned()))
     }
     pub async fn fill_card_tags(&self, card: &mut Card) {
         card.filled_tags = vec![];
@@ -362,6 +363,7 @@ impl TagsManagerWriter {
                 summary: summary.1,
                 wiki_title: original_found.to_owned(),
                 title: found.to_owned(),
+                slug: slug::slugify(found.to_owned()),
                 image: image_src.unwrap(), // Safe
             };
 

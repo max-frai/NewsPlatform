@@ -8,13 +8,13 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;
 
-#[get("/tags/{kind}/{title}")]
+#[get("/tags/{kind}/{slug}/")]
 async fn exact_tag(
     state: web::Data<State>,
-    web::Path((kind, title)): web::Path<(String, String)>,
+    web::Path((kind, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
     let kind = TagKind::from_str(&kind).unwrap();
-    let tag = state.tags_manager.find(kind, &title).await.unwrap();
+    let tag = state.tags_manager.find(kind, &slug).await.unwrap();
 
     let tag_cards = state
         .fetcher

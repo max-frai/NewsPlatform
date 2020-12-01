@@ -1,4 +1,4 @@
-<a href="/tags/{{ tag.kind | lower }}/{{ tag.title }}" class="block w-full">
+<a href="/tags/{{ tag.kind | lower }}/{{ tag.slug }}/" class="block w-full">
     <div class="tagItem">
         <div class="tagImage" style="background-image: url({{ tag.image }})"></div>
         <div>

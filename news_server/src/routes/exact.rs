@@ -5,12 +5,12 @@ use bson::doc;
 use chrono::Duration;
 use tera::Context;
 
-#[get("/general/{id}_{slug}")]
+#[get("/{category}/{slug}.html")]
 async fn exact(
     state: web::Data<State>,
-    web::Path((id, _)): web::Path<(String, String)>,
+    web::Path((category, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
-    let card = state.fetcher.fetch_exact(id).await.unwrap();
+    let card = state.fetcher.fetch_exact(slug).await.unwrap();
     let center_tpl = state
         .tera
         .render(

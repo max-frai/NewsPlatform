@@ -92,6 +92,11 @@ h1 {
     @apply scale-95 opacity-75;
 }
 
+a:active {
+    @apply scale-95 opacity-75;
+}
+
+
 .leftMenuItem {
     @apply mb-2 w-5/6 text-lg font-medium py-2 px-4 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
 }
