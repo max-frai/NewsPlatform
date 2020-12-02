@@ -1,5 +1,10 @@
 {% extends "layouts/layout.tera" %}
 
+{% block meta %}
+<title>HubLoid ➤ Новости Украины и мира за последний час - Главное на сегодня</title>
+<meta name="description" content="HubLoid ➤ Все свежие и главные новости Украины и мира на сегодня ✔ Обновление каждую минуту ≡ Ваш персональный хаб новостей!" />
+{% endblock %}
+
 {% block center_column %}
 
 <h1>Популярные люди</h1>

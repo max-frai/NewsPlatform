@@ -1,5 +1,10 @@
 {% extends "layouts/layout.tera" %}
 
+{% block meta %}
+<title>{{ article_name }} ➤ HubLoid</title>
+<meta name="description" content="HubLoid {{ article_category }} ➤ {{ article_description }}" />
+{% endblock %}
+
 {% block left_column %}
 {% include "parts/popular_tags.tera" %}
 {% endblock %}

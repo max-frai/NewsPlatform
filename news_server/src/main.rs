@@ -15,6 +15,7 @@ use crate::routes::exact_category::exact_category;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::index::index;
 use crate::routes::robots::robots;
+use crate::routes::tags::tags;
 use crate::routes::test::test;
 
 use config;
@@ -66,11 +67,11 @@ async fn main() -> std::io::Result<()> {
 
     indecies::ensure_indecies(db.clone(), constants.clone()).await;
 
-    let news = db.collection(&constants.cards_collection_name);
-    let tags = db.collection(&constants.tags_collection_name);
+    let news_col = db.collection(&constants.cards_collection_name);
+    let tags_col = db.collection(&constants.tags_collection_name);
 
     // TODO: Autoreload tags time from time !!!!!!!!
-    let tags_manager = Arc::new(TagsManager::new(tags, news.clone()).await);
+    let tags_manager = Arc::new(TagsManager::new(tags_col, news_col.clone()).await);
 
     println!("Count person news");
     // let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
@@ -81,7 +82,7 @@ async fn main() -> std::io::Result<()> {
     let top_organizations = vec![];
 
     let fetcher = Arc::new(CardFetcher::new(
-        news,
+        news_col,
         tags_manager.clone(),
         constants.queries_cache_size,
         constants.exact_card_cache_size,
@@ -107,6 +108,7 @@ async fn main() -> std::io::Result<()> {
             .service(exact)
             .service(test)
             .service(categories)
+            .service(tags)
             .service(exact_category)
             .service(exact_tag)
             .service(robots)

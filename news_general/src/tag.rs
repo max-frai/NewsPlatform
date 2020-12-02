@@ -55,7 +55,7 @@ impl Tag {
 
 pub struct TagsManager {
     news_col: Collection,
-    tags: HashMap<ObjectId, Tag>,
+    pub tags: HashMap<ObjectId, Tag>,
     // (Kind, slug) -> Tag
     tags_lookup: HashMap<(TagKind, String), Tag>,
 }

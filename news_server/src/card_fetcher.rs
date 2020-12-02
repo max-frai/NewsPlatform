@@ -40,6 +40,7 @@ impl CardFetcher {
         self.tags_manager.fill_card_tags(card).await;
         card.markdown2html();
         card.fill_marks();
+        card.fill_description();
     }
 
     pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {

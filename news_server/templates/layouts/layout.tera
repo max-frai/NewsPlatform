@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8" />
+    {# <link rel="shortcut icon" type="image/x-icon" href="/static/media/fav.jpg"> #}
+    <link rel="icon" type="image/svg+xml" href="/static/media/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block meta %}{% endblock %}
     <link href="/static/css/main.css" rel="stylesheet">
 </head>
 

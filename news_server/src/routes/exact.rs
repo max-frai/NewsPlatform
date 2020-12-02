@@ -8,7 +8,7 @@ use tera::Context;
 #[get("/{category}/{slug}.html")]
 async fn exact(
     state: web::Data<State>,
-    web::Path((category, slug)): web::Path<(String, String)>,
+    web::Path((_, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
     let card = state.fetcher.fetch_exact(slug).await.unwrap();
     let center_tpl = state
@@ -69,6 +69,9 @@ async fn exact(
     let mut context = Context::new();
     context.insert("center_content", &center_tpl);
     context.insert("right_content", &format!("{}{}", right_tpl, right_tpl2));
+    context.insert("article_name", &card.title);
+    context.insert("article_category", &card.category.to_description());
+    context.insert("article_description", &card.description);
 
     HttpResponse::Ok()
         .content_type("text/html")

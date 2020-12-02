@@ -1,5 +1,5 @@
 <div class="flex font-bold text-lg items-center mb-8">
-    <img class="w-6 mx-3" src="/static/media/demostration.svg"> Новостная Платформа
+    <a href="/"><img class="w-2/3 mx-3" src="/static/media/logo.svg"></a>
 </div>
 
 <a href="/">
@@ -13,7 +13,7 @@
 </div>
 </a>
 
-<a href="/categories">
+<a href="/categories/">
 <div class="leftMenuItem">
     <span>
         <svg class="_1VdX9v8wya" width="24" height="24" fill="none">
@@ -24,6 +24,19 @@
     </span>
     <span class="pl-3">
         Категории
+    </span>
+</div>
+</a>
+
+<a href="/tags/">
+<div class="leftMenuItem">
+    <span>
+        <svg class="_1VdX9v8wya" width="24" height="24" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M5.497 3.006L10 3.001a1 1 0 0 1 1.001 1V10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5.506a2.5 2.5 0 0 1 2.497-2.5zM4 13.008a1 1 0 0 0-.999 1V18.5A2.5 2.5 0 0 0 5.5 21H10a1 1 0 0 0 1-1v-5.999a1 1 0 0 0-1.001-1l-6 .007zm10 0a1 1 0 0 0-.999 1V20a1 1 0 0 0 1 1h4.5a2.5 2.5 0 0 0 2.5-2.5v-4.499a1 1 0 0 0-1.001-1l-6 .007zm0-10a1 1 0 0 0-.999 1V10a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5.503a2.5 2.5 0 0 0-2.503-2.5L14 3.008zM5 18.5a.5.5 0 0 0 .5.5H9v-3.998l-4 .005V18.5zm13.5.5H15v-3.993l4-.005V18.5a.5.5 0 0 1-.5.5zM9 9V5.002l-3.5.004a.5.5 0 0 0-.5.5V9h4zm10 0h-4V5.007l3.5-.004a.5.5 0 0 1 .5.5V9z" fill="#000"></path>
+        </svg>
+    </span>
+    <span class="pl-3">
+        Теги
     </span>
 </div>
 </a>

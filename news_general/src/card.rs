@@ -62,4 +62,12 @@ impl Card {
 
         self.html = MULTI_WHITESPACE_RE.replace_all(&self.html, " ").to_string();
     }
+
+    pub fn fill_description(&mut self) {
+        let mut markdown = self.markdown.trim().replace("\n", " ");
+        markdown = MARK_RE.replace_all(&markdown, " ").to_string();
+        markdown = MULTI_WHITESPACE_RE.replace_all(&markdown, " ").to_string();
+
+        self.description = markdown.trim().chars().take(100).collect::<String>();
+    }
 }
