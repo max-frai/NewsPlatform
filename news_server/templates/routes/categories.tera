@@ -1,5 +1,9 @@
 {% extends "layouts/layout.tera" %}
 
+{% block meta %}
+<title>Категории новостей ➤ HubLoid</title>
+{% endblock %}
+
 {% block center_column %}
 {% if center_content %}
 {{ center_content | safe }}

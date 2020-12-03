@@ -70,6 +70,7 @@ async fn exact_category(
     context.insert("category", &category.to_string());
     context.insert("title", &title);
     context.insert("right_content", &right_tpl);
+    context.insert("category_name", &category.to_description());
 
     HttpResponse::Ok().content_type("text/html").body(
         state
