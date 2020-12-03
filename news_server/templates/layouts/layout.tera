@@ -32,6 +32,7 @@
     </div>
 
     <script src="/static/js/sticky-sidebar.min.js"></script>
+    <script src="/static/js/instant.page.js"></script>
     <script src="/static/js/ResizeSensor.js"></script>
     <script type="text/javascript">
         var sidebar = new StickySidebar('#sidebar', {
