@@ -15,7 +15,7 @@ use crate::routes::exact_category::exact_category;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::index::index;
 use crate::routes::robots::robots;
-use crate::routes::tags::tags;
+use crate::routes::tags::{tags_all, tags_scope};
 use crate::routes::test::test;
 
 use config;
@@ -104,14 +104,15 @@ async fn main() -> std::io::Result<()> {
             // .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .service(tags_all)
+            .service(tags_scope)
             .service(index)
-            .service(exact)
             .service(test)
             .service(categories)
-            .service(tags)
             .service(exact_category)
             .service(exact_tag)
             .service(robots)
+            .service(exact)
             .service(Files::new("/static", "./templates/"))
     });
 

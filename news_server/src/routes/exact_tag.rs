@@ -5,7 +5,6 @@ use bson::doc;
 use chrono::Duration;
 use news_general::{category::Category, tag::TagKind};
 use std::str::FromStr;
-use strum::IntoEnumIterator;
 use tera::Context;
 
 #[get("/tags/{kind}/{slug}/")]

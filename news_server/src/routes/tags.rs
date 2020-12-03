@@ -2,15 +2,32 @@ use crate::{card_queries::CardQuery, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
-use news_general::tag::Tag;
+use news_general::tag::{Tag, TagKind};
+use std::str::FromStr;
 use tera::Context;
 
 #[get("/tags/")]
-async fn tags(state: web::Data<State>) -> impl Responder {
-    let tags: Vec<&Tag> = state
+async fn tags_all(state: web::Data<State>) -> impl Responder {
+    tag_logic(state, None).await
+}
+
+#[get("/tags/{kind}")]
+async fn tags_scope(state: web::Data<State>, web::Path(kind): web::Path<String>) -> impl Responder {
+    tag_logic(state, Some(kind)).await
+}
+
+async fn tag_logic(state: web::Data<State>, kind: Option<String>) -> impl Responder {
+    let all_tags: Vec<&Tag> = state
         .tags_manager
         .tags
         .iter()
+        .filter(|tag| {
+            if let Some(kind) = kind.as_ref().and_then(|kind| TagKind::from_str(&kind).ok()) {
+                return tag.1.kind == kind;
+            } else {
+                return true;
+            };
+        })
         .take(50)
         .map(|(_, val)| val)
         .collect();
@@ -39,7 +56,7 @@ async fn tags(state: web::Data<State>) -> impl Responder {
         .unwrap();
 
     let mut context = Context::new();
-    context.insert("tags", &tags);
+    context.insert("tags", &all_tags);
     context.insert("right_content", &right_tpl);
 
     HttpResponse::Ok()

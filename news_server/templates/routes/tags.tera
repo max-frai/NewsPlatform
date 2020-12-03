@@ -4,11 +4,12 @@
 <h1 class="my-3 mb-5">Теги новостей</h1>
 
 <div class="mainButtonWrap mb-3">
-    <div class="mainButton mainButtonActive">Все</div>
-    <div class="mainButton">Люди</div>
-    <div class="mainButton">Локации</div>
-    <div class="mainButton">Организации</div>
-    <div class="mainButton">События</div>
+    <a href="/tags/"><div class="mainButton mainButtonActive">Все</div></a>
+    <a href="/tags/person"><div class="mainButton">Люди</div></a>
+    <a href="/tags/gpe"><div class="mainButton">Локации</div></a>
+    <a href="/tags/org"><div class="mainButton">Организации</div></a>
+    <a href="/tags/event"><div class="mainButton">События</div></a>
+    <a href="/tags/norp"><div class="mainButton">Группы</div></a>
 </div>
 
 <div class="tagWrap">

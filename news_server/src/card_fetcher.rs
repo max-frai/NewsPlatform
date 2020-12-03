@@ -51,7 +51,7 @@ impl CardFetcher {
                 if Utc::now().timestamp() >= *timeouts {
                     // Invalidate cache, just skip this step
                 } else {
-                    println!("Return cards from cache");
+                    // println!("Return cards from cache");
                     return Ok(cards.clone());
                 }
             }
@@ -89,7 +89,7 @@ impl CardFetcher {
         }
 
         if let Ok(mut cache) = self.cache.lock() {
-            println!("Fetch cards from DB");
+            // println!("Fetch cards from DB");
             let when_timeouts = Utc::now() + query.lifetime;
             cache.insert(query_hash, (result.clone(), when_timeouts.timestamp()));
         }
@@ -100,7 +100,7 @@ impl CardFetcher {
     pub async fn fetch_exact(&self, slug: String) -> Result<Card> {
         if let Ok(mut cache) = self.exact_cache.lock() {
             if let Some(card) = cache.get_mut(&slug) {
-                println!("Return exact card from cache");
+                // println!("Return exact card from cache");
                 return Ok(card.clone());
             }
         }
@@ -119,7 +119,7 @@ impl CardFetcher {
         self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache.lock() {
-            println!("Get exact card from DB");
+            // println!("Get exact card from DB");
             cache.insert(slug, card.clone());
         }
 
