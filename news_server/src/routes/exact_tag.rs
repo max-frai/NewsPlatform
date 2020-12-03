@@ -14,7 +14,7 @@ async fn exact_tag(
     web::Path((kind, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
     let kind = TagKind::from_str(&kind).unwrap();
-    let tag = state.tags_manager.find(kind, &slug).await.unwrap();
+    let tag = state.tags_manager.find(kind.clone(), &slug).await.unwrap();
 
     let tag_cards = state
         .fetcher
@@ -46,6 +46,27 @@ async fn exact_tag(
     context.insert("center_content", &news_list_tpl);
     context.insert("tag", tag);
     context.insert("title", &title);
+
+    let meta_title = match &kind {
+        TagKind::Gpe => format!("{} последние новости - главное на сегодня", tag.wiki_title),
+        TagKind::Person => format!(
+            "{} последние новости - свежие статьи и информация",
+            tag.wiki_title
+        ),
+        _ => format!(
+            "Новости {} - последние и главные новости на сегодня",
+            tag.wiki_title
+        ),
+    };
+
+    let meta_desc = match kind {
+        TagKind::Gpe => format!("HubLoid {} ➤ Главные и последние новости по {} ✔ Важные обновления каждый день", tag.wiki_title, tag.wiki_title),
+        TagKind::Person => format!("HubLoid {} ➤ Последние новости и статьи по персоне {} ✔ Информация и все упоминания", tag.wiki_title, tag.wiki_title),
+        _ => format!("HubLoid {} ➤ Последние новости по {} - вся важная информация ✔ Свежие обновления каждый день", tag.wiki_title, tag.wiki_title)
+    };
+
+    context.insert("meta_title", &meta_title);
+    context.insert("meta_description", &meta_desc);
 
     HttpResponse::Ok().content_type("text/html").body(
         state
