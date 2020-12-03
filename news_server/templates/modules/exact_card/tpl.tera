@@ -28,7 +28,7 @@
 {{ lined_title::generate(title='<img style="height: 16px; width: 16px;" src="/static/media/page.svg">') }}
 </div>
 
-<div class="ArticleContent leading-tight">
+<div class="ArticleContent leading-snug">
     {{ html | safe }}
 </div>
 

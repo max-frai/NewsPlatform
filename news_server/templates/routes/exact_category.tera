@@ -2,7 +2,7 @@
 
 {% block meta %}
 <title>Новости {{ category_name }} - последние и главные новости на сегодня ➤ HubLoid</title>
-<meta name="description" content="HubLoid {{ category_name }} ➤ Последние новости по теме {{ category_name }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" />
+<meta name="description" content="HubLoid {{ category_name | escape }} ➤ Последние новости по теме {{ category_name | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" />
 {% endblock %}
 
 {% block center_column %}

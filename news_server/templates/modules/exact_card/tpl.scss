@@ -1,10 +1,7 @@
 /* purgecss start ignore */
 
 .ArticleContent img {
-    max-width: 100%;
-    margin: 0 auto;
-    border-radius: 5px;
-    /*display: none;*/
+    @apply w-full rounded-lg mx-auto;
 }
 
 .ArticleContent table {
@@ -19,6 +16,10 @@
     max-width: 100%;
     display: block;
     margin: 0 auto;
+}
+
+.ArticleContent iframe {
+    @apply w-full rounded-lg;
 }
 
 .h-68 {
@@ -53,14 +54,22 @@
 
 .ArticlePreview .shade {
     @apply absolute w-full h-full left-0 top-0 right-0 bottom-0 rounded-xl;
-    opacity: 0.8;
+    /*opacity: 0.8;
     background: linear-gradient(rgba(10, 63, 124, 0), rgb(8, 19, 113));
+    */
+    opacity: 0.7;
+    background: linear-gradient(rgba(12, 14, 53, 0), rgb(12, 14, 53));
 }
 
 .ArticlePreview .item {
     @apply w-full h-68 inline-block overflow-hidden relative rounded-xl;
+    /*
     background-color: rgb(248, 227, 172);
     filter: url('#duotone-one');
+    */
+
+    background-color: rgb(255, 255, 255);
+    filter: url('#duotone-zero');
 }
 
 /* purgecss end ignore */

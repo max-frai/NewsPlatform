@@ -67,9 +67,9 @@ async fn exact_category(
 
     let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
+    context.insert("right_content", &right_tpl);
     context.insert("category", &category.to_string());
     context.insert("title", &title);
-    context.insert("right_content", &right_tpl);
     context.insert("category_name", &category.to_description());
 
     HttpResponse::Ok().content_type("text/html").body(

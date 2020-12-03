@@ -1,5 +1,9 @@
 .categoriesItem {
-    @apply w-full h-40 bg-cover bg-center rounded-3xl text-3xl text-white flex shadow-md relative transition duration-300 transform hover:scale-105 hover:shadow-2xl select-none;
+    @apply w-full h-40 bg-cover bg-center rounded-3xl text-3xl text-white flex shadow-md relative transition duration-300 transform hover:scale-110  hover:shadow-2xl select-none;
+}
+
+.categoriesItem:hover {
+    @apply z-10;
 }
 
 .categoriesItemFade {

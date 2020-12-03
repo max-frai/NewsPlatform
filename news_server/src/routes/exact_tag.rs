@@ -28,6 +28,29 @@ async fn exact_tag(
         .await
         .unwrap();
 
+    let last_cards = state
+        .fetcher
+        .fetch(CardQuery {
+            lifetime: Duration::seconds(60),
+            limit: Some(25),
+            sort: Some(doc! { "date" : -1 }),
+            query: doc! {},
+        })
+        .await
+        .unwrap();
+
+    let right_tpl = state
+        .tera
+        .render(
+            "modules/compact_news_list/tpl.tera",
+            &Context::from_serialize(&modules::news_list::NewsListTpl {
+                title: Some(String::from("Последнее")),
+                cards: last_cards,
+            })
+            .unwrap(),
+        )
+        .unwrap();
+
     let title = format!("{}: все новости", tag.wiki_title);
     let news_list_tpl = state
         .tera
@@ -43,6 +66,7 @@ async fn exact_tag(
 
     let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
+    context.insert("right_content", &right_tpl);
     context.insert("tag", tag);
     context.insert("title", &title);
 

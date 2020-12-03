@@ -1,8 +1,8 @@
 {% extends "layouts/layout.tera" %}
 
 {% block meta %}
-<title>{{ article_name }} ➤ HubLoid</title>
-<meta name="description" content="HubLoid {{ article_category }} ➤ {{ article_description }}" />
+<title>{{ article_name | escape }} ➤ HubLoid</title>
+<meta name="description" content="HubLoid {{ article_category | escape }} ➤ {{ article_description | escape }}" />
 {% endblock %}
 
 {% block left_column %}

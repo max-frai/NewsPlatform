@@ -8,7 +8,8 @@
 
 .mainButton:hover,
 .mainButtonActive {
-    @apply bg-gray-200 text-black;
+    @apply text-black;
+    background: rgba(32, 35, 51, .07);
 }
 
 .mainButton:active {

@@ -9,4 +9,20 @@
             <feFuncA type="table" tableValues="0 1"></feFuncA>
         </feComponentTransfer>
     </filter>
+    <filter id="duotone-zero">
+    <feColorMatrix
+      type="matrix"
+      result="grayscale"
+      values="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 0" />
+    <feComponentTransfer color-interpolation-filters="sRGB" result="duotone">
+      <feFuncR type="table" tableValues="0.3568627450980392 1" />
+      <feFuncG
+        type="table"
+        tableValues="0.3686274509803922 0.9411764705882353" />
+      <feFuncB
+        type="table"
+        tableValues="0.48627450980392156 0.8274509803921568" />
+      <feFuncA type="table" tableValues="0 1" />
+    </feComponentTransfer>
+  </filter>
 </svg>
