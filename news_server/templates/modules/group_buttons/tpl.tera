@@ -5,6 +5,6 @@
             {% set class_name = "mainButtonActive" %}
         {% endif %}
 
-        <a href="{{ buttons_base_link }}{{ item.0 }}"><div class="mainButton {{ class_name }}">{{ item.1 }}</div></a>
+        <a href="{{ buttons_base_link }}{{ item.1 }}"><div class="mainButton {{ class_name }}">{{ item.2 }}</div></a>
     {% endfor %}
 </div>

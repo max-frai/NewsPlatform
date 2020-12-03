@@ -12,7 +12,7 @@ async fn tags_all(state: web::Data<State>) -> impl Responder {
     tag_logic(state, None).await
 }
 
-#[get("/tags/{kind}")]
+#[get("/tags/{kind}/")]
 async fn tags_scope(state: web::Data<State>, web::Path(kind): web::Path<String>) -> impl Responder {
     tag_logic(state, Some(kind)).await
 }
@@ -60,9 +60,13 @@ async fn tag_logic(state: web::Data<State>, kind: Option<String>) -> impl Respon
     context.insert("tags", &all_tags);
     context.insert("right_content", &right_tpl);
 
-    let mut group_buttons = vec![(String::new(), "Все")];
+    let mut group_buttons = vec![(String::new(), String::new(), "Все")];
     for tag in TagKind::iter() {
-        group_buttons.push((tag.to_string(), tag.to_description()));
+        group_buttons.push((
+            tag.to_string(),
+            format!("{}/", tag.to_string()),
+            tag.to_description(),
+        ));
     }
     context.insert("buttons_base_link", "/tags/");
     context.insert("buttons_active_tag", &kind.unwrap_or("".to_string()));
