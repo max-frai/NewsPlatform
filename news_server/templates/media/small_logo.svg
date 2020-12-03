@@ -1,11 +1,1 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="64" height="64" fill="white"/>
-<circle cx="32" cy="32" r="28.5" stroke="#CDA977"/>
-<path d="M45.5 32C45.5 39.9497 43.9434 47.1222 41.4492 52.2887C38.9381 57.4903 35.5653 60.5 32 60.5C28.4347 60.5 25.0619 57.4903 22.5508 52.2887C20.0566 47.1222 18.5 39.9497 18.5 32C18.5 24.0503 20.0566 16.8777 22.5508 11.7113C25.0619 6.50968 28.4347 3.5 32 3.5C35.5653 3.5 38.9381 6.50968 41.4492 11.7113C43.9434 16.8777 45.5 24.0503 45.5 32Z" stroke="#CDA977"/>
-<line x1="57" y1="18.5" x2="7" y2="18.5" stroke="#CDA977"/>
-<path d="M56.5 46.5L7.60409 46.5" stroke="#CDA977" stroke-linecap="round"/>
-<rect x="9.5" y="21.5" width="22" height="22" fill="white" stroke="#CDA977"/>
-<rect x="32" y="21" width="23" height="23" fill="#CDA977"/>
-<path d="M25.5576 38H22.9209V32.5156H17.7793V38H15.1426V25.2031H17.7793V30.3887H22.9209V25.2031H25.5576V38Z" fill="black"/>
-<path d="M41.7793 35.8818H47.3779V38H39.1426V25.2031H41.7793V35.8818Z" fill="black"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58"><defs><style>.cls-1,.cls-2{fill:none;}.cls-1,.cls-2,.cls-3{stroke:#cda977;}.cls-2{stroke-linecap:round;}.cls-3{fill:#fff;}.cls-4{fill:#cda977;}</style></defs><title>Asset 1</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><circle class="cls-1" cx="29" cy="29" r="28.5"/><path class="cls-1" d="M42.5,29c0,8-1.56,15.12-4,20.29S32.57,57.5,29,57.5s-6.94-3-9.45-8.21S15.5,37,15.5,29s1.56-15.12,4.05-20.29S25.43.5,29,.5s6.94,3,9.45,8.21S42.5,21.05,42.5,29Z"/><line class="cls-1" x1="54" y1="15.5" x2="4" y2="15.5"/><path class="cls-2" d="M53.5,43.5H4.6"/><rect class="cls-3" x="6.5" y="18.5" width="22" height="22"/><rect class="cls-4" x="29" y="18" width="23" height="23"/><path d="M22.56,35H19.92V29.52H14.78V35H12.14V22.2h2.64v5.19h5.14V22.2h2.64Z"/><path d="M38.78,32.88h5.6V35H36.14V22.2h2.64Z"/></g></g></svg>

@@ -83,18 +83,6 @@ h1 {
     @apply text-xl my-3;
 }
 
-.leftMenuItemActive,
-.leftMenuItem:hover {
-    background: rgba(32,35,51,.07);
-}
-
-.leftMenuItem:active {
-    @apply scale-95 opacity-75;
-}
-
-.leftMenuItem {
-    @apply mb-2 w-full text-sm lg:text-lg font-medium py-2 px-4 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
-}
 
 .height1px {
     height: 1px;
@@ -124,6 +112,51 @@ h1 {
 }
 
 .tagItem:hover {
-    @apply  cursor-pointer;
+    @apply cursor-pointer;
     background: rgba(32,35,51,.07);
 }
+
+#content {
+    @apply px-2 md:px-5 lg:px-8 xl:px-10;
+    width: 700px !important;
+}
+
+.leftMenuItemActive,
+.leftMenuItem:hover {
+    background: rgba(32,35,51,.07);
+}
+
+.leftMenuItem:active {
+    @apply scale-95 opacity-75;
+}
+
+.leftMenuItem {
+    @apply mb-2 py-2 px-2 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
+}
+
+
+.leftMenuText {
+    @apply hidden xl:block;
+}
+
+.MenuContainerFixed {
+    @apply fixed h-full text-center;
+    width: 50px;
+}
+
+.MenuContainer {
+    @apply relative;
+    width: 50px;
+}
+
+@screen xl {
+    .MenuContainer, .MenuContainerFixed {
+        width: 260px;
+        @apply text-left;
+    }
+
+    .leftMenuItem {
+        @apply w-full text-lg font-medium px-4;
+    }
+}
+

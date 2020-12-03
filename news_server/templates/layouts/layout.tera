@@ -12,15 +12,15 @@
 <body>
 
     <div class="flex flex-1 stickycontainer justify-center pt-3">
-        <div class="hidden lg:block relative" style="width: 260px">
-            <div class="fixed h-full" style="width: 260px">
+        <div class="MenuContainer">
+            <div class="MenuContainerFixed">
                 <div class="relative h-full w-full">
                     {% include "parts/menu.tera" %}
                     {% block left_column %}{% endblock left_column %}
                 </div>
             </div>
         </div>
-        <div id="content" class="px-10" style="width: 700px !important">
+        <div id="content">
             {% block center_column %}{% endblock center_column %}
         </div>
         <div id="sidebar" style="width: 300px">
