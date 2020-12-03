@@ -84,9 +84,7 @@ h1 {
 }
 
 .leftMenuItemActive,
-.leftMenuItem:hover,
-.mainButton:hover,
-.mainButtonActive {
+.leftMenuItem:hover {
     @apply bg-gray-200;
 }
 
@@ -94,30 +92,8 @@ h1 {
     @apply scale-95 opacity-75;
 }
 
-a:active,
-.mainButton {
-    @apply scale-95 opacity-75;
-}
-
-
 .leftMenuItem {
     @apply mb-2 w-5/6 text-lg font-medium py-2 px-4 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
-}
-
-.mainButtonWrap {
-    display: flex;
-}
-
-.mainButton:hover {
-    @apply text-black;
-}
-
-.mainButton {
-    @apply font-medium py-2 px-3 mr-1 text-sm rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200 text-gray-600;
-}
-
-.mainButtonActive {
-    @apply text-black;
 }
 
 .height1px {

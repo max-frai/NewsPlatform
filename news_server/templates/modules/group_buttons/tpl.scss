@@ -1,0 +1,16 @@
+.mainButtonWrap {
+    @apply flex flex-wrap;
+}
+
+.mainButton {
+    @apply font-medium py-2 px-3 mr-1 mb-1 text-sm rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200 text-gray-500;
+}
+
+.mainButton:hover,
+.mainButtonActive {
+    @apply bg-gray-200 text-black;
+}
+
+.mainButton:active {
+    @apply scale-95 opacity-75;
+}

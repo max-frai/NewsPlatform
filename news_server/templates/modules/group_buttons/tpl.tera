@@ -1,0 +1,10 @@
+<div class="mainButtonWrap">
+    {% for item in group_buttons %}
+        {% set class_name = "" %}
+        {% if item.0 == buttons_active_tag %}
+            {% set class_name = "mainButtonActive" %}
+        {% endif %}
+
+        <a href="{{ buttons_base_link }}{{ item.0 }}"><div class="mainButton {{ class_name }}">{{ item.1 }}</div></a>
+    {% endfor %}
+</div>

@@ -35,6 +35,20 @@ pub enum TagKind {
     Facility,
 }
 
+impl TagKind {
+    pub fn to_description(&self) -> &'static str {
+        match self {
+            TagKind::Person => "Люди",
+            TagKind::Norp => "Группы",
+            TagKind::Org => "Организации",
+            TagKind::Gpe => "Локации",
+            TagKind::Event => "События",
+            TagKind::Product => "Продукты",
+            TagKind::Facility => "Объекты",
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Tag {
     pub _id: ObjectId,

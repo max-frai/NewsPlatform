@@ -4,6 +4,7 @@ use bson::doc;
 use chrono::Duration;
 use news_general::tag::{Tag, TagKind};
 use std::str::FromStr;
+use strum::IntoEnumIterator;
 use tera::Context;
 
 #[get("/tags/")]
@@ -58,6 +59,14 @@ async fn tag_logic(state: web::Data<State>, kind: Option<String>) -> impl Respon
     let mut context = Context::new();
     context.insert("tags", &all_tags);
     context.insert("right_content", &right_tpl);
+
+    let mut group_buttons = vec![(String::new(), "Все")];
+    for tag in TagKind::iter() {
+        group_buttons.push((tag.to_string(), tag.to_description()));
+    }
+    context.insert("buttons_base_link", "/tags/");
+    context.insert("buttons_active_tag", &kind.unwrap_or("".to_string()));
+    context.insert("group_buttons", &group_buttons);
 
     HttpResponse::Ok()
         .content_type("text/html")
