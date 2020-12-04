@@ -11,7 +11,7 @@
 
 <body>
 
-    <div class="flex flex-1 stickycontainer justify-center pt-3">
+    <div id="MainContainer" class="stickycontainer">
         <div class="MenuContainer">
             <div class="MenuContainerFixed">
                 <div class="relative h-full w-full">
@@ -23,7 +23,7 @@
         <div id="content">
             {% block center_column %}{% endblock center_column %}
         </div>
-        <div id="sidebar" style="width: 300px">
+        <div id="sidebar">
             <div class="sidebar__inner">
                 {% block right_column %}{% endblock right_column %}
             </div>

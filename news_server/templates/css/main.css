@@ -482,10 +482,6 @@ img {
   align-self: center;
 }
 
-.justify-center {
-  justify-content: center;
-}
-
 .justify-between {
   justify-content: space-between;
 }
@@ -669,10 +665,6 @@ img {
   padding-bottom: 0.5rem;
 }
 
-.pt-3 {
-  padding-top: 0.75rem;
-}
-
 .pl-3 {
   padding-left: 0.75rem;
 }
@@ -853,6 +845,7 @@ body {
   margin: 0;
   font-family: ysans, sans-serif;
   font-size: 1em;
+  padding-bottom: 30px;
 }
 
 a {
@@ -989,36 +982,6 @@ h1 {
   background: rgba(32,35,51,.07);
 }
 
-#content {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  #content {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  #content {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  #content {
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-}
-
-#content {
-  width: 700px !important;
-}
-
 .leftMenuItemActive,
 .leftMenuItem:hover {
   background: rgba(32,35,51,.07);
@@ -1073,8 +1036,88 @@ h1 {
 }
 
 .MenuContainer {
+  display: none;
   position: relative;
   width: 50px;
+}
+
+#content {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  #content {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #content {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  #content {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+#sidebar {
+  width: 100%;
+}
+
+#MainContainer {
+  padding-top: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  #content {
+  }
+
+  body, html {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #content {
+    width: 600px;
+  }
+
+  .MenuContainer {
+    display: block;
+  }
+
+  #sidebar {
+    width: 250px;
+  }
+
+  body, html {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  #MainContainer {
+    display: flex;
+    justify-content: center;
+    flex: 1 1 0%;
+  }
+}
+
+@media (min-width: 1024px) {
+  #content {
+    width: 650px;
+  }
+
+  #sidebar {
+    width: 300px;
+  }
 }
 
 @media (min-width: 1280px) {
@@ -1090,6 +1133,10 @@ h1 {
     padding-left: 1rem;
     padding-right: 1rem;
     width: 100%;
+  }
+
+  #content {
+    width: 700px;
   }
 }
 
