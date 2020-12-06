@@ -16,6 +16,8 @@ body {
     font-size: 1em;
 
     padding-bottom: 30px;
+
+    @apply px-3;
 }
 
 a {
@@ -160,10 +162,6 @@ h1 {
 
 @screen sm {
     #content {
-    }
-
-    body, html {
-        @apply px-4;
     }
 }
 

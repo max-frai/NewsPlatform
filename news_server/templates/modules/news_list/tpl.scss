@@ -1,5 +1,5 @@
 .GrayBorder {
-    @apply border border-gray-300 transition-all duration-500 rounded-lg hover:border-gray-500 hover:shadow-lg;
+    @apply md:border md:border-gray-300 transition-all duration-500 rounded-lg hover:border-gray-500 hover:shadow-lg;
 }
 
 .dateMark  {
