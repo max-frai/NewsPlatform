@@ -9,7 +9,6 @@ use mongodb::{
 use news_general::constants::AppConfig;
 use regex::Regex;
 use serde_json::{json, Value};
-use slug::slugify;
 use std::env;
 use std::process::{Command, Stdio};
 use std::{collections::HashMap, sync::Arc};
@@ -112,6 +111,11 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             let title = item.get("title").unwrap().as_str().unwrap();
 
             let object_id = ObjectId::with_string(&tag).unwrap();
+
+            if text.contains("[...] [...]") {
+                println!("Something wrong with this article rewrite [...]");
+                continue;
+            }
 
             // Fix whitespace in markdown image
             let mut rewritten_text = news_general::helper::uppercase_first_letter(&text);

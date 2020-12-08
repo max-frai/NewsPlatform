@@ -9,7 +9,6 @@ use mongodb::{
 use news_general::constants::AppConfig;
 use regex::Regex;
 use serde_json::{json, Value};
-use slug::slugify;
 use std::env;
 use std::process::{Command, Stdio};
 use std::{collections::HashMap, sync::Arc};
@@ -130,7 +129,7 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 .trim()
                 .to_string();
 
-            let new_slug = slug::slugify(&translated_title);
+            let new_slug = str_slug::slug(&translated_title);
 
             let object_id = ObjectId::with_string(&tag).unwrap();
 

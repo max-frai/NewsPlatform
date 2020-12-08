@@ -9,7 +9,6 @@ use mongodb::{
 use news_general::{category::Category, constants::AppConfig};
 use regex::Regex;
 use serde_json::{json, Value};
-use slug::slugify;
 use std::io::Write;
 use std::process::{Command, Stdio};
 use std::{collections::HashMap, sync::Arc};
