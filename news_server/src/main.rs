@@ -31,6 +31,7 @@ use tailwind::process_tailwind;
 pub mod card_fetcher;
 pub mod card_queries;
 pub mod indecies;
+pub mod lowercase_middleware;
 pub mod modules;
 pub mod routes;
 pub mod state;
@@ -105,6 +106,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(state.clone())
             // .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
+            .wrap(lowercase_middleware::LowercaseRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(tags_all)

@@ -9,6 +9,7 @@ news_general = {path = "../news_general"}
 
 actix-web = "3.3"
 actix-files = "0.4"
+actix-service = "1.0"
 
 serde = "1.0"
 fluent = "0.13"
