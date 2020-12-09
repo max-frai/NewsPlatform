@@ -47,13 +47,14 @@ async fn tag_logic(
     kind: Option<String>,
     mut context: LayoutContext,
 ) -> impl Responder {
+    let tag_kind = kind.as_ref().and_then(|kind| TagKind::from_str(&kind).ok());
     let all_tags: Vec<&Tag> = state
         .tags_manager
         .tags
         .iter()
         .filter(|tag| {
-            if let Some(kind) = kind.as_ref().and_then(|kind| TagKind::from_str(&kind).ok()) {
-                return tag.1.kind == kind;
+            if let Some(kind) = &tag_kind {
+                return &tag.1.kind == kind;
             } else {
                 return true;
             };
@@ -89,6 +90,43 @@ async fn tag_logic(
     context.insert("buttons_base_link", "/tags/");
     context.insert("buttons_active_tag", &kind.unwrap_or("".to_string()));
     context.insert("group_buttons", &group_buttons);
+
+    let meta_title = if let Some(ref tag) = tag_kind {
+        match tag {
+            TagKind::Event => "Новости фестивалей и ивентов",
+            TagKind::Person => "Новости популярных личностей и персон",
+            TagKind::Norp => "Новости политических, религиозных и этнических групп",
+            TagKind::Org => "Новости организаций и компаний",
+            TagKind::Gpe => "Новости стран и регионов",
+            TagKind::Product => "Новости и обновления товаров",
+            TagKind::Facility => "Новости и обновления объектов",
+        }
+    } else {
+        "Популярные теги на"
+    };
+
+    let meta_desc = if let Some(ref tag) = tag_kind {
+        match tag {
+            TagKind::Event => {
+                "HubLoid Ивенты и Фестивали ➤ Последние новости по ивентам и фестивалям"
+            }
+            TagKind::Person => "HubLoid Топ персон ➤ Последние новости по топовым личностям",
+            TagKind::Norp => {
+                "HubLoid ➤ Последние новости по политическим, религиозным и этническим группам"
+            }
+            TagKind::Org => {
+                "HubLoid Компании и организации ➤ Последние новости по компаниям и организациям"
+            }
+            TagKind::Gpe => "HubLoid Страны и регионы ➤ Последние новости по странам и регионам",
+            TagKind::Product => "HubLoid Товары и продукты ➤ Последние новости по новым товарам",
+            TagKind::Facility => "HubLoid Объекты ➤ Последние новости по объектам",
+        }
+    } else {
+        "HubLoid Популярные теги ➤ Последние новости по популярным тегам"
+    };
+
+    context.insert("meta_title", meta_title);
+    context.insert("meta_description", &meta_desc);
 
     HttpResponse::Ok()
         .content_type("text/html")
