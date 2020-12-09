@@ -1,5 +1,5 @@
-use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
+use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
@@ -19,6 +19,7 @@ async fn exact_category_fix(web::Path(category): web::Path<String>) -> HttpRespo
 async fn exact_category(
     state: web::Data<State>,
     web::Path(category): web::Path<String>,
+    mut context: LayoutContext,
 ) -> impl Responder {
     let category = Category::from_str(&category).unwrap_or(Category::Other);
     let category_str = format!("{:?}", category);
@@ -72,7 +73,6 @@ async fn exact_category(
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
     context.insert("right_content", &right_tpl);
     context.insert("category", &category.to_string());

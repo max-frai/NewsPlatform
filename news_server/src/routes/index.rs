@@ -1,12 +1,12 @@
-use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
+use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
 use tera::Context;
 
 #[get("/")]
-async fn index(state: web::Data<State>) -> impl Responder {
+async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
     let index_cards = state
         .fetcher
         .fetch(CardQuery {
@@ -30,7 +30,6 @@ async fn index(state: web::Data<State>) -> impl Responder {
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
     context.insert("top_persons", &state.top_persons);
     context.insert("top_organizations", &state.top_organizations);

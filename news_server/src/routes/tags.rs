@@ -1,4 +1,4 @@
-use crate::{card_queries::CardQuery, state::State};
+use crate::{card_queries::CardQuery, layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
@@ -15,8 +15,8 @@ async fn tags_all_fix() -> HttpResponse {
 }
 
 #[get("/tags/")]
-async fn tags_all(state: web::Data<State>) -> impl Responder {
-    tag_logic(state, None).await
+async fn tags_all(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
+    tag_logic(state, None, context).await
 }
 
 #[get("/tags/{kind}")]
@@ -30,11 +30,19 @@ async fn tags_scope_fix(web::Path(kind): web::Path<String>) -> HttpResponse {
 }
 
 #[get("/tags/{kind}/")]
-async fn tags_scope(state: web::Data<State>, web::Path(kind): web::Path<String>) -> impl Responder {
-    tag_logic(state, Some(kind)).await
+async fn tags_scope(
+    state: web::Data<State>,
+    web::Path(kind): web::Path<String>,
+    mut context: LayoutContext,
+) -> impl Responder {
+    tag_logic(state, Some(kind), context).await
 }
 
-async fn tag_logic(state: web::Data<State>, kind: Option<String>) -> impl Responder {
+async fn tag_logic(
+    state: web::Data<State>,
+    kind: Option<String>,
+    mut context: LayoutContext,
+) -> impl Responder {
     let all_tags: Vec<&Tag> = state
         .tags_manager
         .tags
@@ -73,7 +81,6 @@ async fn tag_logic(state: web::Data<State>, kind: Option<String>) -> impl Respon
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("tags", &all_tags);
     context.insert("right_content", &right_tpl);
 

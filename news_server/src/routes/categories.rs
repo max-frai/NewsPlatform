@@ -1,5 +1,5 @@
-use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
+use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, http::header, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
@@ -15,7 +15,7 @@ async fn categories_fix() -> HttpResponse {
 }
 
 #[get("/categories/")]
-async fn categories(state: web::Data<State>) -> impl Responder {
+async fn categories(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
     let categories = Category::iter()
         .map(|item| (item.to_string(), item.to_description().to_owned()))
         .collect();
@@ -52,7 +52,6 @@ async fn categories(state: web::Data<State>) -> impl Responder {
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
     context.insert("right_content", &right_tpl);
 

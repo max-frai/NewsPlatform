@@ -1,6 +1,6 @@
-use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
-use actix_web::{get, web, HttpResponse, Responder};
+use crate::{layout_context::LayoutContext, state::State};
+use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
 use news_general::{category::Category, tag::TagKind};
@@ -19,6 +19,7 @@ async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> 
 
 #[get("/tags/{kind}/{slug}/")]
 async fn exact_tag(
+    mut context: LayoutContext,
     state: web::Data<State>,
     web::Path((kind, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
@@ -74,7 +75,6 @@ async fn exact_tag(
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("center_content", &news_list_tpl);
     context.insert("right_content", &right_tpl);
     context.insert("tag", tag);

@@ -28,9 +28,11 @@ use news_general::tag::*;
 use state::State;
 use tailwind::process_tailwind;
 
+pub mod canonical_middleware;
 pub mod card_fetcher;
 pub mod card_queries;
 pub mod indecies;
+pub mod layout_context;
 pub mod lowercase_middleware;
 pub mod modules;
 pub mod routes;
@@ -107,6 +109,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             // .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
             .wrap(lowercase_middleware::LowercaseRequest)
+            .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(tags_all)

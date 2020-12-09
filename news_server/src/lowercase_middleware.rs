@@ -44,7 +44,6 @@ where
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
         for letter in req.path().chars() {
             if letter.is_alphabetic() && !letter.is_ascii_lowercase() {
-                println!("NOT LOWERCASED: {}", req.path());
                 let new_path = req.path().to_ascii_lowercase();
                 return Either::Right(ok(req.into_response(
                     HttpResponse::MovedPermanently()

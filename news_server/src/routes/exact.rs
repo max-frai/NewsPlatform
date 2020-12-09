@@ -1,5 +1,5 @@
-use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
+use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
@@ -9,6 +9,7 @@ use tera::Context;
 async fn exact(
     state: web::Data<State>,
     web::Path((_, slug)): web::Path<(String, String)>,
+    mut context: LayoutContext,
 ) -> impl Responder {
     let card = state.fetcher.fetch_exact(slug).await.unwrap();
     let center_tpl = state
@@ -66,7 +67,6 @@ async fn exact(
         )
         .unwrap();
 
-    let mut context = Context::new();
     context.insert("center_content", &center_tpl);
     context.insert("right_content", &format!("{}{}", right_tpl, right_tpl2));
     context.insert("article_name", &card.title);
