@@ -1,4 +1,7 @@
-use crate::{card_queries::CardQuery, modules};
+use crate::{
+    card_queries::{last_15_by_tag, last_25, CardQuery},
+    modules,
+};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
 use bson::doc;
@@ -28,27 +31,11 @@ async fn exact_tag(
 
     let tag_cards = state
         .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(15),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! {
-                "tags" : tag._id.to_owned()
-            },
-        })
+        .fetch(last_15_by_tag(tag._id.to_owned()))
         .await
         .unwrap();
 
-    let last_cards = state
-        .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(25),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! {},
-        })
-        .await
-        .unwrap();
+    let last_cards = state.fetcher.fetch(last_25()).await.unwrap();
 
     let right_tpl = state
         .tera

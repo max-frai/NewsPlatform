@@ -1,4 +1,7 @@
-use crate::{card_queries::CardQuery, modules};
+use crate::{
+    card_queries::{last_15, CardQuery},
+    modules,
+};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, http::header, web, HttpResponse, Responder};
 use bson::doc;
@@ -29,16 +32,7 @@ async fn categories(state: web::Data<State>, mut context: LayoutContext) -> impl
         )
         .unwrap();
 
-    let last_cards = state
-        .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(15),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! {},
-        })
-        .await
-        .unwrap();
+    let last_cards = state.fetcher.fetch(last_15()).await.unwrap();
 
     let right_tpl = state
         .tera

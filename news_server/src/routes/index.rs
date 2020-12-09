@@ -1,4 +1,7 @@
-use crate::{card_queries::CardQuery, modules};
+use crate::{
+    card_queries::{last_25, CardQuery},
+    modules,
+};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
@@ -7,17 +10,7 @@ use tera::Context;
 
 #[get("/")]
 async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
-    let index_cards = state
-        .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(30),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! { "country" : "ua" },
-        })
-        .await
-        .unwrap();
-
+    let index_cards = state.fetcher.fetch(last_25()).await.unwrap();
     let news_list_tpl = state
         .tera
         .render(

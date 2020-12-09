@@ -1,4 +1,7 @@
-use crate::{card_queries::CardQuery, modules};
+use crate::{
+    card_queries::{last_15, last_15_by_category, CardQuery},
+    modules,
+};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
@@ -20,17 +23,7 @@ async fn exact(
         )
         .unwrap();
 
-    let last_cards = state
-        .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(15),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! {},
-        })
-        .await
-        .unwrap();
-
+    let last_cards = state.fetcher.fetch(last_15()).await.unwrap();
     let right_tpl = state
         .tera
         .render(
@@ -46,12 +39,7 @@ async fn exact(
     let card_category = format!("{:?}", card.category);
     let category_cards = state
         .fetcher
-        .fetch(CardQuery {
-            lifetime: Duration::seconds(60),
-            limit: Some(15),
-            sort: Some(doc! { "date" : -1 }),
-            query: doc! { "category" : card_category },
-        })
+        .fetch(last_15_by_category(&card_category))
         .await
         .unwrap();
 
