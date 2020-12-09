@@ -1,5 +1,10 @@
 {% extends "layouts/layout.tera" %}
 
+{% block meta %}
+<title>{{ meta_title }} ➤ HubLoid</title>
+<meta name="description" content="{{ meta_description | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" />
+{% endblock %}
+
 {% block center_column %}
 <h1 class="my-3 mb-5">Теги новостей</h1>
 
