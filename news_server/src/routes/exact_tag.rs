@@ -7,6 +7,16 @@ use news_general::{category::Category, tag::TagKind};
 use std::str::FromStr;
 use tera::Context;
 
+#[get("/tags/{kind}/{slug}")]
+async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header(
+            actix_web::http::header::LOCATION,
+            format!("/tags/{}/{}/", kind, slug),
+        )
+        .finish()
+}
+
 #[get("/tags/{kind}/{slug}/")]
 async fn exact_tag(
     state: web::Data<State>,

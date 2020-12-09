@@ -10,12 +10,15 @@ use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
 use crate::routes::categories::categories;
+use crate::routes::categories::categories_fix;
 use crate::routes::exact::exact;
 use crate::routes::exact_category::exact_category;
+use crate::routes::exact_category::exact_category_fix;
 use crate::routes::exact_tag::exact_tag;
+use crate::routes::exact_tag::exact_tag_fix;
 use crate::routes::index::index;
 use crate::routes::robots::robots;
-use crate::routes::tags::{tags_all, tags_scope};
+use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
 
 use config;
@@ -74,12 +77,12 @@ async fn main() -> std::io::Result<()> {
     let tags_manager = Arc::new(TagsManager::new(tags_col, news_col.clone()).await);
 
     println!("Count person news");
-    let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
+    // let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
     println!("Count top organizations");
-    let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
+    // let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
 
-    // let top_persons = vec![];
-    // let top_organizations = vec![];
+    let top_persons = vec![];
+    let top_organizations = vec![];
 
     let fetcher = Arc::new(CardFetcher::new(
         news_col,
@@ -105,12 +108,17 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(tags_all)
+            .service(tags_all_fix)
             .service(tags_scope)
+            .service(tags_scope_fix)
             .service(index)
             .service(test)
             .service(categories)
+            .service(categories_fix)
             .service(exact_category)
+            .service(exact_category_fix)
             .service(exact_tag)
+            .service(exact_tag_fix)
             .service(robots)
             .service(exact)
             .service(Files::new("/static", "./templates/"))

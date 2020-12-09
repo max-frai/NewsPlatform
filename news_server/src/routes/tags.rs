@@ -7,9 +7,26 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;
 
+#[get("/tags")]
+async fn tags_all_fix() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header(actix_web::http::header::LOCATION, "/tags/")
+        .finish()
+}
+
 #[get("/tags/")]
 async fn tags_all(state: web::Data<State>) -> impl Responder {
     tag_logic(state, None).await
+}
+
+#[get("/tags/{kind}")]
+async fn tags_scope_fix(web::Path(kind): web::Path<String>) -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header(
+            actix_web::http::header::LOCATION,
+            format!("/tags/{}/", kind),
+        )
+        .finish()
 }
 
 #[get("/tags/{kind}/")]

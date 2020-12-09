@@ -1,11 +1,18 @@
 use crate::state::State;
 use crate::{card_queries::CardQuery, modules};
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{get, http::header, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
 use news_general::category::Category;
 use strum::IntoEnumIterator;
 use tera::Context;
+
+#[get("/categories")]
+async fn categories_fix() -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header(actix_web::http::header::LOCATION, "/categories/")
+        .finish()
+}
 
 #[get("/categories/")]
 async fn categories(state: web::Data<State>) -> impl Responder {

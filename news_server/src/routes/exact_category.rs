@@ -8,6 +8,13 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;
 
+#[get("/{category}")]
+async fn exact_category_fix(web::Path(category): web::Path<String>) -> HttpResponse {
+    HttpResponse::MovedPermanently()
+        .header(actix_web::http::header::LOCATION, format!("/{}/", category))
+        .finish()
+}
+
 #[get("/{category}/")]
 async fn exact_category(
     state: web::Data<State>,

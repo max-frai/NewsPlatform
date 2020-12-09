@@ -77,7 +77,9 @@ pub struct TagsManager {
 pub struct TagsManagerWriter {
     // (Kind, Title) -> Tag
     tags: HashMap<(TagKind, String), Tag>,
-    text2wikititle: HashMap<String, String>,
+    // (Kind, WikiTitle) -> Tag or None if wrong
+    text2wikititle: HashMap<(TagKind, String), Option<String>>,
+
     collection: Collection,
     morph: MorphAnalyzer,
     wiki: Wiki,
@@ -199,7 +201,7 @@ impl TagsManagerWriter {
         None
     }
 
-    fn load_text2wikititle() -> HashMap<String, String> {
+    fn load_text2wikititle() -> HashMap<(TagKind, String), Option<String>> {
         use std::io::Read;
 
         let mut file = File::open("text2wikititle").unwrap();
@@ -213,10 +215,18 @@ impl TagsManagerWriter {
             }
 
             let mut split = line.split("=");
+            let kind = TagKind::from_str(split.next().unwrap()).unwrap();
             let word = split.next().unwrap();
-            let wiki = split.next().unwrap();
 
-            result.insert(word.to_owned(), wiki.to_owned());
+            let wiki = split.next().map(|title| {
+                if title == "NONE" {
+                    None
+                } else {
+                    Some(title.to_owned())
+                }
+            });
+
+            result.insert((kind.to_owned(), word.to_owned()), wiki.flatten());
         }
 
         dbg!(&result);
@@ -224,11 +234,20 @@ impl TagsManagerWriter {
         result
     }
 
-    fn save_text2wikititle(&mut self, text: &str, wikititle: &str) {
+    fn save_text2wikititle(&mut self, text: &str, wikititle: Option<&str>, kind: TagKind) {
         use std::io::prelude::*;
 
-        self.text2wikititle
-            .insert(text.to_owned(), wikititle.to_owned());
+        if self
+            .text2wikititle
+            .contains_key(&(kind.to_owned(), text.to_owned()))
+        {
+            return;
+        }
+
+        self.text2wikititle.insert(
+            (kind.to_owned(), text.to_owned()),
+            wikititle.map(|i| i.to_string()),
+        );
 
         let mut f = File::with_options()
             .append(true)
@@ -236,7 +255,7 @@ impl TagsManagerWriter {
             .open("text2wikititle")
             .unwrap();
 
-        let result = format!("{}={}\n", text, wikititle);
+        let result = format!("{}={}={}\n", kind, text, wikititle.unwrap_or("NONE"));
         f.write_all(result.as_bytes()).unwrap();
     }
 
@@ -256,39 +275,37 @@ impl TagsManagerWriter {
         // };
         let word = what.to_string();
 
-        let wikititle = if let Some(wikititle) = self.text2wikititle.get(&word) {
-            // println!("Got wikititle from cache");
-            Some(wikititle.to_owned())
-        } else {
-            println!("Search wiki for: {}; {}", word, kind);
-            let mut search_result = self.wiki.search(&word).unwrap();
-            // dbg!(&search_result);
-            // search_result
-            //     .sort_by(|a, b| a.chars().count().partial_cmp(&b.chars().count()).unwrap());
+        let wikititle =
+            if let Some(wikititle) = self.text2wikititle.get(&(kind.to_owned(), word.to_owned())) {
+                // println!("Got wikititle from cache");
+                Some(wikititle.to_owned())
+            } else {
+                println!("Search wiki for: {}; {}", word, kind);
+                let search_result = self.wiki.search(&word).unwrap();
+                // dbg!(&search_result);
+                // search_result
+                //     .sort_by(|a, b| a.chars().count().partial_cmp(&b.chars().count()).unwrap());
 
-            let found = search_result.first().cloned();
-            if let Some(ref found_wiki_title) = found {
-                self.save_text2wikititle(&word, found_wiki_title);
+                Some(search_result.first().cloned())
             }
-
-            found
-        };
+            .flatten();
 
         if wikititle.is_none() {
+            self.save_text2wikititle(&word, None, kind.to_owned());
             return None;
         }
 
         let mut found = wikititle.unwrap();
         let original_found = found.to_owned();
 
-        println!("Wikititle: {}", original_found);
+        println!("FOUND FIRST Wikititle: {}", original_found);
 
         found = found.to_lowercase().replace(",", "");
         found = BRACKETS_RE.replace_all(&found, "").to_string();
 
         let found_tag = self.get_tag(&kind, &found);
         if found_tag.is_some() {
-            // println!("\treturn tag from cache");
+            println!("\tReturn tag directly from cache");
             return found_tag.cloned();
         }
 
@@ -297,25 +314,6 @@ impl TagsManagerWriter {
 
         if similarity >= 0.4 {
             let page = self.wiki.page_from_title(original_found.to_owned());
-
-            let wiki_html = page.get_html_content().unwrap();
-            let document = Html::parse_document(&wiki_html);
-
-            fn get_image(document: &Html, selector: &'static str) -> Option<String> {
-                let selector = Selector::parse(selector).unwrap();
-                for element in document.select(&selector) {
-                    return Some(element.value().attr("src").unwrap_or("").to_string());
-                }
-                None
-            }
-
-            let image_src = get_image(&document, ".infobox-image img")
-                .or(get_image(&document, ".infobox img"))
-                .or(get_image(&document, "img.thumbimage"));
-
-            if image_src.is_none() {
-                return None;
-            }
 
             let summary = {
                 let mut result = (String::new(), String::new());
@@ -358,17 +356,37 @@ impl TagsManagerWriter {
                 result
             };
 
-            // println!("Verify summary is found as: {}", kind);
-            // println!("{}", summary.1);
-
             if self
                 .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
                 .await
                 .is_none()
             {
                 println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
+                self.save_text2wikititle(&word, None, kind.to_owned());
                 return None;
             }
+
+            let wiki_html = page.get_html_content().unwrap();
+            let document = Html::parse_document(&wiki_html);
+
+            fn get_image(document: &Html, selector: &'static str) -> Option<String> {
+                let selector = Selector::parse(selector).unwrap();
+                for element in document.select(&selector) {
+                    return Some(element.value().attr("src").unwrap_or("").to_string());
+                }
+                None
+            }
+
+            let image_src = get_image(&document, ".infobox-image img")
+                .or(get_image(&document, ".infobox img"))
+                .or(get_image(&document, "img.thumbimage"));
+
+            if image_src.is_none() {
+                self.save_text2wikititle(&word, None, kind.to_owned());
+                return None;
+            }
+
+            self.save_text2wikititle(&word, Some(&original_found), kind.to_owned());
 
             let tag = Tag {
                 _id: ObjectId::default(),

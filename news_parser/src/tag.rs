@@ -54,6 +54,7 @@ pub async fn tag_news(
             Some(doc! {
                 "rewritten" : true,
                 "tagged" : false,
+                // "slug" : "strany-es-poluchat-pervye-dozy-vaktsiny-ot-covid-19-cherez-3-4-nedeli"
             }),
             Some(options),
             // None,
@@ -97,8 +98,9 @@ pub async fn tag_news(
                 let word = pair.0.trim();
                 let kind = pair.1.to_owned();
 
-                // dbg!(word);
-                // dbg!(&kind);
+                println!("----------------------");
+                dbg!(word);
+                dbg!(&kind);
 
                 let mut tags_manager_mut = tags_manager.lock().unwrap();
                 if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
