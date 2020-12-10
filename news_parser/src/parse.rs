@@ -263,9 +263,9 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     }
 
                     // Skip very old articles
-                    // if date < (Utc::now() - chrono::Duration::days(1)) {
-                    //     return None;
-                    // }
+                    if date < (Utc::now() - chrono::Duration::days(1)) {
+                        return None;
+                    }
 
                     if date > Utc::now() {
                         return None;

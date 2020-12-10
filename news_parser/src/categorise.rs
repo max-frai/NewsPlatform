@@ -50,8 +50,8 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let news_cursor = news_collection
         .find(
             Some(doc! {
-                "rewritten" : true,
-                "categorised" : false
+                "categorised" : false,
+                "lang" : "rus"
             }),
             Some(options),
             // None,

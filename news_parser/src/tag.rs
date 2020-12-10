@@ -52,8 +52,8 @@ pub async fn tag_news(
     let news_cursor = news_collection
         .find(
             Some(doc! {
-                "rewritten" : true,
                 "tagged" : false,
+                "lang" : "rus",
                 // "slug" : "strany-es-poluchat-pervye-dozy-vaktsiny-ot-covid-19-cherez-3-4-nedeli"
             }),
             Some(options),

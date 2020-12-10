@@ -30,6 +30,8 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .find(
             Some(doc! {
                 "lang" : "rus",
+                "tagged" : true,
+                "categorised" : true,
                 "rewritten" : false
             }),
             Some(options),

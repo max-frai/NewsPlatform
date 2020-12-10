@@ -229,7 +229,7 @@ impl TagsManagerWriter {
             result.insert((kind.to_owned(), word.to_owned()), wiki.flatten());
         }
 
-        dbg!(&result);
+        // dbg!(&result);
 
         result
     }
@@ -356,14 +356,18 @@ impl TagsManagerWriter {
                 result
             };
 
-            if self
-                .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
-                .await
-                .is_none()
-            {
-                println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
-                self.save_text2wikititle(&word, None, kind.to_owned());
-                return None;
+            if similarity < 0.9 {
+                if self
+                    .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
+                    .await
+                    .is_none()
+                {
+                    println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
+                    self.save_text2wikititle(&word, None, kind.to_owned());
+                    return None;
+                }
+            } else {
+                println!("Dont check found tag kind on wiki, SIMILARITY >= 0.9");
             }
 
             let wiki_html = page.get_html_content().unwrap();
