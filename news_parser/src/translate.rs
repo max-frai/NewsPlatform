@@ -86,7 +86,8 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         "cfd724963e8336a0965bea0c0279cdab2ebb95de846e7019b62e1cd44292ebbcef5dba1efea6f351b8cbb9bb7bebc17ff3e13c35eba00c930cce494e25133724",
         "0",
         "0",
-        "uk,ru"
+        "uk,ru",
+        "9224"
     )
     .stdin_bytes(json_string.to_owned())
     .stdout_capture()

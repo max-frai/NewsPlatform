@@ -103,17 +103,20 @@ async fn main() {
         }
     });
 
-    // let rewrite_client = client.clone();
-    // let rewrite_constants = constants.clone();
-    // tokio::task::spawn(async move {
-    //     loop {
-    //         println!("Rewrite news.......");
-    //         let client = rewrite_client.clone();
-    //         let constants = rewrite_constants.clone();
-    //         crate::rewrite::rewrite_news(client, constants.clone()).await;
-    //         delay_for(Duration::from_secs(10)).await;
-    //     }
-    // });
+    let rewrite_client = client.clone();
+    let rewrite_constants = constants.clone();
+    tokio::task::spawn(async move {
+        loop {
+            println!("Rewrite news.......");
+            let client = rewrite_client.clone();
+            let constants = rewrite_constants.clone();
+            tokio::task::spawn(async move {
+                crate::rewrite::rewrite_news(client, constants.clone()).await;
+            })
+            .await;
+            delay_for(Duration::from_secs(60)).await;
+        }
+    });
 
     std::future::pending::<()>().await;
 }

@@ -108,10 +108,7 @@ pub async fn tag_news(
                 // tags_manager_mut.search_for_tag_in_wiki(word, kind);
                 if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
                     let tag_bson = bson::to_document(&tag).unwrap();
-                    tags_col
-                        .insert_one(tag_bson, None)
-                        .await
-                        .expect("failed to insert tag");
+                    tags_col.insert_one(tag_bson, None).await;
 
                     if !final_tags.contains(&tag._id) {
                         final_tags.push(tag._id);
