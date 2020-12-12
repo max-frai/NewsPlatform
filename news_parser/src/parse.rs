@@ -263,7 +263,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     }
 
                     // Skip very old articles
-                    if date < (Utc::now() - chrono::Duration::days(1)) {
+                    // if date < (Utc::now() - chrono::Duration::days(1)) {
+                    if date < (Utc::now() - chrono::Duration::hours(1)) {
                         return None;
                     }
 
@@ -399,9 +400,11 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
         println!("Models count: {}", models.len());
 
-        news_collection
-            .insert_many(models, InsertManyOptions::builder().ordered(false).build())
-            .await
-            .expect("Failed to insert news");
+        if !models.is_empty() {
+            news_collection
+                .insert_many(models, InsertManyOptions::builder().ordered(false).build())
+                .await
+                .expect("Failed to insert news");
+        }
     }
 }

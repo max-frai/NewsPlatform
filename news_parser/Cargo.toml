@@ -43,4 +43,4 @@ rss-parser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/rss-parser-rs.git
 html2md = { git = "https://github.com/max-frai/html2md.git" }
 
 mongodb = "1.1"
-tokio = { version="0.2", features=["macros"] }
+tokio = { version="0.2", features=["macros", "time"] }

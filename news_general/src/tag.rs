@@ -80,9 +80,7 @@ pub struct TagsManagerWriter {
     // (Kind, WikiTitle) -> Tag or None if wrong
     text2wikititle: HashMap<(TagKind, String), Option<String>>,
 
-    collection: Collection,
-    morph: MorphAnalyzer,
-    wiki: Wiki,
+    // morph: MorphAnalyzer,
     comparator: ThreeSetCompare,
 }
 
@@ -165,16 +163,10 @@ impl TagsManagerWriter {
             tags.insert((tag.kind.clone(), tag.title.to_owned()), tag);
         }
 
-        let mut wiki = Wiki::default();
-        wiki.language = "ru".to_owned();
-        wiki.search_results = 1;
-
         Self {
             tags,
             text2wikititle: Self::load_text2wikititle(),
-            collection: tags_col,
-            morph: MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH),
-            wiki,
+            // morph: MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH),
             comparator: ThreeSetCompare::new(),
         }
     }
@@ -273,6 +265,11 @@ impl TagsManagerWriter {
         //     println!("Search word is single word");
         //     what.to_owned()
         // };
+
+        let mut wiki = Wiki::default();
+        wiki.language = "ru".to_owned();
+        wiki.search_results = 1;
+
         let word = what.to_string();
 
         let wikititle =
@@ -281,7 +278,7 @@ impl TagsManagerWriter {
                 Some(wikititle.to_owned())
             } else {
                 println!("Search wiki for: {}; {}", word, kind);
-                let search_result = self.wiki.search(&word).unwrap();
+                let search_result = wiki.search(&word).unwrap();
                 // dbg!(&search_result);
                 // search_result
                 //     .sort_by(|a, b| a.chars().count().partial_cmp(&b.chars().count()).unwrap());
@@ -313,7 +310,7 @@ impl TagsManagerWriter {
         // dbg!(similarity);
 
         if similarity >= 0.4 {
-            let page = self.wiki.page_from_title(original_found.to_owned());
+            let page = wiki.page_from_title(original_found.to_owned());
 
             let summary = {
                 let mut result = (String::new(), String::new());
@@ -404,12 +401,7 @@ impl TagsManagerWriter {
             };
 
             // println!("Write tag to database");
-            let tag_bson = bson::to_document(&tag).unwrap();
             self.tags.insert((kind, found), tag.clone());
-            self.collection
-                .insert_one(tag_bson, None)
-                .await
-                .expect("failed to insert tag");
 
             return Some(tag);
         }
@@ -417,19 +409,19 @@ impl TagsManagerWriter {
         None
     }
 
-    fn normal_form(&self, word: &str) -> Option<String> {
-        let parsed = self.morph.parse(word);
-        if !parsed.is_empty() {
-            let lex = parsed[0].lex.clone();
-            if let Some(part) = lex.get_tag(&self.morph).pos {
-                return if part == Noun {
-                    Some(lex.get_normal_form(&self.morph).to_string())
-                } else {
-                    None
-                };
-            }
-        }
+    // fn normal_form(&self, word: &str) -> Option<String> {
+    //     let parsed = self.morph.parse(word);
+    //     if !parsed.is_empty() {
+    //         let lex = parsed[0].lex.clone();
+    //         if let Some(part) = lex.get_tag(&self.morph).pos {
+    //             return if part == Noun {
+    //                 Some(lex.get_normal_form(&self.morph).to_string())
+    //             } else {
+    //                 None
+    //             };
+    //         }
+    //     }
 
-        None
-    }
+    //     None
+    // }
 }

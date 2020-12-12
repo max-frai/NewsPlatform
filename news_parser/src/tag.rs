@@ -4,10 +4,11 @@ use mongodb::{
     Client,
 };
 use regex::Regex;
+use std::env;
 use std::str::FromStr;
 use std::{collections::HashMap, sync::Arc};
-use std::{env, sync::Mutex};
 use strum::IntoEnumIterator;
+use tokio::sync::Mutex;
 
 use news_general::tag::*;
 
@@ -39,10 +40,11 @@ pub struct ClusteringThread {
 pub async fn tag_news(
     client: Arc<Client>,
     constants: Arc<AppConfig>,
-    tags_manager: Arc<Mutex<TagsManagerWriter>>,
+    tags_manager: Arc<tokio::sync::Mutex<TagsManagerWriter>>,
 ) {
     let db = client.database(&constants.database_name);
     let news_collection = db.collection(&constants.cards_collection_name);
+    let tags_col = db.collection(&constants.tags_collection_name);
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : 1})
@@ -102,8 +104,15 @@ pub async fn tag_news(
                 dbg!(word);
                 dbg!(&kind);
 
-                let mut tags_manager_mut = tags_manager.lock().unwrap();
+                let mut tags_manager_mut = tags_manager.lock().await;
+                // tags_manager_mut.search_for_tag_in_wiki(word, kind);
                 if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
+                    let tag_bson = bson::to_document(&tag).unwrap();
+                    tags_col
+                        .insert_one(tag_bson, None)
+                        .await
+                        .expect("failed to insert tag");
+
                     if !final_tags.contains(&tag._id) {
                         final_tags.push(tag._id);
                     }
