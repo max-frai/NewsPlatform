@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Max Frai"]
 edition = "2018"
 
+[[bin]]
+name = "news_server"
+
 [dependencies]
 news_general = {path = "../news_general"}
 

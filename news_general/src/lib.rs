@@ -1,5 +1,3 @@
-#![feature(with_options)]
-
 pub mod card;
 pub mod category;
 pub mod constants;

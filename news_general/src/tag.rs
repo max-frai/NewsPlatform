@@ -241,11 +241,17 @@ impl TagsManagerWriter {
             wikititle.map(|i| i.to_string()),
         );
 
-        let mut f = File::with_options()
+        let mut f = std::fs::OpenOptions::new()
             .append(true)
             .create(true)
             .open("text2wikititle")
             .unwrap();
+
+        // let mut f = File::with_options()
+        //     .append(true)
+        //     .create(true)
+        //     .open("text2wikititle")
+        //     .unwrap();
 
         let result = format!("{}={}={}\n", kind, text, wikititle.unwrap_or("NONE"));
         f.write_all(result.as_bytes()).unwrap();
