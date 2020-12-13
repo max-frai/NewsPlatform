@@ -47,6 +47,11 @@ RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-
 RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader
 WORKDIR /newsplatform/
+COPY --from=builder /newsplatform/news_parser/libgomp-75eea7e8.so.1 /usr/lib/
+COPY --from=builder /newsplatform/news_parser/libtorch_cpu.so /usr/lib/
+COPY --from=builder /newsplatform/news_parser/libc10.so /usr/lib/
+COPY --from=builder /newsplatform/news_parser/libtorch.so /usr/lib/
+COPY --from=builder /newsplatform/news_parser/configs ./configs
 COPY --from=cacher /newsplatform/models ./models
 ADD news_server/templates ./templates
 ADD news_server/postcss.config.js .
@@ -57,10 +62,6 @@ COPY --from=builder /newsplatform/target/release/news_parser .
 COPY --from=builder /newsplatform/news_parser/rewritebinary_linux .
 COPY --from=builder /newsplatform/news_parser/parserbinary_linux .
 COPY --from=builder /newsplatform/news_parser/nlp_linux .
-COPY --from=builder /newsplatform/news_parser/libgomp-75eea7e8.so.1 /usr/lib/
-COPY --from=builder /newsplatform/news_parser/libtorch_cpu.so /usr/lib/
-COPY --from=builder /newsplatform/news_parser/libc10.so /usr/lib/
-COPY --from=builder /newsplatform/news_parser/libtorch.so /usr/lib/
 
 # COPY --from=builder /newsplatform/news_parser/text2wikititle .
 # RUN chmod 755 text2wikititle
