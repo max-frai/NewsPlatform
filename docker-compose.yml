@@ -6,37 +6,37 @@ services:
         image: mongo:4.4
         container_name: "mongodb_newsplatform"
         restart: always
-        ports:
-            - 127.0.0.1:27042:27017
+        # ports:
+        #     - 127.0.0.1:27042:27017
         expose:
             - "27017"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./mongo-volume:/data/db
 
-    # deeppavlov:
-    #     image: deeppavlov/base-cpu:latest
-    #     container_name: "deeppavlov"
-    #     expose:
-    #         - "5000"
-    #     # ports:
-    #     #     - 127.0.0.1:5555:5000
-    #     volumes:
-    #         - ./dp_components:/root/.deeppavlov
-    #     environment:
-    #         - CONFIG=ner_ontonotes_bert_mult
+    deeppavlov:
+        image: deeppavlov/base-cpu:latest
+        container_name: "deeppavlov"
+        expose:
+            - "5000"
+        # ports:
+        #     - 127.0.0.1:5555:5000
+        volumes:
+            - ./dp_components:/root/.deeppavlov
+        environment:
+            - CONFIG=ner_ontonotes_bert_mult
 
-    # newsplatform:
-    #     restart: always
-    #     build:
-    #         context: .
-    #         dockerfile: ./Dockerfile
-    #     volumes:
-    #         - ./configs:/newsplatform/configs
-    #     ports:
-    #         - 127.0.0.1:2086:2086
-    #     links:
-    #         - mongodb_newsplatform
-    #     depends_on:
-    #         - mongodb_newsplatform
+    newsplatform:
+        restart: always
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        volumes:
+            - ./configs:/newsplatform/configs
+        ports:
+            - 127.0.0.1:2086:2086
+        links:
+            - mongodb_newsplatform
+        depends_on:
+            - mongodb_newsplatform
             # - deeppavlov
