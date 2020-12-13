@@ -3,6 +3,5 @@ node_modules/
 mongo-volume
 mac-*/
 models/
-configs/
 dp_components/
 svelte_graphs/
