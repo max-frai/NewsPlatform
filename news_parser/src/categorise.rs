@@ -103,10 +103,14 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     file.write_all(json_str.as_bytes()).unwrap();
     file.sync_all().unwrap();
 
-    let handle = cmd!("./nlp", "categories", "categories.json")
-        .stdout_capture()
-        .start()
-        .expect("Failed to start nlp");
+    let handle = cmd!(
+        format!("./nlp_{}", env::consts::OS),
+        "categories",
+        "categories.json"
+    )
+    .stdout_capture()
+    .start()
+    .expect("Failed to start nlp");
     let parse_result = handle.wait().expect("Failed to wait nlp");
 
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();

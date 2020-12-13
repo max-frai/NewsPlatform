@@ -1,5 +1,5 @@
-server_url = "127.0.0.1:4244"
-mongodb_url = "mongodb://127.0.0.1:27042"
+server_url = "0.0.0.0:4244"
+mongodb_url = "mongodb://mongodb_newsplatform:27017"
 database_name = "news"
 cards_collection_name = "news"
 sources_collection_name = "sources"

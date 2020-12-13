@@ -42,7 +42,7 @@ pub mod templates;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // std::env::set_var("RUST_LOG", "actix_web=info,actix_files=info");
+    std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
     let mut settings = config::Config::default();
@@ -64,7 +64,7 @@ async fn main() -> std::io::Result<()> {
     let tera = templates::init_tera();
     println!("Templates are loaded");
 
-    println!("Connect mongodb");
+    println!("Connect mongodb: {}", &constants.mongodb_url);
     let client = Client::with_uri_str(&constants.mongodb_url)
         .await
         .expect("Failed to connect mongodb");
@@ -73,10 +73,12 @@ async fn main() -> std::io::Result<()> {
 
     indecies::ensure_indecies(db.clone(), constants.clone()).await;
 
+    println!("Select news and tags collections");
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
 
     // TODO: Autoreload tags time from time !!!!!!!!
+    println!("Construct tags manager");
     let tags_manager = Arc::new(TagsManager::new(tags_col, news_col.clone()).await);
 
     println!("Count person news");

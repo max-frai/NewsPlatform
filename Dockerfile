@@ -42,7 +42,12 @@ FROM rust:1.48-buster as runtime
 RUN echo "PREPARE CARGO CHEF RUNTIME"
 RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.list
 RUN apt update && apt install -y curl xvfb chromium psmisc
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
+RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader
+RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader
 WORKDIR /newsplatform/
+COPY --from=cacher /newsplatform/models ./models
 ADD run.sh .
 ADD news_server/templates ./templates
 ADD news_server/postcss.config.js .
@@ -53,7 +58,7 @@ COPY --from=builder /newsplatform/target/release/news_server .
 COPY --from=builder /newsplatform/target/release/news_parser .
 COPY --from=builder /newsplatform/news_parser/rewritebinary_linux .
 COPY --from=builder /newsplatform/news_parser/parserbinary_linux .
-COPY --from=cacher /newsplatform/models ./models
+COPY --from=builder /newsplatform/news_parser/nlp_linux .
 
 RUN ls -la
 ENTRYPOINT ["./run.sh"]
