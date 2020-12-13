@@ -80,12 +80,12 @@ async fn main() -> std::io::Result<()> {
     let tags_manager = Arc::new(TagsManager::new(tags_col, news_col.clone()).await);
 
     println!("Count person news");
-    // let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
+    let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
     println!("Count top organizations");
-    // let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
+    let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
 
-    let top_persons = vec![];
-    let top_organizations = vec![];
+    // let top_persons = vec![];
+    // let top_organizations = vec![];
 
     let fetcher = Arc::new(CardFetcher::new(
         news_col,

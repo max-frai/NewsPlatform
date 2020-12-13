@@ -2,12 +2,12 @@
 FROM rust:1.48-buster as planner
 RUN echo "PREPARE CARGO CHEF PLANNER"
 WORKDIR /newsplatform/
+RUN cargo install cargo-chef
 ADD news_general ./news_general
 ADD news_parser ./news_parser
 ADD news_server ./news_server
 ADD Cargo.toml .
 ADD Cargo.lock .
-RUN cargo install cargo-chef
 RUN cargo chef prepare  --recipe-path recipe.json
 RUN ls -la
 
@@ -15,11 +15,10 @@ FROM rust:1.48-buster as cacher
 RUN echo "PREPARE CARGO CHEF CACHER"
 WORKDIR /newsplatform/
 RUN cargo install cargo-chef
-COPY --from=planner /newsplatform/recipe.json recipe.json
-RUN cat recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json
 ADD download_models.sh .
 RUN chmod u+x download_models.sh && ./download_models.sh
+COPY --from=planner /newsplatform/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
 RUN ls -la
 RUN ls -la ./models
 
@@ -41,6 +40,8 @@ RUN ls -la
 
 FROM rust:1.48-buster as runtime
 RUN echo "PREPARE CARGO CHEF RUNTIME"
+RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.list
+RUN apt update && apt install -y curl xvfb chromium psmisc
 WORKDIR /newsplatform/
 ADD run.sh .
 ADD news_server/templates ./templates
@@ -56,19 +57,3 @@ COPY --from=cacher /newsplatform/models ./models
 
 RUN ls -la
 ENTRYPOINT ["./run.sh"]
-
-# RUN chmod u+x parserbinary_linux && chmod u+x rewritebinary_linux
-# RUN chmod u+x server && chmod u+x parser && chmod u+x run.sh
-
-# RUN ls -la
-
-# RUN mkdir src
-# ADD newsserver/Cargo.toml .
-# ADD newsserver/Cargo.lock .
-
-# RUN chmod u+x parserbinary_linux && chmod u+x rewritebinary_linux && chmod u+x parserbinary_macos && chmod u+x rewritebinary_macos
-
-# RUN cp target/release/newsserver newsserver
-# RUN chmod u+x newsserver && chmod u+x run.sh
-
-# RUN mkdir configs

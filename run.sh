@@ -23,4 +23,4 @@ echo "Wait after crate Xvfb"
 sleep 5
 
 export DISPLAY=:42
-DISPLAY=:42 ./parser
+DISPLAY=:42 ./news_parser

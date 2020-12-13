@@ -1,0 +1,15 @@
+*/node_modules/*
+*/models/*
+*/mac-*
+*/svelte_graphs/
+*/target/
+*/mongo-volume/
+*/dp_components/
+*/.git
+dp_components/
+mongo-volume/
+news_server/node_modules
+news_server/svelte_graphs
+news_parser/models/
+news_parser/mac-782368
+target/
