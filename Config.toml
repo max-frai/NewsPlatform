@@ -1,4 +1,4 @@
-server_url = "0.0.0.0:4244"
+server_url = "0.0.0.0:2086"
 deeppavlov_url = "http://deeppavlov:5000/model"
 mongodb_url = "mongodb://mongodb_newsplatform:27017"
 database_name = "news"

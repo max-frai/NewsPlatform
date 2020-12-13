@@ -34,7 +34,7 @@ services:
         volumes:
             - ./configs:/newsplatform/configs
         ports:
-            - 0.0.0.0:4244:4244
+            - 127.0.0.1:2086:2086
         links:
             - mongodb_newsplatform
         depends_on:
