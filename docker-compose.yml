@@ -32,7 +32,10 @@ services:
             context: .
             dockerfile: ./Dockerfile
         volumes:
-            - ./configs:/newsplatform/configs
+            - ./Config.toml:Config.toml
+            - type: bind
+              source: ./Config.toml
+              target: /newsplatform/Config.toml
         ports:
             - 127.0.0.1:2086:2086
         links:

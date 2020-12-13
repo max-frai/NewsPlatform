@@ -53,7 +53,6 @@ ADD run.sh .
 ADD news_server/templates ./templates
 ADD news_server/postcss.config.js .
 ADD news_server/tailwind.config.js .
-ADD Config.toml .
 
 COPY --from=builder /newsplatform/target/release/news_server .
 COPY --from=builder /newsplatform/target/release/news_parser .
