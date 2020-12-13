@@ -180,8 +180,9 @@ impl TagsManagerWriter {
         &self,
         summary: &str,
         should_be_tag: TagKind,
+        service_url: &str,
     ) -> Option<()> {
-        if let Some(tags) = crate::ner::ner_tags(summary.to_owned()).await {
+        if let Some(tags) = crate::ner::ner_tags(summary.to_owned(), service_url).await {
             if !tags.is_empty() {
                 // println!("Check: {} == {}", should_be_tag, tags.first().unwrap().1);
                 if should_be_tag == tags.first().unwrap().1 {
@@ -257,7 +258,12 @@ impl TagsManagerWriter {
         f.write_all(result.as_bytes()).unwrap();
     }
 
-    pub async fn search_for_tag_in_wiki(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
+    pub async fn search_for_tag_in_wiki(
+        &mut self,
+        what: &str,
+        kind: TagKind,
+        service_url: &str,
+    ) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
         //     what.split(" ")
@@ -361,7 +367,7 @@ impl TagsManagerWriter {
 
             if similarity < 0.9 {
                 if self
-                    .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
+                    .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned(), service_url)
                     .await
                     .is_none()
                 {

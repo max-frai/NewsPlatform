@@ -4,10 +4,14 @@ use strum::IntoEnumIterator;
 
 use crate::tag::TagKind;
 
-async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+async fn _ner(
+    chunks: Vec<String>,
+    service_url: &str,
+) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     let client = reqwest::Client::new();
     let result = client
-        .post("http://localhost:5555/model")
+        .post(service_url)
+        //"http://localhost:5555/model"
         .json(&maplit::hashmap! {
             "x" => chunks
         })
@@ -28,7 +32,7 @@ async fn _ner(chunks: Vec<String>) -> anyhow::Result<(Vec<String>, Vec<String>)>
     Ok((final_words, final_tags))
 }
 
-async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
+async fn ner(mut text: String, service_url: &str) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     text = text
         .replace(">", " ")
         .replace("\n", " ")
@@ -92,11 +96,11 @@ async fn ner(mut text: String) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     // }
 
     // dbg!(&chunks);
-    _ner(chunks).await
+    _ner(chunks, service_url).await
 }
 
-pub async fn ner_tags(text: String) -> Option<Vec<(String, TagKind)>> {
-    let (words, tags) = ner(text.trim().to_owned())
+pub async fn ner_tags(text: String, service_url: &str) -> Option<Vec<(String, TagKind)>> {
+    let (words, tags) = ner(text.trim().to_owned(), service_url)
         .await
         .unwrap_or((vec![], vec![]));
 
