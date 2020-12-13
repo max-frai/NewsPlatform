@@ -114,6 +114,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .service(robots)
             .service(tags_all)
             .service(tags_all_fix)
             .service(tags_scope)
@@ -126,7 +127,6 @@ async fn main() -> std::io::Result<()> {
             .service(exact_category_fix)
             .service(exact_tag)
             .service(exact_tag_fix)
-            .service(robots)
             .service(exact)
             .service(Files::new("/static", "./templates/"))
     });

@@ -59,6 +59,7 @@ COPY --from=builder /newsplatform/target/release/news_parser .
 COPY --from=builder /newsplatform/news_parser/rewritebinary_linux .
 COPY --from=builder /newsplatform/news_parser/parserbinary_linux .
 COPY --from=builder /newsplatform/news_parser/nlp_linux .
+COPY --from=builder /newsplatform/news_parser/text2wikititle .
 
 RUN ls -la
 ENTRYPOINT ["./run.sh"]
