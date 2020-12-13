@@ -57,8 +57,8 @@ COPY --from=builder /newsplatform/target/release/news_parser .
 COPY --from=builder /newsplatform/news_parser/rewritebinary_linux .
 COPY --from=builder /newsplatform/news_parser/parserbinary_linux .
 COPY --from=builder /newsplatform/news_parser/nlp_linux .
-COPY --from=builder /newsplatform/news_parser/text2wikititle .
-RUN chmod 755 text2wikititle
+# COPY --from=builder /newsplatform/news_parser/text2wikititle .
+# RUN chmod 755 text2wikititle
 RUN chmod u+x rewritebinary_linux && chmod u+x parserbinary_linux && chmod u+x nlp_linux
 
 RUN ls -la

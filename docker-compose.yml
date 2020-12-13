@@ -34,6 +34,7 @@ services:
         volumes:
             - ./Config.toml:/newsplatform/Config.toml
             - ./run.sh:/newsplatform/run.sh
+            - ./news_parser/text2wikititle:/newsplatform/text2wikititle
         ports:
             - 127.0.0.1:2086:2086
         links:
