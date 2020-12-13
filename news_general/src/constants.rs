@@ -10,6 +10,12 @@ pub struct AppConfig {
     pub exact_card_cache_size: usize,
     pub platform_hash: String,
 
+    pub parser_parse: bool,
+    pub parser_rewrite: bool,
+    pub parser_tag: bool,
+    pub parser_categorise: bool,
+    pub parser_translate: bool,
+
     pub cards_collection_name: String,
     pub tags_collection_name: String,
     pub sources_collection_name: String,

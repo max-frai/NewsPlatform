@@ -44,6 +44,7 @@ RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.l
 RUN apt update && apt install -y curl xvfb chromium psmisc
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
+RUN apt-get install cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev
 RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader
 WORKDIR /newsplatform/

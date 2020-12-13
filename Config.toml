@@ -8,3 +8,9 @@ tags_collection_name = "tags"
 queries_cache_size = 100
 exact_card_cache_size = 1000
 platform_hash = "cfd724963e8336a0965bea0c0279cdab2ebb95de846e7019b62e1cd44292ebbcef5dba1efea6f351b8cbb9bb7bebc17ff3e13c35eba00c930cce494e25133724"
+
+parser_parse = true
+parser_rewrite = true
+parser_tag = true
+parser_categorise = true
+parser_translate = true
