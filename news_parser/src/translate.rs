@@ -46,8 +46,8 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .filter_map(|item| item.as_ref().ok())
         .collect::<Vec<&Document>>();
 
-    if news.is_empty() {
-        println!("News to translate is empty, return....");
+    if news.is_empty() || news.len() < 40 {
+        println!("News to translate or it's less than 40 or it is empty, return....");
         return;
     }
 
