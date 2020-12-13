@@ -33,6 +33,7 @@ services:
             dockerfile: ./Dockerfile
         volumes:
             - ./Config.toml:/newsplatform/Config.toml
+            - ./run.sh:/newsplatform/run.sh
         ports:
             - 127.0.0.1:2086:2086
         links:

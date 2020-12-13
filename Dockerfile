@@ -48,7 +48,6 @@ RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader
 WORKDIR /newsplatform/
 COPY --from=cacher /newsplatform/models ./models
-ADD run.sh .
 ADD news_server/templates ./templates
 ADD news_server/postcss.config.js .
 ADD news_server/tailwind.config.js .
