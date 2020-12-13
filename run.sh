@@ -1,9 +1,4 @@
 #!/bin/bash
-while :
-do
-    echo "Sleep in run"
-    sleep 10
-done
 
 echo "Kill Xvfb"
 killall -9 Xvfb
@@ -22,5 +17,7 @@ echo $!
 echo "Wait after crate Xvfb"
 sleep 5
 
-export DISPLAY=:42
-DISPLAY=:42 ./news_parser
+#export DISPLAY=:42
+#DISPLAY=:42 ./news_parser
+
+nohup ./news_server > server_LOG &
