@@ -5,5 +5,6 @@ pub mod exact_category;
 pub mod exact_tag;
 pub mod index;
 pub mod robots;
+pub mod search_console;
 pub mod tags;
 pub mod test;

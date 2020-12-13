@@ -18,6 +18,7 @@ use crate::routes::exact_tag::exact_tag;
 use crate::routes::exact_tag::exact_tag_fix;
 use crate::routes::index::index;
 use crate::routes::robots::robots;
+use crate::routes::search_console::search_console;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
 
@@ -115,6 +116,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(robots)
+            .service(search_console)
             .service(tags_all)
             .service(tags_all_fix)
             .service(tags_scope)
