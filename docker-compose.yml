@@ -17,8 +17,10 @@ services:
     deeppavlov:
         image: deeppavlov/base-cpu:latest
         container_name: "deeppavlov"
-        ports:
-            - 127.0.0.1:5555:5000
+        expose:
+            - "5000"
+        # ports:
+        #     - 127.0.0.1:5555:5000
         volumes:
             - ./dp_components:/root/.deeppavlov
         environment:
