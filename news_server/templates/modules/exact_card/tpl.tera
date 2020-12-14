@@ -13,10 +13,10 @@
         <h1 class="title pr-4 md:pr-8">{{ title }}</h1>
         <div class="flex flex-1 justify-between items-center mt-4 text-xs">
             <div class="category">
-                <a href="/{{ category | lower }}/">{{ category_name(category=category) }}</a>
+                <a ref="/{{ category | lower }}/">{{ category_name(category=category) }}</a>
             </div>
             <div class="dateViews">
-                {{ date['$date'] | date(format="%d %b %H:%M") }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                {{ date['$date'] | date(format="%d %b %H:%M",timezone="Europe/Kiev") }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
                 {% include "media/eye.tera" %}
                 &nbsp;&nbsp;50.7 K
             </div>

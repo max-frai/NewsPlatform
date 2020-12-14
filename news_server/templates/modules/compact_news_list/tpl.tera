@@ -10,7 +10,7 @@
     <div class="mb-3 leading-tight" title="{{ card.title | escape }}">
         <a href="{{ make_card_url(card=card) }}">
             <span class="text-xs mr-1 font-bold text-gray-600 inline-block">
-                {{ card['date']['$date'] | date(format="%H:%M") }}
+                {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
             </span>
             <span class="title">{{ card.title }}</span>
         </a>
