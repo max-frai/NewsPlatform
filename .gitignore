@@ -5,3 +5,10 @@ mac-*/
 models/
 dp_components/
 svelte_graphs/
+.DS_Store
+package-lock.json
+rewritebinary_macos
+libtorch.so
+nlp_macos
+parserbinary_macos
+categories.json

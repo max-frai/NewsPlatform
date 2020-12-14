@@ -59,7 +59,7 @@ impl CardFetcher {
 
         // This added after query hash
         // TODO: Make indecies from this
-        // query.query.insert("rewritten", true);
+        query.query.insert("rewritten", true);
         query.query.insert("categorised", true);
         query.query.insert("tagged", true);
 
