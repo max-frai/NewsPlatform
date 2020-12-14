@@ -88,7 +88,7 @@ async fn main() {
                     crate::categorise::categorise_news(client, constants.clone()).await;
                 })
                 .await;
-                delay_for(Duration::from_secs(60)).await;
+                delay_for(Duration::from_secs(5)).await;
             }
         });
     }
@@ -106,7 +106,7 @@ async fn main() {
                     crate::tag::tag_news(client, constants, tags).await;
                 })
                 .await;
-                delay_for(Duration::from_secs(30)).await;
+                delay_for(Duration::from_secs(10)).await;
             }
         });
     }
