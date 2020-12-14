@@ -22,7 +22,7 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
-        .sort(doc! {"date" : 1})
+        .sort(doc! {"date" : -1})
         .limit(100)
         .build();
 

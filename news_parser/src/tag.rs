@@ -47,8 +47,8 @@ pub async fn tag_news(
     let tags_col = db.collection(&constants.tags_collection_name);
 
     let options = FindOptions::builder()
-        .sort(doc! {"date" : 1})
-        .limit(100)
+        .sort(doc! {"date" : -1})
+        .limit(40)
         .build();
 
     let news_cursor = news_collection

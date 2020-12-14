@@ -22,8 +22,8 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let news_collection = db.collection(&constants.cards_collection_name);
 
     let options = FindOptions::builder()
-        .sort(doc! { "date" : 1 })
-        .limit(3)
+        .sort(doc! { "date" : -1 })
+        .limit(20)
         .build();
 
     let news_cursor = news_collection
