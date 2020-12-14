@@ -23,7 +23,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let options = FindOptions::builder()
         .sort(doc! { "date" : -1 })
-        .limit(20)
+        .limit(3)
         .build();
 
     let news_cursor = news_collection
@@ -81,7 +81,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let json_string =
         serde_json::to_string(&rewrite_array).expect("Failed to construct json for rewrite");
 
-    // dbg!(&json_string);
+    dbg!(&json_string);
 
     let handle = cmd!(
         format!("./rewritebinary_{}", env::consts::OS),
