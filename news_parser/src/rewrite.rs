@@ -103,7 +103,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
 
-    dbg!(&response_json);
+    // dbg!(&response_json);
 
     if let Ok(json) = serde_json::from_str::<Value>(&response_json) {
         println!("Rewrite finished, parse results");
