@@ -23,7 +23,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let options = FindOptions::builder()
         .sort(doc! { "date" : 1 })
-        .limit(10)
+        .limit(3)
         .build();
 
     let news_cursor = news_collection
@@ -102,6 +102,8 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     // dbg!(parse_result);
 
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
+
+    dbg!(&response_json);
 
     if let Ok(json) = serde_json::from_str::<Value>(&response_json) {
         println!("Rewrite finished, parse results");
