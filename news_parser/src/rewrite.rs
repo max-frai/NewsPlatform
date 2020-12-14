@@ -23,7 +23,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let options = FindOptions::builder()
         .sort(doc! { "date" : 1 })
-        .limit(200)
+        .limit(10)
         .build();
 
     let news_cursor = news_collection
@@ -87,7 +87,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         format!("./rewritebinary_{}", env::consts::OS),
         &constants.platform_hash,
         "1",
-        "0",
+        "1",
         "",
         "9223"
     )
