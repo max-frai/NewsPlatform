@@ -67,7 +67,7 @@ impl CardFetcher {
             query.query.insert(
                 "category",
                 doc! {
-                    "$ne" : news_general::category::Category::Unknown.to_string()
+                    "$ne" : format!("{:?}", news_general::category::Category::Unknown)
                 },
             );
         }
