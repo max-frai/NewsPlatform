@@ -136,7 +136,7 @@ impl TagsManager {
                     .count_documents(
                         doc! {
                             "date" : {
-                                "$gte" : Utc::now() - chrono::Duration::days(2)
+                                "$gte" : Utc::now() - chrono::Duration::days(1)
                             },
                             "tags" : tag._id.clone()
                         },
