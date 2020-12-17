@@ -1,5 +1,6 @@
 use crate::{
     card_queries::{last_15_by_tag, last_25, CardQuery},
+    helper::redirect,
     modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
@@ -12,12 +13,7 @@ use tera::Context;
 
 #[get("/tags/{kind}/{slug}")]
 async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .header(
-            actix_web::http::header::LOCATION,
-            format!("/tags/{}/{}/", kind, slug),
-        )
-        .finish()
+    redirect(&format!("/tags/{}/{}/", kind, slug))
 }
 
 #[get("/tags/{kind}/{slug}/")]

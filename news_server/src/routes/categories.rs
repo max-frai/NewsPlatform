@@ -1,5 +1,6 @@
 use crate::{
     card_queries::{last_15, CardQuery},
+    helper::redirect,
     modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
@@ -12,9 +13,7 @@ use tera::Context;
 
 #[get("/categories")]
 async fn categories_fix() -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .header(actix_web::http::header::LOCATION, "/categories/")
-        .finish()
+    redirect("/categories/")
 }
 
 #[get("/categories/")]

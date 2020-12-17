@@ -1,6 +1,6 @@
 use crate::{
     card_queries::{last_15, last_15_by_category, CardQuery},
-    modules,
+    helper, modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
@@ -11,10 +11,17 @@ use tera::Context;
 #[get("/{category}/{slug}.html")]
 async fn exact(
     state: web::Data<State>,
-    web::Path((_, slug)): web::Path<(String, String)>,
+    web::Path((url_category, slug)): web::Path<(String, String)>,
     mut context: LayoutContext,
 ) -> impl Responder {
-    let card = state.fetcher.fetch_exact(slug).await.unwrap();
+    let card = state.fetcher.fetch_exact(slug).await;
+
+    if card.is_err() {
+        return helper::redirect(&format!("/{}/", url_category));
+    }
+
+    let card = card.unwrap();
+
     let center_tpl = state
         .tera
         .render(

@@ -32,6 +32,7 @@ use tailwind::process_tailwind;
 pub mod canonical_middleware;
 pub mod card_fetcher;
 pub mod card_queries;
+pub mod helper;
 pub mod indecies;
 pub mod layout_context;
 pub mod lowercase_middleware;
@@ -43,7 +44,7 @@ pub mod templates;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "actix_web=info");
+    // std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
     let mut settings = config::Config::default();

@@ -1,5 +1,6 @@
 use crate::{
     card_queries::{last_25, CardQuery},
+    helper::redirect,
     layout_context::LayoutContext,
     state::State,
 };
@@ -13,9 +14,7 @@ use tera::Context;
 
 #[get("/tags")]
 async fn tags_all_fix() -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .header(actix_web::http::header::LOCATION, "/tags/")
-        .finish()
+    redirect("/tags/")
 }
 
 #[get("/tags/")]
@@ -25,12 +24,7 @@ async fn tags_all(state: web::Data<State>, mut context: LayoutContext) -> impl R
 
 #[get("/tags/{kind}")]
 async fn tags_scope_fix(web::Path(kind): web::Path<String>) -> HttpResponse {
-    HttpResponse::MovedPermanently()
-        .header(
-            actix_web::http::header::LOCATION,
-            format!("/tags/{}/", kind),
-        )
-        .finish()
+    redirect(&format!("/tags/{}/", kind))
 }
 
 #[get("/tags/{kind}/")]

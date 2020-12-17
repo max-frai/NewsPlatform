@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::card_queries::CardQuery;
+use anyhow::Context;
 use anyhow::Result;
 use bson::{doc, oid::ObjectId};
 use chrono::prelude::*;
@@ -115,7 +116,7 @@ impl CardFetcher {
             )
             .await;
 
-        let mut card: Card = bson::from_document(card?.unwrap())?;
+        let mut card: Card = bson::from_document(card?.context("No such card")?)?;
         self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache.lock() {
