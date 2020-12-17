@@ -1,5 +1,6 @@
 use crate::{card::Card, tag::bson::oid::ObjectId};
 use bson::doc;
+use chrono::prelude::*;
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use maplit::hashmap;
@@ -134,6 +135,9 @@ impl TagsManager {
                     .news_col
                     .count_documents(
                         doc! {
+                            "date" : {
+                                "$gte" : Utc::now() - chrono::Duration::days(2)
+                            },
                             "tags" : tag._id.clone()
                         },
                         None,
