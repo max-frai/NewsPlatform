@@ -115,6 +115,14 @@ h1 {
     @apply flex-shrink-0 rounded-lg w-10 h-10 shadow-lg bg-cover mr-4 border border-gray-200;
 }
 
+.tagDesc {
+    @apply text-gray-700 overflow-hidden overflow-ellipsis;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
 .tagItem:hover {
     @apply cursor-pointer;
     background: rgba(32,35,51,.07);

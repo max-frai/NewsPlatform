@@ -990,6 +990,16 @@ h1 {
   width: 2.5rem;
 }
 
+.tagDesc {
+  overflow: hidden;
+  --tw-text-opacity: 1;
+  color: rgba(68, 64, 60, var(--tw-text-opacity));
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
 .tagItem:hover {
   cursor: pointer;
   background: rgba(32,35,51,.07);

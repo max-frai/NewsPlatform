@@ -151,7 +151,7 @@ impl TagsManager {
 
         tags.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
         tags.iter()
-            .take(4)
+            .take(7)
             .map(|item| item.0.to_owned())
             .collect::<Vec<Tag>>()
     }

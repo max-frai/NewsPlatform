@@ -4,7 +4,7 @@
         <div>
             <h3 class="capitalize">{{ tag.title }}</h3>
             {% if compactTag is undefined %}
-            <div class="text-gray-700">{{ tag.sentence | truncate(length=260) }}</div>
+            <div class="tagDesc">{{ tag.sentence | truncate(length=300) }}</div>
             {% endif %}
         </div>
     </div>

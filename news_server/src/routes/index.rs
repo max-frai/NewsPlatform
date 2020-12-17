@@ -1,5 +1,5 @@
 use crate::{
-    card_queries::{last_25, CardQuery},
+    card_queries::{last_25, last_n, CardQuery},
     modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
@@ -10,7 +10,7 @@ use tera::Context;
 
 #[get("/")]
 async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
-    let index_cards = state.fetcher.fetch(last_25()).await.unwrap();
+    let index_cards = state.fetcher.fetch(last_n(35)).await.unwrap();
     let news_list_tpl = state
         .tera
         .render(
