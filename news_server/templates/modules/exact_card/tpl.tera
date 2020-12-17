@@ -16,9 +16,9 @@
                 <a ref="/{{ category | lower }}/">{{ category_name(category=category) }}</a>
             </div>
             <div class="dateViews">
-                {{ date['$date'] | date(format="%d %b %H:%M",timezone="Europe/Kiev") }}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;
+                {{ date['$date'] | date(format="%d %b %H:%M",timezone="Europe/Kiev") }}&nbsp;&nbsp;&nbsp;<!--·&nbsp;&nbsp;&nbsp;
                 {% include "media/eye.tera" %}
-                &nbsp;&nbsp;50.7 K
+                &nbsp;&nbsp;50.7 K-->
             </div>
         </div>
     </div>

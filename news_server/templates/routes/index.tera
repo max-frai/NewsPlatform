@@ -6,7 +6,13 @@
 {% endblock %}
 
 {% block center_column %}
+{% include "parts/graphs.tera" %}
+{% if center_content %}
+{{ center_content | safe }}
+{% endif %}
+{% endblock %}
 
+{% block right_column %}
 <h1>Популярные люди</h1>
 <div class="tagWrap mt-3">
 {% for tag in top_persons %}
@@ -20,8 +26,4 @@
     {% include "modules/tag_item/tpl.tera" %}
 {% endfor %}
 </div>
-
-{% if center_content %}
-{{ center_content | safe }}
-{% endif %}
 {% endblock %}
