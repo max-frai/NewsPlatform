@@ -21,4 +21,4 @@ export DISPLAY=:42
 #DISPLAY=:42 ./news_parser
 
 # nohup ./news_server > server_LOG &
-./news_server > server_LOG
+./news_server &>> server_LOG

@@ -44,7 +44,7 @@ pub mod templates;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // std::env::set_var("RUST_LOG", "actix_web=info");
+    std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
 
     let mut settings = config::Config::default();
