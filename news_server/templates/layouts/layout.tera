@@ -40,7 +40,7 @@
 
     <script src="/static/js/sticky-sidebar.min.js"></script>
     <script src="/static/js/instant.page.js"></script>
-    <script src="/static/js/resizesensor.js"></script>
+    <script src="/static/js/resizesensord.js"></script>
     <script type="text/javascript">
         var sidebar = new StickySidebar('#sidebar', {
             containerSelector: '.stickycontainer',
