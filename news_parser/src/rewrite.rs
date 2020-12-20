@@ -86,7 +86,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let handle = cmd!(
         format!("./rewritebinary_{}", env::consts::OS),
         &constants.platform_hash,
-        "0",
+        "1",
         "0",
         "",
         "9223"
