@@ -161,7 +161,11 @@ impl TagsManager {
         while let Some(card) = last_news.next().await {
             let card_typed: Card = bson::from_document(card?)?;
             for tag in card_typed.tags {
-                if self.tags[&tag].kind != kind {
+                if let Some(full_tag) = self.tags.get(&tag) {
+                    if full_tag.kind != kind {
+                        continue;
+                    }
+                } else {
                     continue;
                 }
 
