@@ -67,6 +67,7 @@ async fn exact(
     context.insert("article_name", &card.title);
     context.insert("article_category", &card.category.to_description());
     context.insert("article_description", &card.description);
+    context.insert("og_image", &card.og_image);
 
     HttpResponse::Ok()
         .content_type("text/html")
