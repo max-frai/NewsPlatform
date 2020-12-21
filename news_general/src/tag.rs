@@ -1,4 +1,5 @@
 use crate::{card::Card, tag::bson::oid::ObjectId};
+use anyhow::Result;
 use bson::doc;
 use chrono::prelude::*;
 use futures::stream::StreamExt;
@@ -70,6 +71,7 @@ impl Tag {
 
 pub struct TagsManager {
     news_col: Collection,
+    tags_col: Collection,
     pub tags: HashMap<ObjectId, Tag>,
     // (Kind, slug) -> Tag
     tags_lookup: HashMap<(TagKind, String), Tag>,
@@ -96,8 +98,17 @@ lazy_static! {
 }
 
 impl TagsManager {
-    pub async fn new(tags_col: Collection, news_col: Collection) -> Self {
-        let mut raw_tags = tags_col.find(None, None).await.unwrap();
+    pub fn new(tags_col: Collection, news_col: Collection) -> Self {
+        Self {
+            tags: HashMap::new(),
+            tags_lookup: HashMap::new(),
+            news_col,
+            tags_col,
+        }
+    }
+
+    pub async fn load(&self) -> (HashMap<ObjectId, Tag>, HashMap<(TagKind, String), Tag>) {
+        let mut raw_tags = self.tags_col.find(None, None).await.unwrap();
         let mut tags = HashMap::new();
         let mut tags_lookup = HashMap::new();
 
@@ -107,11 +118,16 @@ impl TagsManager {
             tags_lookup.insert((tag.kind.clone(), tag.slug.to_owned()), tag);
         }
 
-        Self {
-            news_col,
-            tags,
-            tags_lookup,
-        }
+        (tags, tags_lookup)
+    }
+
+    pub fn set_data(
+        &mut self,
+        tags: HashMap<ObjectId, Tag>,
+        tags_lookup: HashMap<(TagKind, String), Tag>,
+    ) {
+        self.tags = tags;
+        self.tags_lookup = tags_lookup;
     }
 
     pub async fn find(&self, kind: TagKind, slug: &str) -> Option<&Tag> {
@@ -127,33 +143,45 @@ impl TagsManager {
         }
     }
 
-    pub async fn get_popular_by_kind(&self, kind: TagKind) -> Vec<Tag> {
-        let mut tags = vec![];
-        for (_, tag) in &self.tags {
-            if tag.kind == kind {
-                let count = self
-                    .news_col
-                    .count_documents(
-                        doc! {
-                            "date" : {
-                                "$gte" : Utc::now() - chrono::Duration::days(1)
-                            },
-                            "tags" : tag._id.clone()
-                        },
-                        None,
-                    )
-                    .await
-                    .unwrap();
+    pub async fn get_popular_by_kind(&self, kind: TagKind) -> Result<Vec<Tag>> {
+        let mut last_news = self
+            .news_col
+            .find(
+                doc! {
+                    "date" : {
+                        "$gte" : Utc::now() - chrono::Duration::days(1)
+                    }
+                },
+                None,
+            )
+            .await
+            .unwrap();
 
-                tags.push((tag, count));
+        let mut tags = HashMap::<ObjectId, usize>::new();
+        while let Some(card) = last_news.next().await {
+            let card_typed: Card = bson::from_document(card?)?;
+            for tag in card_typed.tags {
+                if self.tags[&tag].kind != kind {
+                    continue;
+                }
+
+                if tags.contains_key(&tag) {
+                    *tags.get_mut(&tag).unwrap() += 1;
+                } else {
+                    tags.insert(tag, 1);
+                }
             }
         }
 
-        tags.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
-        tags.iter()
+        let mut stats = tags.iter().collect::<Vec<(&ObjectId, &usize)>>();
+        stats.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+
+        Ok(stats
+            .iter()
             .take(7)
             .map(|item| item.0.to_owned())
-            .collect::<Vec<Tag>>()
+            .map(|id| self.tags[&id].to_owned())
+            .collect::<Vec<Tag>>())
     }
 }
 

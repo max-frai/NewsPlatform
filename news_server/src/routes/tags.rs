@@ -42,20 +42,22 @@ async fn tag_logic(
     mut context: LayoutContext,
 ) -> impl Responder {
     let tag_kind = kind.as_ref().and_then(|kind| TagKind::from_str(&kind).ok());
-    let all_tags: Vec<&Tag> = state
-        .tags_manager
-        .tags
-        .iter()
-        .filter(|tag| {
-            if let Some(kind) = &tag_kind {
-                return &tag.1.kind == kind;
-            } else {
-                return true;
-            };
-        })
-        .take(50)
-        .map(|(_, val)| val)
-        .collect();
+    let all_tags: Vec<Tag> = {
+        let tags_manager = state.tags_manager.read().await;
+        tags_manager
+            .tags
+            .iter()
+            .filter(|tag| {
+                if let Some(kind) = &tag_kind {
+                    return &tag.1.kind == kind;
+                } else {
+                    return true;
+                };
+            })
+            .take(50)
+            .map(|(_, val)| val.to_owned())
+            .collect()
+    };
 
     let last_cards = state.fetcher.fetch(last_25()).await.unwrap();
     let right_tpl = state

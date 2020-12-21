@@ -1,4 +1,5 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
+use tokio::sync::RwLock;
 
 use actix_files::Files;
 // use actix_web::{
@@ -28,6 +29,7 @@ use news_general::constants::*;
 use news_general::tag::*;
 use state::State;
 use tailwind::process_tailwind;
+use tokio::time::delay_for;
 
 pub mod canonical_middleware;
 pub mod card_fetcher;
@@ -44,7 +46,7 @@ pub mod templates;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "actix_web=debug");
+    // std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
 
     let mut settings = config::Config::default();
@@ -79,17 +81,7 @@ async fn main() -> std::io::Result<()> {
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
 
-    // TODO: Autoreload tags time from time !!!!!!!!
-    println!("Construct tags manager");
-    let tags_manager = Arc::new(TagsManager::new(tags_col, news_col.clone()).await);
-
-    println!("Count person news");
-    let top_persons = tags_manager.get_popular_by_kind(TagKind::Person).await;
-    println!("Count top organizations");
-    let top_organizations = tags_manager.get_popular_by_kind(TagKind::Gpe).await;
-
-    // let top_persons = vec![];
-    // let top_organizations = vec![];
+    let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
 
     let fetcher = Arc::new(CardFetcher::new(
         news_col,
@@ -102,9 +94,61 @@ async fn main() -> std::io::Result<()> {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
         tera: tera.clone(),
-        tags_manager,
-        top_persons,
-        top_organizations,
+        tags_manager: tags_manager.clone(),
+        top_persons: Arc::new(RwLock::new(vec![])),
+        top_gpe: Arc::new(RwLock::new(vec![])),
+    });
+
+    // Tags reloader
+    let worker_tags_manager = tags_manager.clone();
+    tokio::task::spawn(async move {
+        loop {
+            println!("Reload tags for tags manager...");
+            let (tags, tags_lookup) = {
+                let tags_manager = worker_tags_manager.read().await;
+                tags_manager.load().await
+            };
+
+            {
+                let mut tags_manager = worker_tags_manager.write().await;
+                tags_manager.set_data(tags, tags_lookup);
+            }
+
+            delay_for(Duration::from_secs(60)).await;
+        }
+    });
+
+    // Top persons & places reloader
+    let worker_state = state.clone();
+    tokio::task::spawn(async move {
+        loop {
+            println!("Reload top persons & places...");
+            {
+                let tags_manager = worker_state.tags_manager.read().await;
+
+                println!("Count person news");
+                let top_persons = tags_manager
+                    .get_popular_by_kind(TagKind::Person)
+                    .await
+                    .expect("Failed to get top persons");
+
+                println!("Count top gpe");
+                let top_gpe = tags_manager
+                    .get_popular_by_kind(TagKind::Gpe)
+                    .await
+                    .expect("Failed to get top gpe");
+
+                {
+                    let mut persons_mut = worker_state.top_persons.write().await;
+                    *persons_mut = top_persons;
+                }
+                {
+                    let mut gpe_mut = worker_state.top_gpe.write().await;
+                    *gpe_mut = top_gpe;
+                }
+            }
+            delay_for(Duration::from_secs(60 * 60)).await;
+        }
     });
 
     println!("Create server");

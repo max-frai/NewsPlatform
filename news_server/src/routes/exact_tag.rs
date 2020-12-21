@@ -23,7 +23,14 @@ async fn exact_tag(
     web::Path((kind, slug)): web::Path<(String, String)>,
 ) -> impl Responder {
     let kind = TagKind::from_str(&kind).unwrap();
-    let tag = state.tags_manager.find(kind.clone(), &slug).await.unwrap();
+    let tag = {
+        let tags_manager = state.tags_manager.read().await;
+        tags_manager
+            .find(kind.clone(), &slug)
+            .await
+            .unwrap()
+            .to_owned()
+    };
 
     let tag_cards = state
         .fetcher
@@ -60,7 +67,7 @@ async fn exact_tag(
 
     context.insert("center_content", &news_list_tpl);
     context.insert("right_content", &right_tpl);
-    context.insert("tag", tag);
+    context.insert("tag", &tag);
     context.insert("title", &title);
 
     let meta_title = match &kind {

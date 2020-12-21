@@ -32,7 +32,7 @@
         <div id="content">
             {% block center_column %}{% endblock center_column %}
         </div>
-        <div id="sidebar">
+        <div id="sidebar" style="min-width: 250px">
             <div class="sidebar__inner">
                 {% block right_column %}{% endblock right_column %}
             </div>

@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex};
+use tokio::sync::RwLock;
 
 use crate::card_queries::CardQuery;
 use anyhow::Context;
@@ -14,7 +15,7 @@ use std::time::{Duration, Instant};
 
 pub struct CardFetcher {
     collection: Collection,
-    tags_manager: Arc<TagsManager>,
+    tags_manager: Arc<RwLock<TagsManager>>,
 
     // Cache name -> (Cards, future timestamp when cache timeouts)
     cache: Mutex<LruCache<String, (Vec<Card>, i64)>>,
@@ -25,7 +26,7 @@ pub struct CardFetcher {
 impl CardFetcher {
     pub fn new(
         collection: Collection,
-        tags_manager: Arc<TagsManager>,
+        tags_manager: Arc<RwLock<TagsManager>>,
         queries_cache_size: usize,
         exact_card_cache_size: usize,
     ) -> Self {
@@ -38,10 +39,12 @@ impl CardFetcher {
     }
 
     async fn prepare_card(&self, card: &mut Card) {
-        self.tags_manager.fill_card_tags(card).await;
         card.markdown2html();
         card.fill_marks();
         card.fill_description();
+
+        let tags_manager = self.tags_manager.read().await;
+        tags_manager.fill_card_tags(card).await;
     }
 
     pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {
