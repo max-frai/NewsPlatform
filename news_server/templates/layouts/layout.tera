@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    {% block after_body %}{% endblock after_body %}
 
     <div id="MainContainer" class="stickycontainer">
         <div class="MenuContainerMobile md:hidden h-16 flex items-center font-bold text-lg mb-3">

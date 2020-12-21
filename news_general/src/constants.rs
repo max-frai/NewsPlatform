@@ -9,6 +9,7 @@ pub struct AppConfig {
     pub queries_cache_size: usize,
     pub exact_card_cache_size: usize,
     pub platform_hash: String,
+    pub full_domain: String,
 
     pub parser_parse: bool,
     pub parser_rewrite: bool,

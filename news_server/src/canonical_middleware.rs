@@ -6,10 +6,13 @@ use std::{
 use actix_service::{Service, Transform};
 use actix_web::{
     dev::{ServiceRequest, ServiceResponse},
+    web::Data,
     FromRequest, HttpMessage,
 };
 use actix_web::{http, Error, HttpResponse};
 use futures::future::{ok, Either, Ready};
+
+use crate::state::State;
 
 pub struct CanonicalRequest;
 
@@ -47,15 +50,20 @@ where
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
+    fn call(&mut self, req: ServiceRequest) -> Self::Future {
         let mut context = tera::Context::new();
+
+        if let Some(state) = req.app_data::<Data<State>>() {
+            context.insert("PROJECT_DOMAIN", &state.constants.full_domain);
+        }
+
         if !req.query_string().is_empty() {
             let canonical = {
                 let info = req.connection_info();
                 format!("{}://{}{}", info.scheme(), info.host(), req.path())
             };
 
-            dbg!(&canonical);
+            // dbg!(&canonical);
             context.insert(
                 "query_string_meta",
                 &format!(

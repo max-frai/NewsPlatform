@@ -64,8 +64,9 @@ async fn exact(
 
     context.insert("center_content", &center_tpl);
     context.insert("right_content", &format!("{}{}", right_tpl, right_tpl2));
-    context.insert("article_name", &card.title);
     context.insert("article_category", &card.category.to_description());
+    context.insert("card", &card);
+    context.insert("article_name", &card.title);
     context.insert("article_description", &card.description);
     context.insert("og_image", &card.og_image);
 
