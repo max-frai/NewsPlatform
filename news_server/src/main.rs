@@ -122,6 +122,8 @@ async fn main() -> std::io::Result<()> {
     // Top persons & places reloader
     let worker_state = state.clone();
     tokio::task::spawn(async move {
+        // First time wait for tags manager to load
+        delay_for(Duration::from_secs(20)).await;
         loop {
             println!("Reload top persons & places...");
             {
