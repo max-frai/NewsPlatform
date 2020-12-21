@@ -18,6 +18,7 @@ use crate::routes::exact_category::exact_category_fix;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::exact_tag::exact_tag_fix;
 use crate::routes::index::index;
+use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
 use crate::routes::search_console::search_console;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
@@ -97,6 +98,7 @@ async fn main() -> std::io::Result<()> {
         tags_manager: tags_manager.clone(),
         top_persons: Arc::new(RwLock::new(vec![])),
         top_gpe: Arc::new(RwLock::new(vec![])),
+        js_bundle: Arc::new(RwLock::new(String::new())),
     });
 
     // Tags reloader
@@ -108,7 +110,6 @@ async fn main() -> std::io::Result<()> {
                 let tags_manager = worker_tags_manager.read().await;
                 tags_manager.load().await
             };
-
             {
                 let mut tags_manager = worker_tags_manager.write().await;
                 tags_manager.set_data(tags, tags_lookup);
@@ -161,6 +162,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(robots)
+            .service(js_bundle)
             .service(search_console)
             .service(tags_all)
             .service(tags_all_fix)

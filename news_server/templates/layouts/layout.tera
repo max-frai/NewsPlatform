@@ -9,7 +9,7 @@
     {% if query_string_meta is defined %}
         {{ query_string_meta }}
     {% endif %}
-    <link href="/static/css/main.css?v=1" rel="stylesheet">
+    <link href="/static/css/main.css?v=2" rel="stylesheet">
 </head>
 
 <body>
@@ -39,16 +39,7 @@
         </div>
     </div>
 
-    <script src="/static/js/sticky-sidebar.min.js"></script>
-    <script src="/static/js/instant.page.js"></script>
-    <script src="/static/js/resizesensord.js"></script>
-    <script type="text/javascript">
-        var sidebar = new StickySidebar('#sidebar', {
-            containerSelector: '.stickycontainer',
-            innerWrapperSelector: '.sidebar__inner',
-            minWidth: 800
-        });
-    </script>
+    <script async src="/bundle.js?v=1"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YLXEFT0BQ"></script>

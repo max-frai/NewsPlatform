@@ -12,4 +12,5 @@ pub struct State {
     pub tags_manager: Arc<RwLock<TagsManager>>,
     pub top_persons: Arc<RwLock<Vec<Tag>>>,
     pub top_gpe: Arc<RwLock<Vec<Tag>>>,
+    pub js_bundle: Arc<RwLock<String>>,
 }

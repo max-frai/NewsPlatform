@@ -20,7 +20,7 @@ duct = "0.13"
 env_logger = "0.8"
 lru-cache = "0.1"
 lazy_static = "1.4"
-tera = "1.5"
+tera = "1.6"
 bson = "1.1"
 mongodb = "1.1"
 futures = "0.3"
@@ -28,7 +28,8 @@ anyhow = "1.0"
 config = "0.10"
 listenfd = "0.3"
 comrak = "0.9"
+alphanumeric-sort = "1.4"
 strum = "0.18"
 strum_macros = "0.18"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }
-tokio = { version="0.2", features=["macros", "time"] }
+tokio = { version="0.2", features=["macros", "time", "fs"] }
