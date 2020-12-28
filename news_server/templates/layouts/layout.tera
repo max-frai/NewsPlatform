@@ -18,7 +18,7 @@
     <div id="MainContainer" class="stickycontainer">
         <div class="MenuContainerMobile md:hidden h-16 flex items-center font-bold text-lg mb-3">
             <a href="/" class="h-4/6 w-full">
-                <img class="h-full" src="/static/media/logo.svg">
+                <img class="h-full" alt="HubLoid" src="/static/media/logo.svg">
             </a>
         </div>
         <div class="MenuContainer">
@@ -32,7 +32,7 @@
         <div id="content">
             {% block center_column %}{% endblock center_column %}
         </div>
-        <div id="sidebar" style="min-width: 250px">
+        <div id="sidebar">
             <div class="sidebar__inner">
                 {% block right_column %}{% endblock right_column %}
             </div>

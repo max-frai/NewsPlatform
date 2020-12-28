@@ -41,6 +41,8 @@ impl CardFetcher {
     async fn prepare_card(&self, card: &mut Card) {
         card.markdown2html();
         card.fill_marks();
+        // Second call if there is mark in mark
+        card.fill_marks();
         card.fill_description();
 
         let tags_manager = self.tags_manager.read().await;
