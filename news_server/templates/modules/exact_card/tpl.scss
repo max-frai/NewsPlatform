@@ -8,6 +8,11 @@
     width: 100%;
 }
 
+.ArticleContent blockquote {
+    @apply m-0 pl-4;
+    border-left: 10px solid #eee;
+}
+
 .ArticleContent blockquote,
 .ArticleContent iframe,
 .ArticleContent figure {
