@@ -4,6 +4,7 @@ use tera::Context;
 
 #[get("/robots.txt")]
 async fn robots(state: web::Data<State>) -> impl Responder {
-    let body = "User-agent: *\nDisallow:";
-    HttpResponse::Ok().content_type("text/plain").body(body)
+    let sitemap_url = format!("{}/sitemap.xml", state.constants.full_domain);
+    let body = format!("User-agent: *\nDisallow:\nSitemap: {}", sitemap_url);
+    HttpResponse::Ok().content_type("text/plain").body(&body)
 }
