@@ -104,11 +104,6 @@ async fn main() -> std::io::Result<()> {
         sitemap: Arc::new(RwLock::new(String::new())),
     });
 
-    println!("Generate sitemap...");
-    generate_sitemap_xml(state.clone())
-        .await
-        .expect("Failed to generate sitemap");
-
     // Tags reloader
     let worker_tags_manager = tags_manager.clone();
     tokio::task::spawn(async move {
@@ -161,6 +156,11 @@ async fn main() -> std::io::Result<()> {
             delay_for(Duration::from_secs(60 * 60)).await;
         }
     });
+
+    println!("Generate sitemap...");
+    generate_sitemap_xml(state.clone())
+        .await
+        .expect("Failed to generate sitemap");
 
     println!("Create server");
     let mut server = HttpServer::new(move || {
