@@ -6,10 +6,14 @@ use tera::{Error, Result};
 
 use news_general::{card::*, category::Category};
 
+pub fn make_card_url_raw(card: &Card) -> String {
+    format!("/{}/{}.html", card.category, card.slug)
+}
+
 pub fn make_card_url(args: &HashMap<String, Value>) -> Result<Value> {
     match args.get("card") {
         Some(val) => match from_value::<Card>(val.clone()) {
-            Ok(card) => Ok(to_value(format!("/{}/{}.html", card.category, card.slug)).unwrap()),
+            Ok(card) => Ok(to_value(make_card_url_raw(&card)).unwrap()),
             Err(_) => Err(Error::msg(
                 "Function `make_url` received `card`, but with wrong type",
             )),

@@ -39,6 +39,15 @@ pub fn last_25() -> CardQuery {
     }
 }
 
+pub fn all_sitemap() -> CardQuery {
+    CardQuery {
+        lifetime: Duration::seconds(60),
+        limit: Some(10),
+        sort: Some(doc! { "date" : -1 }),
+        query: doc! {},
+    }
+}
+
 pub fn last_n(num: i64) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(60),

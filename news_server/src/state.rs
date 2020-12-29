@@ -10,7 +10,10 @@ pub struct State {
     pub constants: Arc<AppConfig>,
     pub tera: Arc<Tera>,
     pub tags_manager: Arc<RwLock<TagsManager>>,
+
     pub top_persons: Arc<RwLock<Vec<Tag>>>,
     pub top_gpe: Arc<RwLock<Vec<Tag>>>,
+
     pub js_bundle: Arc<RwLock<String>>,
+    pub sitemap: Arc<RwLock<String>>,
 }

@@ -30,7 +30,7 @@ async fn exact(
         )
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_15()).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
     let right_tpl = state
         .tera
         .render(
@@ -46,7 +46,7 @@ async fn exact(
     let card_category = format!("{:?}", card.category);
     let category_cards = state
         .fetcher
-        .fetch(last_15_by_category(&card_category))
+        .fetch(last_15_by_category(&card_category), true)
         .await
         .unwrap();
 

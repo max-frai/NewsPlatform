@@ -28,7 +28,7 @@ async fn exact_category(
 
     let category_cards = state
         .fetcher
-        .fetch(last_15_by_category(&category_str))
+        .fetch(last_15_by_category(&category_str), true)
         .await
         .unwrap();
 
@@ -45,7 +45,7 @@ async fn exact_category(
         )
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_15()).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
     let right_tpl = state
         .tera
         .render(

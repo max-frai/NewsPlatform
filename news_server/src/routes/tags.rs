@@ -59,7 +59,7 @@ async fn tag_logic(
             .collect()
     };
 
-    let last_cards = state.fetcher.fetch(last_25()).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();
     let right_tpl = state
         .tera
         .render(

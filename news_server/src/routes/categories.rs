@@ -31,7 +31,7 @@ async fn categories(state: web::Data<State>, mut context: LayoutContext) -> impl
         )
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_15()).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
 
     let right_tpl = state
         .tera

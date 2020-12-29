@@ -49,16 +49,18 @@ impl CardFetcher {
         tags_manager.fill_card_tags(card).await;
     }
 
-    pub async fn fetch(&self, mut query: CardQuery) -> Result<Vec<Card>> {
+    pub async fn fetch(&self, mut query: CardQuery, cache: bool) -> Result<Vec<Card>> {
         let query_hash = query.to_string();
 
-        if let Ok(mut cache) = self.cache.lock() {
-            if let Some((cards, timeouts)) = cache.get_mut(&query_hash) {
-                if Utc::now().timestamp() >= *timeouts {
-                    // Invalidate cache, just skip this step
-                } else {
-                    // println!("Return cards from cache");
-                    return Ok(cards.clone());
+        if cache {
+            if let Ok(mut cache) = self.cache.lock() {
+                if let Some((cards, timeouts)) = cache.get_mut(&query_hash) {
+                    if Utc::now().timestamp() >= *timeouts {
+                        // Invalidate cache, just skip this step
+                    } else {
+                        // println!("Return cards from cache");
+                        return Ok(cards.clone());
+                    }
                 }
             }
         }
@@ -94,10 +96,12 @@ impl CardFetcher {
             result.push(card_typed);
         }
 
-        if let Ok(mut cache) = self.cache.lock() {
-            // println!("Fetch cards from DB");
-            let when_timeouts = Utc::now() + query.lifetime;
-            cache.insert(query_hash, (result.clone(), when_timeouts.timestamp()));
+        if cache {
+            if let Ok(mut cache) = self.cache.lock() {
+                // println!("Fetch cards from DB");
+                let when_timeouts = Utc::now() + query.lifetime;
+                cache.insert(query_hash, (result.clone(), when_timeouts.timestamp()));
+            }
         }
 
         Ok(result)

@@ -1,3 +1,4 @@
+use routes::sitemap_xml::generate_sitemap_xml;
 use std::{sync::Arc, time::Duration};
 use tokio::sync::RwLock;
 
@@ -21,6 +22,7 @@ use crate::routes::index::index;
 use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
 use crate::routes::search_console::search_console;
+use crate::routes::sitemap_xml::sitemap_xml;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
 
@@ -99,7 +101,13 @@ async fn main() -> std::io::Result<()> {
         top_persons: Arc::new(RwLock::new(vec![])),
         top_gpe: Arc::new(RwLock::new(vec![])),
         js_bundle: Arc::new(RwLock::new(String::new())),
+        sitemap: Arc::new(RwLock::new(String::new())),
     });
+
+    println!("Generate sitemap...");
+    generate_sitemap_xml(state.clone())
+        .await
+        .expect("Failed to generate sitemap");
 
     // Tags reloader
     let worker_tags_manager = tags_manager.clone();
@@ -165,6 +173,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(robots)
             .service(js_bundle)
+            .service(sitemap_xml)
             .service(search_console)
             .service(tags_all)
             .service(tags_all_fix)

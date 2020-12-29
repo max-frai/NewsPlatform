@@ -10,7 +10,7 @@ use tera::Context;
 
 #[get("/")]
 async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
-    let index_cards = state.fetcher.fetch(last_n(35)).await.unwrap();
+    let index_cards = state.fetcher.fetch(last_n(35), true).await.unwrap();
     let news_list_tpl = state
         .tera
         .render(

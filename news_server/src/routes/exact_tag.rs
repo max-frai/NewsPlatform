@@ -34,11 +34,11 @@ async fn exact_tag(
 
     let tag_cards = state
         .fetcher
-        .fetch(last_15_by_tag(tag._id.to_owned()))
+        .fetch(last_15_by_tag(tag._id.to_owned()), true)
         .await
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_25()).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();
 
     let right_tpl = state
         .tera
