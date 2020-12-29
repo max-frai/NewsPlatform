@@ -8,11 +8,6 @@
     width: 100%;
 }
 
-.ArticleContent blockquote {
-    @apply m-0 pl-4;
-    border-left: 10px solid #eee;
-}
-
 .ArticleContent blockquote,
 .ArticleContent iframe,
 .ArticleContent figure {
@@ -21,6 +16,15 @@
     max-width: 100%;
     display: block;
     margin: 0 auto;
+}
+
+.ArticleContent blockquote {
+    @apply m-0 pl-4;
+    border-left: 10px solid #eee;
+}
+
+.ArticleContent figcaption {
+    @apply font-medium text-gray-400 text-center text-xs p-1;
 }
 
 .ArticleContent iframe {
