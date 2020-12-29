@@ -1,5 +1,5 @@
 use crate::{
-    card_queries::{last_15, last_15_by_category, CardQuery},
+    card_queries::{last_15, last_25_by_category, CardQuery},
     helper::redirect,
     modules,
 };
@@ -28,7 +28,7 @@ async fn exact_category(
 
     let category_cards = state
         .fetcher
-        .fetch(last_15_by_category(&category_str), true)
+        .fetch(last_25_by_category(&category_str), true)
         .await
         .unwrap();
 
