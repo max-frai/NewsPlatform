@@ -314,13 +314,18 @@ impl TagsManagerWriter {
         //     what.to_owned()
         // };
 
+        // If it's person and we have only surname or name, skip it. We need both
+        if kind == TagKind::Person && what.split(" ").collect::<Vec<&str>>().len() < 2 {
+            return None;
+        }
+
         let mut wiki = Wiki::default();
         wiki.language = "ru".to_owned();
         wiki.search_results = 1;
 
         let word = what.to_string();
 
-        let wikititle =
+        let mut wikititle =
             if let Some(wikititle) = self.text2wikititle.get(&(kind.to_owned(), word.to_owned())) {
                 // println!("Got wikititle from cache");
                 Some(wikititle.to_owned())
@@ -343,10 +348,23 @@ impl TagsManagerWriter {
         let mut found = wikititle.unwrap();
         let original_found = found.to_owned();
 
-        println!("FOUND FIRST Wikititle: {}", original_found);
-
         found = found.to_lowercase().replace(",", "");
         found = BRACKETS_RE.replace_all(&found, "").to_string();
+
+        if kind == TagKind::Person {
+            println!("KIND IS PERSON, REMOVE THIRD NAME: {} --------", found);
+            let parts = found.split(" ").collect::<Vec<&str>>();
+            found = parts
+                .iter()
+                .take(2)
+                .map(|item| item.to_owned())
+                .collect::<Vec<&str>>()
+                .join(" ");
+
+            println!("AFTER PROCESS: {}", found);
+        }
+
+        println!("FOUND FIRST Wikititle: {}", original_found);
 
         let found_tag = self.get_tag(&kind, &found);
         if found_tag.is_some() {
@@ -357,7 +375,7 @@ impl TagsManagerWriter {
         let similarity = self.comparator.similarity(&found, &word);
         // dbg!(similarity);
 
-        if similarity >= 0.4 {
+        if similarity >= 0.65 {
             let page = wiki.page_from_title(original_found.to_owned());
 
             let summary = {
