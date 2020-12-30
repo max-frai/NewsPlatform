@@ -85,6 +85,7 @@ impl CardFetcher {
         let options = FindOptions::builder()
             .sort(query.sort)
             .limit(query.limit)
+            .allow_disk_use(true)
             .build();
 
         let mut cards = self.collection.find(query.query, options).await?;
