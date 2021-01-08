@@ -19,7 +19,7 @@ sleep 5
 
 export DISPLAY=:42
 # DISPLAY=:42 ./news_parser
-DISPLAY=:42 nohup ./news_parser &
+nohup ./news_parser &>> parser_LOG
 
 # nohup ./news_server > server_LOG &
 ./news_server &>> server_LOG
