@@ -14,21 +14,21 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./mongo-volume:/data/db
 
-    deeppavlov:
-        image: deeppavlov/base-cpu:latest
-        container_name: "deeppavlov"
-        expose:
-            - "5000"
-        # ports:
-        #     - 127.0.0.1:5555:5000
-        volumes:
-            - ./dp_components:/root/.deeppavlov
-        environment:
-            - CONFIG=ner_ontonotes_bert_mult
-        deploy:
-            resources:
-                limits:
-                    memory: 10G
+    # deeppavlov:
+    #     image: deeppavlov/base-cpu:latest
+    #     container_name: "deeppavlov"
+    #     expose:
+    #         - "5000"
+    #     # ports:
+    #     #     - 127.0.0.1:5555:5000
+    #     volumes:
+    #         - ./dp_components:/root/.deeppavlov
+    #     environment:
+    #         - CONFIG=ner_ontonotes_bert_mult
+    #     deploy:
+    #         resources:
+    #             limits:
+    #                 memory: 10G
 
     newsplatform:
         restart: always
