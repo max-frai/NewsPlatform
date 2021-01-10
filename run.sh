@@ -18,8 +18,8 @@ echo "Wait after crate Xvfb"
 sleep 5
 
 export DISPLAY=:42
-# DISPLAY=:42 ./news_parser
-nohup ./news_parser &>> parser_LOG
 
-# nohup ./news_server > server_LOG &
+echo "RUN PARSER"
+nohup ./news_parser > parser_LOG &
+echo "RUN SERVER"
 ./news_server &>> server_LOG
