@@ -1,11 +1,13 @@
 use crate::{
     card_queries::{last_25, last_n, CardQuery},
     modules,
+    tag_cache::TagCache,
 };
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
 use chrono::Duration;
+use news_general::tag::TagKind;
 use tera::Context;
 
 #[get("/")]
@@ -25,11 +27,13 @@ async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Resp
 
     context.insert("center_content", &news_list_tpl);
 
-    let top_persons = state.top_persons.read().await;
-    context.insert("top_persons", &*top_persons);
+    let tags_cache = state.tags_cache.read().await;
 
-    let top_gpe = state.top_gpe.read().await;
-    context.insert("top_gpe", &*top_gpe);
+    let top_persons = tags_cache.get(&TagCache::DayExactTop(TagKind::Person));
+    context.insert("top_persons", top_persons.unwrap_or(&vec![]));
+
+    let top_gpe = tags_cache.get(&TagCache::DayExactTop(TagKind::Gpe));
+    context.insert("top_gpe", top_gpe.unwrap_or(&vec![]));
 
     HttpResponse::Ok()
         .content_type("text/html")

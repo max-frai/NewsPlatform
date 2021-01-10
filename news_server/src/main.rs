@@ -1,5 +1,6 @@
 use routes::sitemap_xml::generate_sitemap_xml;
-use std::{sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration};
+use tag_cache::TagCache;
 use tokio::sync::RwLock;
 
 use actix_files::Files;
@@ -25,6 +26,7 @@ use crate::routes::search_console::search_console;
 use crate::routes::sitemap_xml::sitemap_xml;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
+use strum::IntoEnumIterator;
 
 use config;
 use mongodb::Client;
@@ -44,6 +46,7 @@ pub mod lowercase_middleware;
 pub mod modules;
 pub mod routes;
 pub mod state;
+pub mod tag_cache;
 pub mod tailwind;
 pub mod templates;
 
@@ -98,8 +101,9 @@ async fn main() -> std::io::Result<()> {
         constants: constants.clone(),
         tera: tera.clone(),
         tags_manager: tags_manager.clone(),
-        top_persons: Arc::new(RwLock::new(vec![])),
-        top_gpe: Arc::new(RwLock::new(vec![])),
+        // top_persons: Arc::new(RwLock::new(vec![])),
+        // top_gpe: Arc::new(RwLock::new(vec![])),
+        tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
     });
@@ -128,32 +132,56 @@ async fn main() -> std::io::Result<()> {
         // First time wait for tags manager to load
         delay_for(Duration::from_secs(20)).await;
         loop {
-            println!("Reload top persons & places...");
+            println!("Load day exact top of tags...");
             {
                 let tags_manager = worker_state.tags_manager.read().await;
-
-                println!("Count person news");
-                let top_persons = tags_manager
-                    .get_popular_by_kind(TagKind::Person)
-                    .await
-                    .expect("Failed to get top persons");
-
-                println!("Count top gpe");
-                let top_gpe = tags_manager
-                    .get_popular_by_kind(TagKind::Gpe)
-                    .await
-                    .expect("Failed to get top gpe");
-
-                {
-                    let mut persons_mut = worker_state.top_persons.write().await;
-                    *persons_mut = top_persons;
-                }
-                {
-                    let mut gpe_mut = worker_state.top_gpe.write().await;
-                    *gpe_mut = top_gpe;
+                for tag in TagKind::iter() {
+                    println!("\tday top for kind: {}", tag);
+                    let top = tags_manager
+                        .get_popular_by_kind(Some(tag.clone()), chrono::Duration::days(1), 10)
+                        .await
+                        .expect("Failed to get day top");
+                    {
+                        let mut gpe_mut = worker_state.tags_cache.write().await;
+                        gpe_mut.insert(TagCache::DayExactTop(tag), top);
+                    }
                 }
             }
-            delay_for(Duration::from_secs(60 * 60)).await;
+            delay_for(Duration::from_secs(60 * 30)).await;
+        }
+    });
+
+    let worker_state = state.clone();
+    tokio::task::spawn(async move {
+        // First time wait for tags manager to load
+        delay_for(Duration::from_secs(20)).await;
+        loop {
+            println!("Load two week exact top of tags...");
+            {
+                let tags_manager = worker_state.tags_manager.read().await;
+                for tag in TagKind::iter() {
+                    println!("\ttwo week top for kind: {}", tag);
+                    let top = tags_manager
+                        .get_popular_by_kind(Some(tag.clone()), chrono::Duration::days(14), 50)
+                        .await
+                        .expect("Failed to get week top");
+
+                    {
+                        let mut gpe_mut = worker_state.tags_cache.write().await;
+                        gpe_mut.insert(TagCache::TwoWeekExactTop(tag), top);
+                    }
+                }
+
+                let overall_top = tags_manager
+                    .get_popular_by_kind(None, chrono::Duration::days(14), 50)
+                    .await
+                    .expect("Failed to get overall week top");
+                {
+                    let mut overall_mut = worker_state.tags_cache.write().await;
+                    overall_mut.insert(TagCache::TwoWeekOverallTop, overall_top);
+                }
+            }
+            delay_for(Duration::from_secs(60 * 60 * 24)).await;
         }
     });
 

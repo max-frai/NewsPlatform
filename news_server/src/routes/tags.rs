@@ -3,6 +3,7 @@ use crate::{
     helper::redirect,
     layout_context::LayoutContext,
     state::State,
+    tag_cache::TagCache,
 };
 use actix_web::{get, web, HttpResponse, Responder};
 use bson::doc;
@@ -43,20 +44,17 @@ async fn tag_logic(
 ) -> impl Responder {
     let tag_kind = kind.as_ref().and_then(|kind| TagKind::from_str(&kind).ok());
     let all_tags: Vec<Tag> = {
-        let tags_manager = state.tags_manager.read().await;
-        tags_manager
-            .tags
-            .iter()
-            .filter(|tag| {
-                if let Some(kind) = &tag_kind {
-                    return &tag.1.kind == kind;
-                } else {
-                    return true;
-                };
-            })
-            .take(50)
-            .map(|(_, val)| val.to_owned())
-            .collect()
+        let tags_cache = state.tags_cache.read().await;
+
+        let cache_kind = tag_kind
+            .as_ref()
+            .map(|kind| TagCache::TwoWeekExactTop(kind.clone()))
+            .unwrap_or(TagCache::TwoWeekOverallTop);
+
+        tags_cache
+            .get(&cache_kind)
+            .map(|vec| vec.to_owned()) // TODO: Remove copy of vec
+            .unwrap_or(vec![])
     };
 
     let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();

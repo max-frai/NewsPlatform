@@ -143,13 +143,18 @@ impl TagsManager {
         }
     }
 
-    pub async fn get_popular_by_kind(&self, kind: TagKind) -> Result<Vec<Tag>> {
+    pub async fn get_popular_by_kind(
+        &self,
+        kind: Option<TagKind>, // If none, all kinds are used
+        duration: chrono::Duration,
+        limit: usize,
+    ) -> Result<Vec<Tag>> {
         let mut last_news = self
             .news_col
             .find(
                 doc! {
                     "date" : {
-                        "$gte" : Utc::now() - chrono::Duration::days(1)
+                        "$gte" : Utc::now() - duration
                     }
                 },
                 None,
@@ -162,8 +167,10 @@ impl TagsManager {
             let card_typed: Card = bson::from_document(card?)?;
             for tag in card_typed.tags {
                 if let Some(full_tag) = self.tags.get(&tag) {
-                    if full_tag.kind != kind {
-                        continue;
+                    if let Some(ref filter_kind) = kind {
+                        if &full_tag.kind != filter_kind {
+                            continue;
+                        }
                     }
                 } else {
                     continue;
@@ -182,7 +189,7 @@ impl TagsManager {
 
         Ok(stats
             .iter()
-            .take(7)
+            .take(limit)
             .map(|item| item.0.to_owned())
             .map(|id| self.tags[&id].to_owned())
             .collect::<Vec<Tag>>())
