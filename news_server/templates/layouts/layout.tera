@@ -9,7 +9,7 @@
     {% if query_string_meta is defined %}
         {{ query_string_meta }}
     {% endif %}
-    <link href="/static/css/main.css?v=2" rel="stylesheet">
+    <link href="/static/css/main.css?v=3" rel="stylesheet">
 </head>
 
 <body>
