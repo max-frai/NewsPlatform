@@ -3,13 +3,21 @@ use std::str::FromStr;
 use strum::IntoEnumIterator;
 
 use crate::tag::TagKind;
+use unicode_normalization::UnicodeNormalization;
 
 async fn _ner(
     chunks: Vec<String>,
     service_url: &str,
 ) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     let client = reqwest::Client::new();
+
+    let chunks = chunks
+        .iter()
+        .map(|line| line.chars().nfkc().collect::<String>())
+        .collect::<Vec<String>>();
+
     dbg!(&chunks);
+
     let result = client
         .post(service_url)
         //"http://localhost:5555/model"
