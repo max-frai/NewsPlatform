@@ -280,7 +280,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     )
                     .stdout_capture()
                     .start()
-                    .unwap();
+                    .unwrap();
                     // .expect("Failed to execute parsebinary");
 
                     let parse_result = handle.wait();
