@@ -337,7 +337,7 @@ impl TagsManagerWriter {
                 // println!("Got wikititle from cache");
                 Some(wikititle.to_owned())
             } else {
-                println!("Search wiki for: {}; {}", word, kind);
+                // println!("Search wiki for: {}; {}", word, kind);
                 let search_result = wiki.search(&word).unwrap();
                 // dbg!(&search_result);
                 // search_result
@@ -359,7 +359,7 @@ impl TagsManagerWriter {
         found = BRACKETS_RE.replace_all(&found, "").to_string();
 
         if kind == TagKind::Person {
-            println!("KIND IS PERSON, REMOVE THIRD NAME: {} --------", found);
+            // println!("KIND IS PERSON, REMOVE THIRD NAME: {} --------", found);
             let parts = found.split(" ").collect::<Vec<&str>>();
             found = parts
                 .iter()
@@ -368,14 +368,14 @@ impl TagsManagerWriter {
                 .collect::<Vec<&str>>()
                 .join(" ");
 
-            println!("AFTER PROCESS: {}", found);
+            // println!("AFTER PROCESS: {}", found);
         }
 
-        println!("FOUND FIRST Wikititle: {}", original_found);
+        // println!("FOUND FIRST Wikititle: {}", original_found);
 
         let found_tag = self.get_tag(&kind, &found);
         if found_tag.is_some() {
-            println!("\tReturn tag directly from cache");
+            // println!("\tReturn tag directly from cache");
             return found_tag.cloned();
         }
 
@@ -432,12 +432,12 @@ impl TagsManagerWriter {
                     .await
                     .is_none()
                 {
-                    println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
+                    // println!("\t\tTHIS WIKI TAG KIND IS WRONG, skip");
                     self.save_text2wikititle(&word, None, kind.to_owned());
                     return None;
                 }
             } else {
-                println!("Dont check found tag kind on wiki, SIMILARITY >= 0.9");
+                // println!("Dont check found tag kind on wiki, SIMILARITY >= 0.9");
             }
 
             let wiki_html = page.get_html_content().unwrap();

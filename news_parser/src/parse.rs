@@ -272,7 +272,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                         return None;
                     }
 
-                    println!("Parse: {:?}", link);
+                    // println!("Parse: {:?}", link);
                     let handle = cmd!(
                         format!("./parserbinary_{}", env::consts::OS),
                         link.to_string(),
@@ -280,7 +280,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     )
                     .stdout_capture()
                     .start()
-                    .expect("Failed to execute parsebinary");
+                    .unwap();
+                    // .expect("Failed to execute parsebinary");
 
                     let parse_result = handle.wait();
 
@@ -389,7 +390,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
                         return Some(bson::to_bson(&item).unwrap().as_document().unwrap().clone());
                     } else {
-                        println!("Wrong returned json from parsebinary");
+                        // println!("Wrong returned json from parsebinary");
                     }
 
                     None
@@ -404,7 +405,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             news_collection
                 .insert_many(models, InsertManyOptions::builder().ordered(false).build())
                 .await
-                .expect("Failed to insert news");
+                .unwrap();
+            // .expect("Failed to insert news");
         }
     }
 }

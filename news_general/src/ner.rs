@@ -9,6 +9,7 @@ async fn _ner(
     service_url: &str,
 ) -> anyhow::Result<(Vec<String>, Vec<String>)> {
     let client = reqwest::Client::new();
+    dbg!(&chunks);
     let result = client
         .post(service_url)
         //"http://localhost:5555/model"
@@ -108,7 +109,7 @@ pub async fn ner_tags(text: String, service_url: &str) -> Option<Vec<(String, Ta
     // dbg!(&tags);
 
     if words.is_empty() {
-        println!("No ner words, skip");
+        // println!("No ner words, skip");
         return None;
     }
 
