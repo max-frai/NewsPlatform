@@ -33,7 +33,7 @@ pub struct Card {
 }
 
 lazy_static! {
-    static ref MARK_RE: Regex = Regex::new(r"\{ ?(\d)+ ?\}").unwrap();
+    static ref MARK_RE: Regex = Regex::new(r"\{ ?(\d+) ?\}").unwrap();
     static ref MULTI_WHITESPACE_RE: Regex = Regex::new(r" {2,}").unwrap();
 }
 
