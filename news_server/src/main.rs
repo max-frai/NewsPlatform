@@ -34,7 +34,7 @@ use news_general::constants::*;
 use news_general::tag::*;
 use state::State;
 use tailwind::process_tailwind;
-use tokio::time::delay_for;
+use tokio::time::sleep;
 
 pub mod canonical_middleware;
 pub mod card_fetcher;
@@ -122,7 +122,7 @@ async fn main() -> std::io::Result<()> {
                 tags_manager.set_data(tags, tags_lookup);
             }
 
-            delay_for(Duration::from_secs(60)).await;
+            sleep(Duration::from_secs(60)).await;
         }
     });
 
@@ -130,7 +130,7 @@ async fn main() -> std::io::Result<()> {
     let worker_state = state.clone();
     tokio::task::spawn(async move {
         // First time wait for tags manager to load
-        delay_for(Duration::from_secs(20)).await;
+        sleep(Duration::from_secs(20)).await;
         loop {
             println!("Load day exact top of tags...");
             {
@@ -147,14 +147,14 @@ async fn main() -> std::io::Result<()> {
                     }
                 }
             }
-            delay_for(Duration::from_secs(60 * 30)).await;
+            sleep(Duration::from_secs(60 * 30)).await;
         }
     });
 
     let worker_state = state.clone();
     tokio::task::spawn(async move {
         // First time wait for tags manager to load
-        delay_for(Duration::from_secs(20)).await;
+        sleep(Duration::from_secs(20)).await;
         loop {
             println!("Load two week exact top of tags...");
             {
@@ -181,7 +181,7 @@ async fn main() -> std::io::Result<()> {
                     overall_mut.insert(TagCache::TwoWeekOverallTop, overall_top);
                 }
             }
-            delay_for(Duration::from_secs(60 * 60 * 24)).await;
+            sleep(Duration::from_secs(60 * 60 * 24)).await;
         }
     });
 

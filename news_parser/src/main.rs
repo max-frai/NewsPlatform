@@ -7,7 +7,7 @@ use mongodb::{
 use std::{pin::Pin, sync::Arc};
 use tokio::main;
 use tokio::sync::Mutex;
-use tokio::time::{delay_for, Duration};
+use tokio::time::{sleep, Duration};
 
 use news_general::constants::*;
 use news_general::tag::*;
@@ -53,7 +53,7 @@ async fn main() {
                 })
                 .await;
 
-                delay_for(Duration::from_secs(60)).await;
+                sleep(Duration::from_secs(60)).await;
             }
         });
     }
@@ -71,7 +71,7 @@ async fn main() {
                 })
                 .await;
 
-                delay_for(Duration::from_secs(60)).await;
+                sleep(Duration::from_secs(60)).await;
             }
         });
     }
@@ -88,7 +88,7 @@ async fn main() {
                     crate::categorise::categorise_news(client, constants.clone()).await;
                 })
                 .await;
-                delay_for(Duration::from_secs(5)).await;
+                sleep(Duration::from_secs(5)).await;
             }
         });
     }
@@ -106,7 +106,7 @@ async fn main() {
                     crate::tag::tag_news(client, constants, tags).await;
                 })
                 .await;
-                delay_for(Duration::from_secs(10)).await;
+                sleep(Duration::from_secs(10)).await;
             }
         });
     }
@@ -123,7 +123,7 @@ async fn main() {
                     crate::rewrite::rewrite_news(client, constants.clone()).await;
                 })
                 .await;
-                delay_for(Duration::from_secs(60)).await;
+                sleep(Duration::from_secs(60)).await;
             }
         });
     }
