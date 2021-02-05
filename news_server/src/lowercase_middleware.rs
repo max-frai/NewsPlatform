@@ -1,18 +1,17 @@
 use std::task::{Context, Poll};
 
 use actix_service::{Service, Transform};
-use actix_web::dev::{ServiceRequest, ServiceResponse};
+use actix_web::dev::{MessageBody, ServiceRequest, ServiceResponse};
 use actix_web::{http, Error, HttpResponse};
 use futures::future::{ok, Either, Ready};
 
 pub struct LowercaseRequest;
 
-impl<S, B> Transform<S> for LowercaseRequest
+impl<S, B> Transform<S, ServiceRequest> for LowercaseRequest
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+    B: MessageBody,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type InitError = ();
@@ -27,12 +26,11 @@ pub struct LowercaseRequestMiddleware<S> {
     service: S,
 }
 
-impl<S, B> Service for LowercaseRequestMiddleware<S>
+impl<S, B> Service<ServiceRequest> for LowercaseRequestMiddleware<S>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+    B: MessageBody,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Future = Either<S::Future, Ready<Result<Self::Response, Self::Error>>>;

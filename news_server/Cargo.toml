@@ -10,9 +10,10 @@ name = "news_server"
 [dependencies]
 news_general = {path = "../news_general"}
 
-actix-web = "3.3"
-actix-files = "0.5"
-actix-service = "1.0"
+actix-web = "4.0.0-beta.1"
+actix-files = "0.6.0-beta.1"
+actix-service = "=2.0.0-beta.3"
+actix-rt = "=2.0.0-beta.2"
 
 serde = "1.0"
 fluent = "0.14"

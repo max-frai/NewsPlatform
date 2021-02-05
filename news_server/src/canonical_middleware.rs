@@ -5,10 +5,11 @@ use std::{
 
 use actix_service::{Service, Transform};
 use actix_web::{
-    dev::{ServiceRequest, ServiceResponse},
+    dev::{MessageBody, ServiceRequest, ServiceResponse},
     web::Data,
     FromRequest, HttpMessage,
 };
+
 use actix_web::{http, Error, HttpResponse};
 use futures::future::{ok, Either, Ready};
 
@@ -16,16 +17,15 @@ use crate::state::State;
 
 pub struct CanonicalRequest;
 
-impl<S, B> Transform<S> for CanonicalRequest
+impl<S, B> Transform<S, ServiceRequest> for CanonicalRequest
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+    B: MessageBody,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
+    type Transform = CanonicalRequestMiddleware<S>;
     type Error = Error;
     type InitError = ();
-    type Transform = CanonicalRequestMiddleware<S>;
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
@@ -36,15 +36,14 @@ pub struct CanonicalRequestMiddleware<S> {
     service: S,
 }
 
-impl<S, B> Service for CanonicalRequestMiddleware<S>
+impl<S, B> Service<ServiceRequest> for CanonicalRequestMiddleware<S>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
+    B: MessageBody,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = Either<S::Future, Ready<Result<Self::Response, Self::Error>>>;
+    type Future = S::Future;
 
     fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
@@ -83,7 +82,7 @@ where
         }
 
         match ServiceRequest::from_parts(httpreq, payload) {
-            Ok(req) => Either::Left(self.service.call(req)),
+            Ok(req) => self.service.call(req),
             Err(_) => panic!("Something went wrong with ServiceRequest construction"),
         }
     }
