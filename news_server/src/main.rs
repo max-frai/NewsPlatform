@@ -1,3 +1,4 @@
+use graphs::{air::parse_air_quality, graphs_manager::Charts, stocks::parse_stocks};
 use routes::sitemap_xml::generate_sitemap_xml;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -8,6 +9,7 @@ use actix_files::Files;
 //     middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers},
 //     Error,
 // };
+use actix::prelude::*;
 use actix_web::{middleware, web, App, HttpServer};
 use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
@@ -39,6 +41,7 @@ use tokio::time::sleep;
 pub mod canonical_middleware;
 pub mod card_fetcher;
 pub mod card_queries;
+pub mod graphs;
 pub mod helper;
 pub mod indecies;
 pub mod layout_context;
@@ -49,6 +52,8 @@ pub mod state;
 pub mod tag_cache;
 pub mod tailwind;
 pub mod templates;
+pub mod ws_client;
+pub mod ws_server;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -96,6 +101,10 @@ async fn main() -> std::io::Result<()> {
         constants.exact_card_cache_size,
     ));
 
+    println!("Start WebSocket server...");
+    let ws_server_addr = ws_server::WsServer::default().start();
+    let charts_manager = Arc::new(RwLock::new(Charts::new(ws_server_addr.clone())));
+
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
@@ -106,6 +115,32 @@ async fn main() -> std::io::Result<()> {
         tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
+        ws_server_addr: ws_server_addr.clone(),
+        charts_manager: charts_manager.clone(),
+    });
+
+    let charts_manager_clone = charts_manager.clone();
+    tokio::task::spawn(async move {
+        loop {
+            crate::graphs::stocks::parse_stocks(charts_manager_clone.clone()).await;
+            sleep(Duration::from_secs(60 * 3)).await;
+        }
+    });
+
+    let charts_manager_clone2 = charts_manager.clone();
+    tokio::task::spawn(async move {
+        loop {
+            crate::graphs::air::parse_air_quality(charts_manager_clone2.clone()).await;
+            sleep(Duration::from_secs(60 * 10)).await;
+        }
+    });
+
+    let charts_manager_clone3 = charts_manager.clone();
+    tokio::task::spawn(async move {
+        loop {
+            crate::graphs::fuel_uah::parse_black_uah(charts_manager_clone3.clone()).await;
+            sleep(Duration::from_secs(60 * 4)).await;
+        }
     });
 
     // Tags reloader
@@ -199,6 +234,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .service(web::resource("/ws").route(web::get().to(ws_server::ws_index)))
             .service(robots)
             .service(js_bundle)
             .service(sitemap_xml)

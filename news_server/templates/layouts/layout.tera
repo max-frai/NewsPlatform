@@ -39,7 +39,7 @@
         </div>
     </div>
 
-    <script async src="/bundle.js?v=1"></script>
+    <script async src="/bundle.js?v=3"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YLXEFT0BQ"></script>

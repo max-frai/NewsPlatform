@@ -14,8 +14,11 @@ actix-web = "4.0.0-beta.1"
 actix-files = "0.6.0-beta.1"
 actix-service = "=2.0.0-beta.3"
 actix-rt = "=2.0.0-beta.2"
+actix-web-actors  = "4.0.0-beta.1"
+actix = "0.11.0-beta.1"
 
 serde = "1.0"
+serde_json = "1.0"
 fluent = "0.14"
 duct = "0.13"
 env_logger = "0.8"
@@ -29,9 +32,11 @@ anyhow = "1.0"
 sitemap = "0.4"
 config = "0.10"
 listenfd = "0.3"
+maplit = "1.0"
 comrak = "0.9"
 alphanumeric-sort = "1.4"
 strum = "0.18"
 strum_macros = "0.18"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }
 tokio = { version="1.1", features=["macros", "time", "fs"] }
+reqwest = { version = "0.11", features = ["json"] }
