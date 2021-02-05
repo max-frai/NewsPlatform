@@ -110,8 +110,6 @@ async fn main() -> std::io::Result<()> {
         constants: constants.clone(),
         tera: tera.clone(),
         tags_manager: tags_manager.clone(),
-        // top_persons: Arc::new(RwLock::new(vec![])),
-        // top_gpe: Arc::new(RwLock::new(vec![])),
         tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
