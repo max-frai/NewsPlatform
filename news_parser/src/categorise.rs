@@ -6,9 +6,9 @@ use mongodb::{
     Client,
 };
 use news_general::{category::Category, constants::AppConfig};
-use std::io::Write;
 use std::sync::Arc;
 use std::{collections::HashSet, env};
+use std::{io::Write, path::Path};
 
 use bson::oid::ObjectId;
 use chrono::Utc;
@@ -98,15 +98,23 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     file.write_all(json_str.as_bytes()).unwrap();
     file.sync_all().unwrap();
 
+    let categories_json_path = env::current_dir().unwrap().join("categories.json");
+
+    let prev_cd = env::current_dir().unwrap();
+    let cd = Path::new("news_nlp");
+    env::set_current_dir(&cd).expect("Failed to change current dir to nlp folder");
+
     let handle = cmd!(
         format!("./nlp_{}", env::consts::OS),
         "categories",
-        "categories.json"
+        &categories_json_path
     )
     .stdout_capture()
     .start()
     .expect("Failed to start nlp");
     let parse_result = handle.wait().expect("Failed to wait nlp");
+
+    env::set_current_dir(&prev_cd).expect("Failed to change current dir to prev folder");
 
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
     let threads = serde_json::from_str::<Vec<ClusteringThread>>(response_json).unwrap();
