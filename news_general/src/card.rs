@@ -1,5 +1,5 @@
 use bson::oid::ObjectId;
-use comrak::{format_html, markdown_to_html, parse_document, Arena, ComrakOptions};
+use comrak::{format_html, parse_document, Arena, ComrakOptions};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};

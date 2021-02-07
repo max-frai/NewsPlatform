@@ -1,6 +1,5 @@
 use crate::state::State;
 use actix_web::{get, web, HttpResponse, Responder};
-use tera::Context;
 
 use tokio::fs;
 

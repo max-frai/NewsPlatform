@@ -6,18 +6,15 @@ use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
-use serde::{Deserialize, Serialize};
 use std::env;
-use std::process::{Command, Stdio};
 use std::sync::Arc;
 use std::time::Duration;
 use url::Url;
-use whatlang::{detect, Lang, Script};
+use whatlang::{detect, Lang};
 
 use bson::oid::ObjectId;
+use byteorder::BigEndian;
 use byteorder::ByteOrder;
-use byteorder::{BigEndian, ReadBytesExt};
-use config::Config;
 use duct::*;
 use mongodb::{
     bson::{doc, document::Document, Bson},
@@ -95,8 +92,8 @@ impl RssItem for RssItemFull {
         self.pub_date.as_ref()
     }
 
-    fn set_enclosure(&mut self, data: &str) {}
-    fn set_category(&mut self, data: &str) {}
+    fn set_enclosure(&mut self, _: &str) {}
+    fn set_category(&mut self, _: &str) {}
     fn enclosure(&self) -> Option<&String> {
         None
     }
@@ -152,7 +149,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     println!("Last news slug length: {}", last_news_slug.len());
 
     println!("Get all sources...");
-    let options = FindOptions::builder().limit(1).build();
+    let _options = FindOptions::builder().limit(1).build();
     // let options = FindOptions::builder().build();
     let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(50);
     // let data_result = sources_collection.find(None, Some(options)).await.unwrap();
@@ -254,8 +251,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     let source_id = ObjectId::with_string(&item.source.clone().unwrap()).unwrap();
                     let date = item.pub_date.unwrap();
                     let country = item.country.clone().unwrap();
-                    let source_name = &item.source_name.clone().unwrap();
-                    let project = &item.project.clone().unwrap();
+                    let _source_name = &item.source_name.clone().unwrap();
+                    let _project = &item.project.clone().unwrap();
 
                     if title.chars().count() < 40 {
                         println!("Too small title, skip: {}", title);
@@ -354,7 +351,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                         //     return None;
                         // }
 
-                        let lower_content =
+                        let _lower_content =
                             format!("{} {}", title.to_lowercase(), html.to_lowercase());
 
                         // for stop in &constants.stop_words {

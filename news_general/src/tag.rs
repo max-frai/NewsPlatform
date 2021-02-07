@@ -8,14 +8,12 @@ use maplit::hashmap;
 use mongodb::bson;
 use mongodb::Collection;
 use regex::*;
-use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru, Source};
 use scraper::Html;
 use scraper::Selector;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::string::ToString;
 use std::{collections::HashMap, fs::File};
-use strum::IntoEnumIterator;
 use strum_macros::Display;
 use strum_macros::EnumIter;
 use strum_macros::EnumString;
@@ -332,7 +330,7 @@ impl TagsManagerWriter {
 
         let word = what.to_string();
 
-        let mut wikititle =
+        let wikititle =
             if let Some(wikititle) = self.text2wikititle.get(&(kind.to_owned(), word.to_owned())) {
                 // println!("Got wikititle from cache");
                 Some(wikititle.to_owned())

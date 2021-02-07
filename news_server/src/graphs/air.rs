@@ -1,6 +1,4 @@
-use chrono::prelude::*;
 use serde_json::Value;
-use std::{io::Read, sync::Arc};
 
 use super::graphs_manager::ChartsManager;
 

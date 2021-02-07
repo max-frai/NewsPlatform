@@ -1,6 +1,5 @@
 use crate::ws_server::{ChartsMessage, WsServer};
 use actix::prelude::*;
-use maplit::*;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 

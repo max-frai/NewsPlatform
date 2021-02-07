@@ -1,4 +1,3 @@
-use news_general::card::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]

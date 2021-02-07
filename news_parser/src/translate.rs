@@ -1,21 +1,17 @@
 use duct::*;
 use futures::stream::StreamExt;
-use maplit::hashmap;
 use mongodb::{
-    bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
+    bson::{doc, document::Document},
+    options::FindOptions,
     Client,
 };
 use news_general::constants::AppConfig;
-use regex::Regex;
 use serde_json::{json, Value};
 use std::env;
-use std::process::{Command, Stdio};
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 use unicode_segmentation::UnicodeSegmentation;
 
 use bson::oid::ObjectId;
-use chrono::Utc;
 
 pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let db = client.database(&constants.database_name);

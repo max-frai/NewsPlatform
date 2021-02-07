@@ -1,19 +1,14 @@
 use duct::*;
 use futures::stream::StreamExt;
-use maplit::hashmap;
 use mongodb::{
-    bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
+    bson::{doc, document::Document},
+    options::FindOptions,
     Client,
 };
 use news_general::{category::Category, constants::AppConfig};
-use regex::Regex;
-use serde_json::{json, Value};
 use std::io::Write;
-use std::process::{Command, Stdio};
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 use std::{collections::HashSet, env};
-use unicode_segmentation::UnicodeSegmentation;
 
 use bson::oid::ObjectId;
 use chrono::Utc;

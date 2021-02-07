@@ -1,9 +1,6 @@
-use bson::{bson, doc, oid::ObjectId, Bson};
-use maplit::*;
-use serde_json::{Result, Value};
-use std::{io::Read, sync::Arc};
-
 use super::graphs_manager::ChartsManager;
+use maplit::*;
+use serde_json::Value;
 
 async fn parse_uah() -> anyhow::Result<Vec<f64>> {
     println!("----- PARSE BLACK UAH -----");

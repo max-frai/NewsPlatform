@@ -1,13 +1,8 @@
 use crate::{
-    card_queries::{last_25, CardQuery},
-    helper::redirect,
-    layout_context::LayoutContext,
-    state::State,
+    card_queries::last_25, helper::redirect, layout_context::LayoutContext, state::State,
     tag_cache::TagCache,
 };
 use actix_web::{get, web, HttpResponse, Responder};
-use bson::doc;
-use chrono::Duration;
 use news_general::tag::{Tag, TagKind};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
@@ -19,7 +14,7 @@ async fn tags_all_fix() -> HttpResponse {
 }
 
 #[get("/tags/")]
-async fn tags_all(state: web::Data<State>, mut context: LayoutContext) -> impl Responder {
+async fn tags_all(state: web::Data<State>, context: LayoutContext) -> impl Responder {
     tag_logic(state, None, context).await
 }
 
@@ -32,7 +27,7 @@ async fn tags_scope_fix(web::Path(kind): web::Path<String>) -> HttpResponse {
 async fn tags_scope(
     state: web::Data<State>,
     web::Path(kind): web::Path<String>,
-    mut context: LayoutContext,
+    context: LayoutContext,
 ) -> impl Responder {
     tag_logic(state, Some(kind), context).await
 }

@@ -1,13 +1,11 @@
 use crate::{
-    card_queries::{last_15_by_tag, last_25, CardQuery},
+    card_queries::{last_15_by_tag, last_25},
     helper::redirect,
     modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
-use actix_web::{get, web, HttpRequest, HttpResponse, Responder};
-use bson::doc;
-use chrono::Duration;
-use news_general::{category::Category, tag::TagKind};
+use actix_web::{get, web, HttpResponse, Responder};
+use news_general::tag::TagKind;
 use std::str::FromStr;
 use tera::Context;
 

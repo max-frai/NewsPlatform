@@ -1,7 +1,6 @@
 use bson::Document;
 use bson::{doc, oid::ObjectId};
-use chrono::Duration;
-use lazy_static::lazy_static;
+use chrono::{Duration, Utc};
 
 #[derive(Debug)]
 pub struct CardQuery {
@@ -75,6 +74,19 @@ pub fn last_15_by_tag(tag_id: ObjectId) -> CardQuery {
         sort: Some(doc! { "date" : -1 }),
         query: doc! {
             "tags" : tag_id
+        },
+    }
+}
+
+pub fn last_hours(hours: i64) -> CardQuery {
+    let filter_utc = Utc::now() - chrono::Duration::hours(hours);
+
+    CardQuery {
+        lifetime: Duration::seconds(120),
+        limit: None,
+        sort: Some(doc! { "date" : -1 }),
+        query: doc! {
+            "date" : { "$gte" : filter_utc }
         },
     }
 }

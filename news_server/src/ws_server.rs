@@ -1,17 +1,9 @@
-use crate::{
-    state::State,
-    // parsers::clustering::{ClusteringResult, ClusteringThread, NewsItem},
-    ws_client::WebSocketClient,
-};
+use crate::{graphs::news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient};
 use actix::prelude::*;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
-use maplit::*;
 use serde::Serialize;
-use std::{
-    collections::{HashMap, VecDeque},
-    sync::Arc,
-};
+use std::collections::HashMap;
 
 pub async fn ws_index(
     r: HttpRequest,
@@ -50,23 +42,23 @@ pub struct TodayTrendsMessage {
     pub trends: Vec<(String, i32)>,
 }
 
-// #[derive(Message, Serialize, Debug)]
-// #[rtype(result = "()")]
-// pub struct PopularClusterMessage {
-//     pub clusters: Vec<ClusteringResult>,
-// }
+#[derive(Message, Serialize, Debug)]
+#[rtype(result = "()")]
+pub struct PopularClusterMessage {
+    pub clusters: Vec<ClusteringResult>,
+}
 
-// #[derive(Message, Serialize, Debug)]
-// #[rtype(result = "()")]
-// pub struct SummaryClusterMessage {
-//     pub cluster: ClusteringResult,
-// }
+#[derive(Message, Serialize, Debug)]
+#[rtype(result = "()")]
+pub struct SummaryClusterMessage {
+    pub cluster: ClusteringResult,
+}
 
-// #[derive(Message, Serialize, Debug)]
-// #[rtype(result = "()")]
-// pub struct MostRecentClusterMessage {
-//     pub cluster: ClusteringResult,
-// }
+#[derive(Message, Serialize, Debug)]
+#[rtype(result = "()")]
+pub struct MostRecentClusterMessage {
+    pub cluster: ClusteringResult,
+}
 
 // #[derive(Message, Serialize, Debug)]
 // #[rtype(result = "()")]
@@ -129,7 +121,7 @@ impl WsServer {
 
     fn send_one(&self, message: JsonMessage, addr: &Recipient<JsonMessage>) {
         // dbg!(message);
-        addr.do_send(message);
+        addr.do_send(message).unwrap();
     }
 
     fn add_client(&mut self, addr: Recipient<JsonMessage>) -> usize {
@@ -190,13 +182,13 @@ impl Handler<ChartsMessage> for WsServer {
 //     }
 // }
 
-// impl Handler<PopularClusterMessage> for WsServer {
-//     type Result = ();
+impl Handler<PopularClusterMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: PopularClusterMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: PopularClusterMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 // impl Handler<TweetsMessage> for WsServer {
 //     type Result = ();
@@ -206,13 +198,13 @@ impl Handler<ChartsMessage> for WsServer {
 //     }
 // }
 
-// impl Handler<SummaryClusterMessage> for WsServer {
-//     type Result = ();
+impl Handler<SummaryClusterMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: SummaryClusterMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: SummaryClusterMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 // impl Handler<CovidTimeMessage> for WsServer {
 //     type Result = ();
@@ -230,13 +222,13 @@ impl Handler<ChartsMessage> for WsServer {
 //     }
 // }
 
-// impl Handler<MostRecentClusterMessage> for WsServer {
-//     type Result = ();
+impl Handler<MostRecentClusterMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: MostRecentClusterMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: MostRecentClusterMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 impl Handler<Connect> for WsServer {
     type Result = usize;

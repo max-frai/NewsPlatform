@@ -1,11 +1,5 @@
-use futures::Future;
-use mongodb::{
-    bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
-    Client,
-};
-use std::{pin::Pin, sync::Arc};
-use tokio::main;
+use mongodb::Client;
+use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::time::{sleep, Duration};
 
@@ -51,7 +45,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::parse::parse_news(client, constants).await;
                 })
-                .await;
+                .await
+                .unwrap();
 
                 sleep(Duration::from_secs(60)).await;
             }
@@ -69,7 +64,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::translate::translate_news(client, constants.clone()).await;
                 })
-                .await;
+                .await
+                .unwrap();
 
                 sleep(Duration::from_secs(60)).await;
             }
@@ -87,7 +83,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::categorise::categorise_news(client, constants.clone()).await;
                 })
-                .await;
+                .await
+                .unwrap();
                 sleep(Duration::from_secs(5)).await;
             }
         });
@@ -105,7 +102,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::tag::tag_news(client, constants, tags).await;
                 })
-                .await;
+                .await
+                .unwrap();
                 sleep(Duration::from_secs(10)).await;
             }
         });
@@ -122,7 +120,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::rewrite::rewrite_news(client, constants.clone()).await;
                 })
-                .await;
+                .await
+                .unwrap();
                 sleep(Duration::from_secs(60)).await;
             }
         });
