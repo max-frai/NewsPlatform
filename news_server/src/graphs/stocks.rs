@@ -1,8 +1,6 @@
-use bson::{bson, doc, oid::ObjectId, Bson};
 use maplit::*;
-use mongodb::Collection;
 use reqwest::header;
-use serde_json::{Result, Value};
+use serde_json::Value;
 
 use super::graphs_manager::ChartsManager;
 

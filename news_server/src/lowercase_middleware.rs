@@ -2,7 +2,7 @@ use std::task::{Context, Poll};
 
 use actix_service::{Service, Transform};
 use actix_web::dev::{MessageBody, ServiceRequest, ServiceResponse};
-use actix_web::{http, Error, HttpResponse};
+use actix_web::{Error, HttpResponse};
 use futures::future::{ok, Either, Ready};
 
 pub struct LowercaseRequest;

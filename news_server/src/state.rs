@@ -3,6 +3,7 @@ use crate::{
     ws_server::WsServer,
 };
 use actix::prelude::*;
+use mongodb::Collection;
 use news_general::tag::TagsManager;
 use news_general::{constants::*, tag::Tag};
 use std::{collections::HashMap, sync::Arc};
@@ -22,4 +23,6 @@ pub struct State {
 
     pub charts_manager: ChartsManager,
     pub ws_server_addr: Addr<WsServer>,
+
+    pub sources_col: Collection,
 }

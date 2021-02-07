@@ -12,3 +12,7 @@ libtorch.so
 nlp_macos
 parserbinary_macos
 categories.json
+news_server/templates/css/main.css
+news_server/package-lock.json
+news_parser/libtorch_cpu.so
+Cargo.lock

@@ -1,4 +1,4 @@
-use actix_web::{dev::Payload, web::Data, Error, FromRequest, HttpRequest};
+use actix_web::{dev::Payload, Error, FromRequest, HttpRequest};
 use futures::future::{ok, Ready};
 use std::ops::{Deref, DerefMut};
 

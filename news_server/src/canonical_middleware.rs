@@ -1,17 +1,13 @@
-use std::{
-    borrow::BorrowMut,
-    task::{Context, Poll},
-};
+use std::task::{Context, Poll};
 
 use actix_service::{Service, Transform};
 use actix_web::{
     dev::{MessageBody, ServiceRequest, ServiceResponse},
     web::Data,
-    FromRequest, HttpMessage,
 };
 
-use actix_web::{http, Error, HttpResponse};
-use futures::future::{ok, Either, Ready};
+use actix_web::Error;
+use futures::future::{ok, Ready};
 
 use crate::state::State;
 

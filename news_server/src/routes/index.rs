@@ -1,12 +1,6 @@
-use crate::{
-    card_queries::{last_25, last_n, CardQuery},
-    modules,
-    tag_cache::TagCache,
-};
+use crate::{card_queries::last_n, modules, tag_cache::TagCache};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use bson::doc;
-use chrono::Duration;
 use news_general::tag::TagKind;
 use tera::Context;
 

@@ -1,21 +1,15 @@
 use mongodb::{
-    bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
+    bson::{doc, document::Document},
+    options::FindOptions,
     Client,
 };
-use regex::Regex;
-use std::env;
-use std::str::FromStr;
-use std::{collections::HashMap, sync::Arc};
-use strum::IntoEnumIterator;
-use tokio::sync::Mutex;
+use std::sync::Arc;
 
 use news_general::tag::*;
 
 use futures::stream::StreamExt;
 use news_general::constants::AppConfig;
 use serde::{Deserialize, Serialize};
-use wikipedia::iter::Category;
 
 use news_general;
 
@@ -114,7 +108,7 @@ pub async fn tag_news(
                     .await
                 {
                     let tag_bson = bson::to_document(&tag).unwrap();
-                    tags_col.insert_one(tag_bson, None).await;
+                    tags_col.insert_one(tag_bson, None).await.unwrap();
 
                     if !final_tags.contains(&tag._id) {
                         final_tags.push(tag._id);

@@ -1,4 +1,6 @@
-use graphs::{air::parse_air_quality, graphs_manager::Charts, stocks::parse_stocks};
+#![feature(async_closure)]
+
+use graphs::graphs_manager::Charts;
 use routes::sitemap_xml::generate_sitemap_xml;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -91,6 +93,7 @@ async fn main() -> std::io::Result<()> {
     println!("Select news and tags collections");
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
+    let sources_col = db.collection(&constants.sources_collection_name);
 
     let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
 
@@ -115,8 +118,10 @@ async fn main() -> std::io::Result<()> {
         sitemap: Arc::new(RwLock::new(String::new())),
         ws_server_addr: ws_server_addr.clone(),
         charts_manager: charts_manager.clone(),
+        sources_col: sources_col.clone(),
     });
 
+    /*
     let charts_manager_clone = charts_manager.clone();
     tokio::task::spawn(async move {
         loop {
@@ -137,6 +142,17 @@ async fn main() -> std::io::Result<()> {
     tokio::task::spawn(async move {
         loop {
             crate::graphs::fuel_uah::parse_black_uah(charts_manager_clone3.clone()).await;
+            sleep(Duration::from_secs(60 * 4)).await;
+        }
+    });
+    */
+
+    let clustering_state = state.clone();
+    tokio::task::spawn(async move {
+        loop {
+            crate::graphs::news_cluster::generate_json_for_clustering(clustering_state.clone())
+                .await
+                .unwrap();
             sleep(Duration::from_secs(60 * 4)).await;
         }
     });

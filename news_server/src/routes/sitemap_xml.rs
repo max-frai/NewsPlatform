@@ -2,7 +2,6 @@ use crate::{card_queries::all_sitemap, state::State, templates::make_card_url_ra
 use actix_web::{get, web, HttpResponse, Responder};
 
 use anyhow::{Context, Result};
-use sitemap::structs::UrlEntry;
 use sitemap::writer::SiteMapWriter;
 
 pub(crate) async fn generate_sitemap_xml(state: web::Data<State>) -> Result<String> {

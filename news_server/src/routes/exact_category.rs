@@ -1,15 +1,12 @@
 use crate::{
-    card_queries::{last_15, last_25_by_category, CardQuery},
+    card_queries::{last_15, last_25_by_category},
     helper::redirect,
     modules,
 };
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use bson::doc;
-use chrono::Duration;
 use news_general::category::Category;
 use std::str::FromStr;
-use strum::IntoEnumIterator;
 use tera::Context;
 
 #[get("/{category}")]

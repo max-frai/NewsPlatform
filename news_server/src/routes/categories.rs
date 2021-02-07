@@ -1,12 +1,6 @@
-use crate::{
-    card_queries::{last_15, CardQuery},
-    helper::redirect,
-    modules,
-};
+use crate::{card_queries::last_15, helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
-use actix_web::{get, http::header, web, HttpResponse, Responder};
-use bson::doc;
-use chrono::Duration;
+use actix_web::{get, web, HttpResponse, Responder};
 use news_general::category::Category;
 use strum::IntoEnumIterator;
 use tera::Context;

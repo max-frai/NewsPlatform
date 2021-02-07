@@ -11,7 +11,6 @@ use lru_cache::LruCache;
 use mongodb::options::FindOptions;
 use mongodb::Collection;
 use news_general::{card::*, tag::TagsManager};
-use std::time::{Duration, Instant};
 
 pub struct CardFetcher {
     collection: Collection,
@@ -19,8 +18,9 @@ pub struct CardFetcher {
 
     // Cache name -> (Cards, future timestamp when cache timeouts)
     cache: Mutex<LruCache<String, (Vec<Card>, i64)>>,
-    // Card id -> Card
+    // Card slug -> Card
     exact_cache: Mutex<LruCache<String, Card>>,
+    exact_cache_by_id: Mutex<LruCache<ObjectId, Card>>,
 }
 
 impl CardFetcher {
@@ -35,6 +35,7 @@ impl CardFetcher {
             tags_manager,
             cache: Mutex::new(LruCache::new(queries_cache_size)),
             exact_cache: Mutex::new(LruCache::new(exact_card_cache_size)),
+            exact_cache_by_id: Mutex::new(LruCache::new(5000)),
         }
     }
 
@@ -118,20 +119,32 @@ impl CardFetcher {
 
         let card = self
             .collection
-            .find_one(
-                doc! {
-                    "slug" : &slug
-                },
-                None,
-            )
+            .find_one(doc! { "slug" : &slug }, None)
             .await;
 
         let mut card: Card = bson::from_document(card?.context("No such card")?)?;
         self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache.lock() {
-            // println!("Get exact card from DB");
             cache.insert(slug, card.clone());
+        }
+
+        Ok(card)
+    }
+
+    pub async fn fetch_exact_by_id(&self, _id: ObjectId) -> Result<Card> {
+        if let Ok(mut cache) = self.exact_cache_by_id.lock() {
+            if let Some(card) = cache.get_mut(&_id) {
+                return Ok(card.clone());
+            }
+        }
+
+        let card = self.collection.find_one(doc! { "_id" : &_id }, None).await;
+        let mut card: Card = bson::from_document(card?.context("No such card")?)?;
+        self.prepare_card(&mut card).await;
+
+        if let Ok(mut cache) = self.exact_cache_by_id.lock() {
+            cache.insert(_id, card.clone());
         }
 
         Ok(card)

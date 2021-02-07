@@ -1,1 +1,2 @@
-<div id="SvelteGraphs"></div>
+<div id="SvelteCharts"></div>
+<div id="SvelteRunningLine"></div>

@@ -1,21 +1,16 @@
 use duct::*;
 use futures::stream::StreamExt;
-use maplit::hashmap;
 use mongodb::{
-    bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
+    bson::{doc, document::Document},
+    options::FindOptions,
     Client,
 };
 use news_general::constants::AppConfig;
-use regex::Regex;
 use serde_json::{json, Value};
 use std::env;
-use std::process::{Command, Stdio};
-use std::{collections::HashMap, sync::Arc};
-use unicode_segmentation::UnicodeSegmentation;
+use std::sync::Arc;
 
 use bson::oid::ObjectId;
-use chrono::Utc;
 
 pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let db = client.database(&constants.database_name);
@@ -123,7 +118,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             }
 
             // Fix whitespace in markdown image
-            let mut rewritten_text = news_general::helper::uppercase_first_letter(&text);
+            let rewritten_text = news_general::helper::uppercase_first_letter(&text);
             // rewritten_title = uppercase_first_letter(&rewritten_title).trim().to_string();
 
             dbg!(&title);
