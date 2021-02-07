@@ -20,6 +20,7 @@ models_list=(
     "https://github.com/IlyaGusev/tgcontest/blob/master/models/ru_sentence_embedder_v3.pt?raw=true"
 )
 
+cd news_nlp
 mkdir models
 cd models
 for url in ${models_list[@]}; do

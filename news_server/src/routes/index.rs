@@ -23,10 +23,10 @@ async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Resp
 
     let tags_cache = state.tags_cache.read().await;
 
-    let top_persons = tags_cache.get(&TagCache::DayExactTop(TagKind::Person));
+    let top_persons = tags_cache.get(&TagCache::DayExactTop(TagKind::Per));
     context.insert("top_persons", top_persons.unwrap_or(&vec![]));
 
-    let top_gpe = tags_cache.get(&TagCache::DayExactTop(TagKind::Gpe));
+    let top_gpe = tags_cache.get(&TagCache::DayExactTop(TagKind::Loc));
     context.insert("top_gpe", top_gpe.unwrap_or(&vec![]));
 
     HttpResponse::Ok()

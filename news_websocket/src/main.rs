@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 // use crate::graphs_manager::Charts;
 use actix::prelude::*;
@@ -17,6 +17,7 @@ pub mod graphs_manager;
 pub mod news_cluster;
 pub mod state;
 pub mod stocks;
+pub mod trends;
 pub mod ws_client;
 pub mod ws_server;
 
@@ -102,6 +103,16 @@ async fn main() -> std::io::Result<()> {
                 .await
                 .unwrap();
             sleep(Duration::from_secs(60 * 4)).await;
+        }
+    });
+
+    let clustering_state2 = state.clone();
+    tokio::task::spawn(async move {
+        loop {
+            trends::parse_trends(clustering_state2.clone())
+                .await
+                .unwrap();
+            sleep(Duration::from_secs(60 * 10)).await;
         }
     });
 

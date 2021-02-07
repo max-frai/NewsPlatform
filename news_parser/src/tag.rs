@@ -86,29 +86,24 @@ pub async fn tag_news(
 
         let _id = item.get("_id").unwrap().as_object_id().unwrap();
 
+        // println!("Title:\n{}", title.trim());
         // println!("Text:\n{}", text.trim());
 
         let mut final_tags = vec![];
-        if let Some(ner_tags) =
-            news_general::ner::ner_tags(format!("{}. {}", title, text), &constants.deeppavlov_url)
-                .await
-        {
+        if let Some(ner_tags) = news_general::ner::ner_tags(format!("{}. {}", title, text)).await {
             for pair in &ner_tags {
                 let word = pair.0.trim();
                 let kind = pair.1.to_owned();
 
-                // println!("----------------------");
-                // dbg!(word);
-                // dbg!(&kind);
+                println!("----------------------");
+                dbg!(word);
+                dbg!(&kind);
 
                 let mut tags_manager_mut = tags_manager.lock().await;
                 // tags_manager_mut.search_for_tag_in_wiki(word, kind);
-                if let Some(tag) = tags_manager_mut
-                    .search_for_tag_in_wiki(word, kind, &constants.deeppavlov_url)
-                    .await
-                {
+                if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
                     let tag_bson = bson::to_document(&tag).unwrap();
-                    tags_col.insert_one(tag_bson, None).await.unwrap();
+                    tags_col.insert_one(tag_bson, None).await;
 
                     if !final_tags.contains(&tag._id) {
                         final_tags.push(tag._id);

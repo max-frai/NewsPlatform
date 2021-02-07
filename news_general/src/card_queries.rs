@@ -1,6 +1,6 @@
 use bson::Document;
 use bson::{doc, oid::ObjectId};
-use chrono::{Duration, Utc};
+use chrono::{DateTime, Duration, Utc};
 
 #[derive(Debug)]
 pub struct CardQuery {
@@ -8,6 +8,7 @@ pub struct CardQuery {
     pub limit: Option<i64>,
     pub sort: Option<Document>,
     pub query: Document,
+    pub projection: Option<Document>,
 }
 
 impl std::fmt::Display for CardQuery {
@@ -26,6 +27,7 @@ pub fn last_15() -> CardQuery {
         limit: Some(15),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {},
+        projection: None,
     }
 }
 
@@ -35,6 +37,7 @@ pub fn last_25() -> CardQuery {
         limit: Some(25),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {},
+        projection: None,
     }
 }
 
@@ -44,6 +47,7 @@ pub fn all_sitemap() -> CardQuery {
         limit: Some(1000000),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {},
+        projection: None,
     }
 }
 
@@ -53,6 +57,7 @@ pub fn last_n(num: i64) -> CardQuery {
         limit: Some(num),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {},
+        projection: None,
     }
 }
 
@@ -64,6 +69,7 @@ pub fn last_25_by_category(category: &str) -> CardQuery {
         query: doc! {
             "category" : category,
         },
+        projection: None,
     }
 }
 
@@ -75,6 +81,7 @@ pub fn last_15_by_tag(tag_id: ObjectId) -> CardQuery {
         query: doc! {
             "tags" : tag_id
         },
+        projection: None,
     }
 }
 
@@ -88,5 +95,28 @@ pub fn last_hours(hours: i64) -> CardQuery {
         query: doc! {
             "date" : { "$gte" : filter_utc }
         },
+        projection: None,
+    }
+}
+
+pub fn last_between_dates(lower: DateTime<Utc>, upper: DateTime<Utc>) -> CardQuery {
+    CardQuery {
+        lifetime: Duration::seconds(120),
+        limit: None,
+        sort: Some(doc! { "date" : -1 }),
+        query: doc! {
+            "$and" : vec![
+                    doc! {
+                        "date" : { "$gte" : lower },
+                    },
+                    doc! {
+                        "date" : { "$lte" : upper }
+                    }
+                ]
+        },
+        projection: None
+        // projection: Some(doc! {
+        //     "title": 1
+        // }),
     }
 }

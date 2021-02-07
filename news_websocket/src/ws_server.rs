@@ -174,13 +174,13 @@ impl Handler<ChartsMessage> for WsServer {
     }
 }
 
-// impl Handler<TodayTrendsMessage> for WsServer {
-//     type Result = ();
+impl Handler<TodayTrendsMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: TodayTrendsMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: TodayTrendsMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 impl Handler<PopularClusterMessage> for WsServer {
     type Result = ();

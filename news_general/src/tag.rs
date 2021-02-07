@@ -26,10 +26,12 @@ pub type Wiki = wikipedia::Wikipedia<wikipedia::http::default::Client>;
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum TagKind {
-    Person,
+    Per,
     Norp,
     Org,
+    Loc,
     Gpe,
+    Person,
     Event,
     Product,
     Facility,
@@ -38,9 +40,11 @@ pub enum TagKind {
 impl TagKind {
     pub fn to_description(&self) -> &'static str {
         match self {
+            TagKind::Per => "Люди",
             TagKind::Person => "Люди",
             TagKind::Norp => "Группы",
             TagKind::Org => "Организации",
+            TagKind::Loc => "Локации",
             TagKind::Gpe => "Локации",
             TagKind::Event => "События",
             TagKind::Product => "Продукты",
@@ -221,9 +225,8 @@ impl TagsManagerWriter {
         &self,
         summary: &str,
         should_be_tag: TagKind,
-        service_url: &str,
     ) -> Option<()> {
-        if let Some(tags) = crate::ner::ner_tags(summary.to_owned(), service_url).await {
+        if let Some(tags) = crate::ner::ner_tags(summary.to_owned()).await {
             if !tags.is_empty() {
                 // println!("Check: {} == {}", should_be_tag, tags.first().unwrap().1);
                 if should_be_tag == tags.first().unwrap().1 {
@@ -299,12 +302,7 @@ impl TagsManagerWriter {
         f.write_all(result.as_bytes()).unwrap();
     }
 
-    pub async fn search_for_tag_in_wiki(
-        &mut self,
-        what: &str,
-        kind: TagKind,
-        service_url: &str,
-    ) -> Option<Tag> {
+    pub async fn search_for_tag_in_wiki(&mut self, what: &str, kind: TagKind) -> Option<Tag> {
         // let word = if what.contains(" ") {
         //     println!("Search word contains space, split it");
         //     what.split(" ")
@@ -320,7 +318,7 @@ impl TagsManagerWriter {
         // };
 
         // If it's person and we have only surname or name, skip it. We need both
-        if kind == TagKind::Person && what.split(" ").collect::<Vec<&str>>().len() < 2 {
+        if kind == TagKind::Per && what.split(" ").collect::<Vec<&str>>().len() < 2 {
             return None;
         }
 
@@ -356,7 +354,7 @@ impl TagsManagerWriter {
         found = found.to_lowercase().replace(",", "");
         found = BRACKETS_RE.replace_all(&found, "").to_string();
 
-        if kind == TagKind::Person {
+        if kind == TagKind::Per {
             // println!("KIND IS PERSON, REMOVE THIRD NAME: {} --------", found);
             let parts = found.split(" ").collect::<Vec<&str>>();
             found = parts
@@ -426,7 +424,7 @@ impl TagsManagerWriter {
 
             if similarity < 0.9 {
                 if self
-                    .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned(), service_url)
+                    .verify_found_wikititle_ok_by_tag(&summary.1, kind.to_owned())
                     .await
                     .is_none()
                 {

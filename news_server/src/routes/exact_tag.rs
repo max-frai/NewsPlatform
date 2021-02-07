@@ -69,7 +69,7 @@ async fn exact_tag(
 
     let meta_title = match &kind {
         TagKind::Gpe => format!("{} последние новости - главное на сегодня", tag.wiki_title),
-        TagKind::Person => format!(
+        TagKind::Per => format!(
             "{} последние новости - свежие статьи и информация",
             tag.wiki_title
         ),
@@ -81,7 +81,7 @@ async fn exact_tag(
 
     let meta_desc = match kind {
         TagKind::Gpe => format!("HubLoid {} ➤ Главные и последние новости по {} ✔ Важные обновления каждый день", tag.wiki_title, tag.wiki_title),
-        TagKind::Person => format!("HubLoid {} ➤ Последние новости и статьи по персоне {} ✔ Информация и все упоминания", tag.wiki_title, tag.wiki_title),
+        TagKind::Per => format!("HubLoid {} ➤ Последние новости и статьи по персоне {} ✔ Информация и все упоминания", tag.wiki_title, tag.wiki_title),
         _ => format!("HubLoid {} ➤ Последние новости по {} - вся важная информация ✔ Свежие обновления каждый день", tag.wiki_title, tag.wiki_title)
     };
 

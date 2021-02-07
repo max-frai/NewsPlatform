@@ -17,6 +17,7 @@ init({
 import Charts from './Charts.svelte';
 import RunningLine from './RunningLine.svelte';
 import TopNews from './TopNews.svelte';
+import Trends from './Trends.svelte';
 
 new Charts({
 	target: document.querySelector('#SvelteCharts')
@@ -26,6 +27,9 @@ new RunningLine({
 });
 new TopNews({
 	target: document.querySelector('#SvelteTopNews')
+});
+new Trends({
+	target: document.querySelector('#SvelteTrends')
 });
 
 // export default app;

@@ -83,10 +83,10 @@ async fn tag_logic(
     let meta_title = if let Some(ref tag) = tag_kind {
         match tag {
             TagKind::Event => "Новости фестивалей и ивентов",
-            TagKind::Person => "Новости популярных личностей и персон",
+            TagKind::Per | TagKind::Person => "Новости популярных личностей и персон",
             TagKind::Norp => "Новости политических, религиозных и этнических групп",
             TagKind::Org => "Новости организаций и компаний",
-            TagKind::Gpe => "Новости стран и регионов",
+            TagKind::Loc | TagKind::Gpe => "Новости стран и регионов",
             TagKind::Product => "Новости и обновления товаров",
             TagKind::Facility => "Новости и обновления объектов",
         }
@@ -99,14 +99,18 @@ async fn tag_logic(
             TagKind::Event => {
                 "HubLoid Ивенты и Фестивали ➤ Последние новости по ивентам и фестивалям"
             }
-            TagKind::Person => "HubLoid Топ персон ➤ Последние новости по топовым личностям",
+            TagKind::Per | TagKind::Person => {
+                "HubLoid Топ персон ➤ Последние новости по топовым личностям"
+            }
             TagKind::Norp => {
                 "HubLoid ➤ Последние новости по политическим, религиозным и этническим группам"
             }
             TagKind::Org => {
                 "HubLoid Компании и организации ➤ Последние новости по компаниям и организациям"
             }
-            TagKind::Gpe => "HubLoid Страны и регионы ➤ Последние новости по странам и регионам",
+            TagKind::Loc | TagKind::Gpe => {
+                "HubLoid Страны и регионы ➤ Последние новости по странам и регионам"
+            }
             TagKind::Product => "HubLoid Товары и продукты ➤ Последние новости по новым товарам",
             TagKind::Facility => "HubLoid Объекты ➤ Последние новости по объектам",
         }

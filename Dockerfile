@@ -46,6 +46,8 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev
 RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
+RUN pip3 install -U spacy
+RUN python3 -m spacy download ru_core_news_lg
 WORKDIR /newsplatform/
 COPY --from=builder /newsplatform/news_parser/libgomp-75eea7e8.so.1 /usr/lib/
 COPY --from=builder /newsplatform/news_parser/libtorch_cpu.so /usr/lib/
