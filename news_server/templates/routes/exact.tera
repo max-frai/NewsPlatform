@@ -1,70 +1,46 @@
 {% extends "layouts/layout.tera" %}
-
 {% block meta %}
-<title>{{ article_name | escape }} ➤ HubLoid</title>
-<meta name="description" content="HubLoid {{ article_category | escape }} ➤ {{ article_description | escape }}" />
-
-<meta property="og:title" content="{{ article_name | escape }}"/>
-<meta property="og:description" content="{{ article_description | escape }}"/>
-
-<meta property="og:image" content="{{ og_image }}"/>
-{# <meta property="og:image:width" content="617"/>
-<meta property="og:image:height" content="617"/> #}
-
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="{{ article_name | escape }}"/>
-<meta name="twitter:description" content="{{ article_description | escape }}"/>
-<meta name="twitter:image" content="{{ og_image }}"/>
+    <title>{{ article_name | escape }} ➤ HubLoid</title>
+    <meta content="HubLoid {{ article_category | escape }} ➤ {{ article_description | escape }}" name="description"/>
+    <meta content="{{ article_name | escape }}" property="og:title"/>
+    <meta content="{{ article_description | escape }}" property="og:description"/>
+    <meta
+    content="{{ og_image }}" property="og:image"/> {# <meta property="og:image:width" content="617"/>
+        <meta property="og:image:height" content="617"/> #}
+    <meta content="summary" name="twitter:card"/>
+    <meta content="{{ article_name | escape }}" name="twitter:title"/>
+    <meta content="{{ article_description | escape }}" name="twitter:description"/>
+    <meta content="{{ og_image }}" name="twitter:image"/>
 {% endblock %}
-
 {% block left_column %}
-{% include "parts/popular_tags.tera" %}
+    {% include "parts/popular_tags.tera" %}
 {% endblock %}
-
 {% block after_body %}
-<script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "NewsArticle",
-        "headline": "{{ article_name | escape }}",
-        "description": "{{ article_description | escape }}",
-        "name": "{{ article_name | escape }} ➤ HubLoid",
-        "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}"
-        },
-        "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
-        "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
-        "author": {
-            "@type": "Organization",
-            "name": "HubLoid"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "HubLoid",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://hubloid.com.ua/static/media/logo.svg"
+    <script type="application/ld+json">
+        { "@context": "http://schema.org", "@type": "NewsArticle", "headline": "{{ article_name | escape }}",
+                "description": "{{ article_description | escape }}",
+                "name": "{{ article_name | escape }}
+        ➤ HubLoid",
+                "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}",
+                "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}
+        " }, "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
+                "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}
+        ", "author": { "@type": "Organization", "name": "HubLoid" }, "publisher": { "@type": "Organization", "name": "HubLoid", "logo": { "@type": "ImageObject", "url":
+        "https://hubloid.com.ua/static/media/logo.svg" } }, "image": { "@type": "ImageObject", "representativeOfPage": "true", "url": "{{ og_image }}"
+                }
             }
-        },
-        "image": {
-            "@type": "ImageObject",
-            "representativeOfPage": "true",
-            "url": "{{ og_image }}"
-        }
-    }
-</script>
+    </script>
 {% endblock %}
-
 {% block center_column %}
-{% if center_content %}
-{{ center_content | safe }}
-{% endif %}
+    {% if center_content %}
+        {{ center_content | safe }}
+    {% endif %}
+    <div id="SvelteTopNews"></div>
 {% endblock %}
-
 {% block right_column %}
-{% if right_content %}
-{{ right_content | safe }}
-{% endif %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
 {% endblock %}

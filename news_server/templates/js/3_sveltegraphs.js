@@ -1,1 +1,1 @@
-../../SvelteGraphs/public/build/bundle.js
+../../../news_svelte/public/build/bundle.js

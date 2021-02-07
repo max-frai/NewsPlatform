@@ -4,7 +4,6 @@ mongo-volume
 mac-*/
 models/
 dp_components/
-svelte_graphs/
 .DS_Store
 package-lock.json
 rewritebinary_macos
