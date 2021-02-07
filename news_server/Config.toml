@@ -1,6 +1,1 @@
-server_url = "127.0.0.1:4244"
-mongodb_url = "mongodb://127.0.0.1:27017"
-database_name = "news"
-cards_collection_name = "news"
-queries_cache_size = 100
-exact_card_cache_size = 1000
+../Config.toml

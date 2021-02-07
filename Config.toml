@@ -1,16 +1,18 @@
 server_url = "0.0.0.0:2086"
-deeppavlov_url = "http://deeppavlov:5000/model"
-mongodb_url = "mongodb://mongodb_newsplatform:27017"
+full_domain = "https://hubloid.com.ua"
+deeppavlov_url = "http://localhost:5555/model"
+# mongodb_url = "mongodb://mongodb_newsplatform:27017"
+mongodb_url = "mongodb://127.0.0.1:27042"
 database_name = "news"
 cards_collection_name = "news"
 sources_collection_name = "sources"
 tags_collection_name = "tags"
 queries_cache_size = 100
-exact_card_cache_size = 1000
+exact_card_cache_size = 5000
 platform_hash = "cfd724963e8336a0965bea0c0279cdab2ebb95de846e7019b62e1cd44292ebbcef5dba1efea6f351b8cbb9bb7bebc17ff3e13c35eba00c930cce494e25133724"
 
-parser_parse = true
-parser_rewrite = true
+parser_parse = false
+parser_rewrite = false
 parser_tag = true
-parser_categorise = true
-parser_translate = true
+parser_categorise = false
+parser_translate = false
