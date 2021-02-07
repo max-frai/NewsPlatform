@@ -318,39 +318,39 @@ async fn generate_news(
 pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Result<()> {
     println!("--- GENERATE JSON FOR CLUSTERING ---");
 
-    // let popular_clusters = generate_news(
-    //     // 6,
-    //     100000,
-    //     12,
-    //     300,
-    //     // 0.014,
-    //     NewsTitleSorting::DoNotSort,
-    //     state.clone(),
-    //     true,
-    // )
-    // .await;
-    // state.ws_server_addr.do_send(PopularClusterMessage {
-    //     clusters: popular_clusters,
-    // });
+    let popular_clusters = generate_news(
+        // 6,
+        100000,
+        12,
+        300,
+        // 0.014,
+        NewsTitleSorting::DoNotSort,
+        state.clone(),
+        true,
+    )
+    .await;
+    state.ws_server_addr.do_send(PopularClusterMessage {
+        clusters: popular_clusters,
+    });
 
-    // let summary_24h_clusters = generate_news(
-    //     // 24,
-    //     100000,
-    //     50,
-    //     300,
-    //     // 0.013,
-    //     NewsTitleSorting::Descending,
-    //     state.clone(),
-    //     false,
-    // )
-    // .await;
-    // for cluster in summary_24h_clusters {
-    //     if cluster.category == "society" {
-    //         state
-    //             .ws_server_addr
-    //             .do_send(SummaryClusterMessage { cluster });
-    //     }
-    // }
+    let summary_24h_clusters = generate_news(
+        // 24,
+        100000,
+        50,
+        300,
+        // 0.013,
+        NewsTitleSorting::Descending,
+        state.clone(),
+        false,
+    )
+    .await;
+    for cluster in summary_24h_clusters {
+        if cluster.category == "society" {
+            state
+                .ws_server_addr
+                .do_send(SummaryClusterMessage { cluster });
+        }
+    }
 
     let most_recent_clusters = generate_news(
         // 4,
