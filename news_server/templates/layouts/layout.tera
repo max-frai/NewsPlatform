@@ -15,6 +15,7 @@
 <body>
     {% block after_body %}{% endblock after_body %}
 
+    <div id="SvelteRunningLine" style="min-height: 28px;"></div>
     <div id="MainContainer" class="stickycontainer">
         <div class="MenuContainerMobile md:hidden h-16 flex items-center font-bold text-lg mb-3">
             <a href="/" class="h-4/6 w-full">
