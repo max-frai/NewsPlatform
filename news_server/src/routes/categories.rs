@@ -1,7 +1,7 @@
-use crate::{card_queries::last_15, helper::redirect, modules};
+use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use news_general::category::Category;
+use news_general::{card_queries::last_15, category::Category};
 use strum::IntoEnumIterator;
 use tera::Context;
 

@@ -1,10 +1,7 @@
-use crate::{
-    card_fetcher::CardFetcher, graphs::graphs_manager::ChartsManager, tag_cache::TagCache,
-    ws_server::WsServer,
-};
-use actix::prelude::*;
-use mongodb::Collection;
-use news_general::tag::TagsManager;
+use crate::tag_cache::TagCache;
+// use actix::prelude::*;
+// use mongodb::Collection;
+use news_general::{card_fetcher::CardFetcher, tag::TagsManager};
 use news_general::{constants::*, tag::Tag};
 use std::{collections::HashMap, sync::Arc};
 use tera::Tera;
@@ -20,9 +17,8 @@ pub struct State {
 
     pub js_bundle: Arc<RwLock<String>>,
     pub sitemap: Arc<RwLock<String>>,
+    // pub charts_manager: ChartsManager,
+    // pub ws_server_addr: Addr<WsServer>,
 
-    pub charts_manager: ChartsManager,
-    pub ws_server_addr: Addr<WsServer>,
-
-    pub sources_col: Collection,
+    // pub sources_col: Collection,
 }

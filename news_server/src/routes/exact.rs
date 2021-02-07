@@ -1,9 +1,7 @@
-use crate::{
-    card_queries::{last_15, last_25_by_category},
-    helper, modules,
-};
+use crate::{helper, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
+use news_general::card_queries::{last_15, last_25_by_category};
 use tera::Context;
 
 #[get("/{category}/{slug}.html")]

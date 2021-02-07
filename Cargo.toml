@@ -4,4 +4,5 @@ members = [
     "news_general",
     "news_parser",
     "news_server",
+    "news_websocket",
 ]

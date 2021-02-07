@@ -1,4 +1,5 @@
 use bson::oid::ObjectId;
+use chrono::Utc;
 use comrak::{format_html, parse_document, Arena, ComrakOptions};
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -30,6 +31,33 @@ pub struct Card {
     pub rewritten: bool,
     pub categorised: bool,
     pub tagged: bool,
+}
+
+impl Default for Card {
+    fn default() -> Self {
+        Self {
+            _id: ObjectId::new(),
+            source_id: ObjectId::new(),
+            og_image: String::new(),
+            title: String::new(),
+            html: String::new(),
+            markdown: String::new(),
+            markdown_original: String::new(),
+            slug: String::new(),
+            date: bson::DateTime(Utc::now()),
+            description: String::new(),
+            lang: String::new(),
+            link: String::new(),
+            country: String::new(),
+            category: Category::Unknown,
+            marks: vec![],
+            tags: vec![],
+            filled_tags: vec![],
+            rewritten: false,
+            categorised: false,
+            tagged: false,
+        }
+    }
 }
 
 lazy_static! {

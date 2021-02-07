@@ -1,6 +1,3 @@
-#![feature(async_closure)]
-
-use graphs::graphs_manager::Charts;
 use routes::sitemap_xml::generate_sitemap_xml;
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -11,9 +8,7 @@ use actix_files::Files;
 //     middleware::errhandlers::{ErrorHandlerResponse, ErrorHandlers},
 //     Error,
 // };
-use actix::prelude::*;
 use actix_web::{middleware, web, App, HttpServer};
-use card_fetcher::CardFetcher;
 use listenfd::ListenFd;
 
 use crate::routes::categories::categories;
@@ -34,16 +29,13 @@ use strum::IntoEnumIterator;
 
 use config;
 use mongodb::Client;
-use news_general::constants::*;
 use news_general::tag::*;
+use news_general::{card_fetcher::CardFetcher, constants::*};
 use state::State;
 use tailwind::process_tailwind;
 use tokio::time::sleep;
 
 pub mod canonical_middleware;
-pub mod card_fetcher;
-pub mod card_queries;
-pub mod graphs;
 pub mod helper;
 pub mod indecies;
 pub mod layout_context;
@@ -54,8 +46,6 @@ pub mod state;
 pub mod tag_cache;
 pub mod tailwind;
 pub mod templates;
-pub mod ws_client;
-pub mod ws_server;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -93,7 +83,6 @@ async fn main() -> std::io::Result<()> {
     println!("Select news and tags collections");
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
-    let sources_col = db.collection(&constants.sources_collection_name);
 
     let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
 
@@ -104,10 +93,6 @@ async fn main() -> std::io::Result<()> {
         constants.exact_card_cache_size,
     ));
 
-    println!("Start WebSocket server...");
-    let ws_server_addr = ws_server::WsServer::default().start();
-    let charts_manager = Arc::new(RwLock::new(Charts::new(ws_server_addr.clone())));
-
     let state = web::Data::new(State {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
@@ -116,45 +101,6 @@ async fn main() -> std::io::Result<()> {
         tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
-        ws_server_addr: ws_server_addr.clone(),
-        charts_manager: charts_manager.clone(),
-        sources_col: sources_col.clone(),
-    });
-
-    /*
-    let charts_manager_clone = charts_manager.clone();
-    tokio::task::spawn(async move {
-        loop {
-            crate::graphs::stocks::parse_stocks(charts_manager_clone.clone()).await;
-            sleep(Duration::from_secs(60 * 3)).await;
-        }
-    });
-
-    let charts_manager_clone2 = charts_manager.clone();
-    tokio::task::spawn(async move {
-        loop {
-            crate::graphs::air::parse_air_quality(charts_manager_clone2.clone()).await;
-            sleep(Duration::from_secs(60 * 10)).await;
-        }
-    });
-
-    let charts_manager_clone3 = charts_manager.clone();
-    tokio::task::spawn(async move {
-        loop {
-            crate::graphs::fuel_uah::parse_black_uah(charts_manager_clone3.clone()).await;
-            sleep(Duration::from_secs(60 * 4)).await;
-        }
-    });
-    */
-
-    let clustering_state = state.clone();
-    tokio::task::spawn(async move {
-        loop {
-            crate::graphs::news_cluster::generate_json_for_clustering(clustering_state.clone())
-                .await
-                .unwrap();
-            sleep(Duration::from_secs(60 * 4)).await;
-        }
     });
 
     // Tags reloader
@@ -248,7 +194,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(web::resource("/ws").route(web::get().to(ws_server::ws_index)))
             .service(robots)
             .service(js_bundle)
             .service(sitemap_xml)

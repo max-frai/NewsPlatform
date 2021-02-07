@@ -1,11 +1,10 @@
-use crate::{
-    card_queries::{last_15_by_tag, last_25},
-    helper::redirect,
-    modules,
-};
+use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use news_general::tag::TagKind;
+use news_general::{
+    card_queries::{last_15_by_tag, last_25},
+    tag::TagKind,
+};
 use std::str::FromStr;
 use tera::Context;
 

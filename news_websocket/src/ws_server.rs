@@ -1,4 +1,4 @@
-use crate::{graphs::news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient};
+use crate::{news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient};
 use actix::prelude::*;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
@@ -121,7 +121,7 @@ impl WsServer {
 
     fn send_one(&self, message: JsonMessage, addr: &Recipient<JsonMessage>) {
         // dbg!(message);
-        addr.do_send(message).unwrap();
+        addr.do_send(message);
     }
 
     fn add_client(&mut self, addr: Recipient<JsonMessage>) -> usize {

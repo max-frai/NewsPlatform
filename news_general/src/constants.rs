@@ -3,6 +3,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub server_url: String,
+    pub ws_server_url: String,
     pub mongodb_url: String,
     pub deeppavlov_url: String,
     pub database_name: String,

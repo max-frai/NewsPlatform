@@ -1,12 +1,11 @@
 use crate::{
-    card_queries::last_hours,
     state::State,
     ws_server::{MostRecentClusterMessage, PopularClusterMessage, SummaryClusterMessage},
 };
 use actix_web::web;
 use bson::{oid::ObjectId, *};
 use futures::StreamExt;
-use news_general::card::Card;
+use news_general::{card::Card, card_queries::last_hours};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -30,9 +29,8 @@ pub struct ClusteringThread {
     pub articles: Vec<String>,
     pub category: String,
     pub title: String,
-    // #[serde(default)]
+    #[serde(default)]
     pub main_item: Card,
-    // pub main_item: NewsItem,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -41,40 +39,16 @@ pub struct ClusteringResult {
     pub threads: Vec<ClusteringThread>,
 }
 
-// #[derive(Serialize, Deserialize, Debug, Clone)]
-// pub struct NewsItem {
-//     #[serde(rename = "_id")]
-//     pub id: ObjectId,
-//     pub title: String,
-//     pub link: String,
-//     pub date: bson::DateTime,
-//     pub og_image: String,
-//     pub html: Option<String>,
-// }
-
-// impl Default for NewsItem {
-//     fn default() -> Self {
-//         Self {
-//             id: ObjectId::new(),
-//             title: String::new(),
-//             link: String::new(),
-//             og_image: String::new(),
-//             html: None,
-//             date: Utc::now().into(),
-//         }
-//     }
-// }
-
-// impl Default for ClusteringThread {
-//     fn default() -> Self {
-//         Self {
-//             articles: Vec::default(),
-//             category: String::default(),
-//             title: String::default(),
-//             main_item: Card::default(),
-//         }
-//     }
-// }
+impl Default for ClusteringThread {
+    fn default() -> Self {
+        Self {
+            articles: Vec::default(),
+            category: String::default(),
+            title: String::default(),
+            main_item: Card::default(),
+        }
+    }
+}
 
 async fn clustering_logic(
     for_hours: i64,
@@ -147,6 +121,10 @@ async fn clustering_logic(
             //     }
             // }
 
+            if !source2name.contains_key(&item.source_id) {
+                return None;
+            }
+
             Some(ClusteringItem {
                 category: String::default(),
                 description: String::default(),
@@ -167,8 +145,9 @@ async fn clustering_logic(
     file.write_all(json_str.as_bytes()).unwrap();
     file.sync_all().unwrap();
 
-    let prev_cd = env::current_dir().unwrap();
+    let news_json_path = env::current_dir().unwrap().join("news.json");
 
+    let prev_cd = env::current_dir().unwrap();
     let cd = Path::new("news_nlp");
     env::set_current_dir(&cd).expect("Failed to change current dir to nlp folder");
 
@@ -179,7 +158,7 @@ async fn clustering_logic(
     // ./build/tgnews top test/data/news.json --from_json
     let output = Command::new(format!("./nlp_{}", env::consts::OS))
         .arg("top")
-        .arg("news.json")
+        .arg(&news_json_path)
         // .arg("--ru_clustering_distance_threshold")
         // .arg(clustering_distance_threshold.to_string())
         // .arg("--from_json")
@@ -188,12 +167,14 @@ async fn clustering_logic(
 
     env::set_current_dir(&prev_cd).expect("Failed to change current dir to prev folder");
 
-    let stderr = std::str::from_utf8(&output.stderr).unwrap_or_default();
-    dbg!(&stderr);
+    // let stderr = std::str::from_utf8(&output.stderr).unwrap_or_default();
+    // dbg!(&stderr);
 
     let stdout = std::str::from_utf8(&output.stdout).unwrap_or_default();
-    dbg!(&stdout);
+    // dbg!(&stdout);
     let result = serde_json::from_str::<Vec<ClusteringResult>>(stdout).unwrap();
+
+    // dbg!(&result);
 
     let mut clusters = vec![];
     for mut cluster in result {
@@ -264,6 +245,8 @@ async fn generate_news(
     )
     .await;
 
+    // dbg!(&clusters);
+
     for summary in clusters.iter_mut() {
         summary
             .threads
@@ -272,20 +255,25 @@ async fn generate_news(
         summary.threads = summary
             .threads
             .iter()
-            .filter(|thread| thread.articles.len() > 2)
+            // .filter(|thread| thread.articles.len() > 2)
+            .filter(|thread| thread.articles.len() >= 1)
             .take(15)
             .cloned()
             .collect();
+
+        // dbg!(&summary);
 
         let mut items_cache = HashMap::new();
         for mut thread in summary.threads.iter_mut() {
             for article_id in &thread.articles {
                 let article_id = ObjectId::with_string(article_id).unwrap();
+                // dbg!(&article_id);
                 let item = state
                     .fetcher
                     .fetch_exact_by_id(article_id.clone())
                     .await
                     .unwrap();
+                // dbg!(&item);
                 items_cache.insert(article_id, item);
             }
 
@@ -330,40 +318,43 @@ async fn generate_news(
 pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Result<()> {
     println!("--- GENERATE JSON FOR CLUSTERING ---");
 
-    let popular_clusters = generate_news(
-        6,
-        12,
-        300,
-        // 0.014,
-        NewsTitleSorting::DoNotSort,
-        state.clone(),
-        true,
-    )
-    .await;
-    state.ws_server_addr.do_send(PopularClusterMessage {
-        clusters: popular_clusters,
-    });
+    // let popular_clusters = generate_news(
+    //     // 6,
+    //     100000,
+    //     12,
+    //     300,
+    //     // 0.014,
+    //     NewsTitleSorting::DoNotSort,
+    //     state.clone(),
+    //     true,
+    // )
+    // .await;
+    // state.ws_server_addr.do_send(PopularClusterMessage {
+    //     clusters: popular_clusters,
+    // });
 
-    let summary_24h_clusters = generate_news(
-        24,
-        50,
-        300,
-        // 0.013,
-        NewsTitleSorting::Descending,
-        state.clone(),
-        false,
-    )
-    .await;
-    for cluster in summary_24h_clusters {
-        if cluster.category == "society" {
-            state
-                .ws_server_addr
-                .do_send(SummaryClusterMessage { cluster });
-        }
-    }
+    // let summary_24h_clusters = generate_news(
+    //     // 24,
+    //     100000,
+    //     50,
+    //     300,
+    //     // 0.013,
+    //     NewsTitleSorting::Descending,
+    //     state.clone(),
+    //     false,
+    // )
+    // .await;
+    // for cluster in summary_24h_clusters {
+    //     if cluster.category == "society" {
+    //         state
+    //             .ws_server_addr
+    //             .do_send(SummaryClusterMessage { cluster });
+    //     }
+    // }
 
     let most_recent_clusters = generate_news(
-        4,
+        // 4,
+        1000000,
         50,
         300,
         // 0.018,

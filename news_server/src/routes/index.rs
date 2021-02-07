@@ -1,7 +1,7 @@
-use crate::{card_queries::last_n, modules, tag_cache::TagCache};
 use crate::{layout_context::LayoutContext, state::State};
+use crate::{modules, tag_cache::TagCache};
 use actix_web::{get, web, HttpResponse, Responder};
-use news_general::tag::TagKind;
+use news_general::{card_queries::last_n, tag::TagKind};
 use tera::Context;
 
 #[get("/")]

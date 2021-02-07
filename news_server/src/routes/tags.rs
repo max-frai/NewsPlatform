@@ -1,9 +1,9 @@
-use crate::{
-    card_queries::last_25, helper::redirect, layout_context::LayoutContext, state::State,
-    tag_cache::TagCache,
-};
+use crate::{helper::redirect, layout_context::LayoutContext, state::State, tag_cache::TagCache};
 use actix_web::{get, web, HttpResponse, Responder};
-use news_general::tag::{Tag, TagKind};
+use news_general::{
+    card_queries::last_25,
+    tag::{Tag, TagKind},
+};
 use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tera::Context;

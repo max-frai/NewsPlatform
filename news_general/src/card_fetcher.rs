@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 use tokio::sync::RwLock;
 
-use crate::card_queries::CardQuery;
+use crate::{card::Card, card_queries::CardQuery, category, tag::TagsManager};
 use anyhow::Context;
 use anyhow::Result;
 use bson::{doc, oid::ObjectId};
@@ -10,7 +10,6 @@ use futures::stream::StreamExt;
 use lru_cache::LruCache;
 use mongodb::options::FindOptions;
 use mongodb::Collection;
-use news_general::{card::*, tag::TagsManager};
 
 pub struct CardFetcher {
     collection: Collection,
@@ -76,7 +75,7 @@ impl CardFetcher {
             query.query.insert(
                 "category",
                 doc! {
-                    "$ne" : format!("{:?}", news_general::category::Category::Unknown)
+                    "$ne" : format!("{:?}", category::Category::Unknown)
                 },
             );
         }
