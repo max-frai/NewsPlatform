@@ -124,14 +124,13 @@ h1 {
 }
 
 .tagItem:hover {
-    @apply cursor-pointer;
-    background: rgba(32,35,51,.07);
+    @apply cursor-pointer bg-gray-100;
 }
 
 
 .leftMenuItemActive,
 .leftMenuItem:hover {
-    background: rgba(32,35,51,.07);
+    @apply bg-gray-100;
 }
 
 .leftMenuItem:active {

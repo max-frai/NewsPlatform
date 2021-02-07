@@ -12,10 +12,10 @@
 </script>
 
 <h1 class="BlockTitle">Тренды на сегодня</h1>
-<div class="GrayBorder p-1 md:p-3 flex flex-wrap text-xs">
+<div class="GrayBorder p-1 md:p-3 flex flex-wrap text-xs text-center">
     {#each trends as trend}
         <div
-            class="mr-1 flex-none bg-gray-200 rounded-md px-1 md:px-3 py-1 mb-1
+            class="mr-1 flex-grow bg-gray-100 rounded-md px-1 md:px-3 py-1 mb-1
         capitalize"
         >
             {trend[0]}
