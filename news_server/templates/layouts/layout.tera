@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <script async src="/bundle.js?v=3"></script>
+    <script async src="/bundle.js?v=5"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YLXEFT0BQ"></script>

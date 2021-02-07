@@ -16,12 +16,16 @@ init({
 
 import Charts from './Charts.svelte';
 import RunningLine from './RunningLine.svelte';
+import TopNews from './TopNews.svelte';
 
 new Charts({
 	target: document.querySelector('#SvelteCharts')
 });
 new RunningLine({
 	target: document.querySelector('#SvelteRunningLine')
+});
+new TopNews({
+	target: document.querySelector('#SvelteTopNews')
 });
 
 // export default app;

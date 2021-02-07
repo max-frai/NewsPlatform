@@ -146,7 +146,7 @@
 
 <div class="bg-gray-200 rounded-lg">
   <div class="InfoBlockWrap mx-auto md:justify-center">
-    <SmartScroll classes="py-2">
+    <SmartScroll classes="py-2 pl-1">
       {#each chartBlocks as block}
         <InfoBlock {...block} />
       {/each}
