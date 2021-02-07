@@ -75,7 +75,7 @@
             <div class="FavoritedMoving" bind:this={threadContainer}>
                 {#each threads as thread}
                     <div class="flex-none ">
-                        <a href="/read/{thread.main_item._id.$oid}">
+                        <a href="#">
                             {thread.main_item.title}
                         </a>
                         &nbsp;&nbsp;
