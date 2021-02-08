@@ -8,7 +8,7 @@ edition = "2018"
 name = "news_websocket"
 
 [dependencies]
-actix-web = {version = "4.0.0-beta.1", features = ["rustls"] }
+actix-web = {version = "4.0.0-beta.1", features = ["openssl"] }
 actix-files = "0.6.0-beta.1"
 actix-service = "=2.0.0-beta.3"
 actix-rt = "=2.0.0-beta.2"
@@ -30,7 +30,7 @@ listenfd = "0.3"
 rsmorphy = "0.4"
 lazy_static = "1.4"
 chrono = "0.4"
-rustls = "0.19"
+openssl = "0.10"
 
 reqwest = { version = "0.11", features = ["json"] }
 

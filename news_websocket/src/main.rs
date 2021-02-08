@@ -11,11 +11,8 @@ use state::State;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
 
-use rustls::internal::pemfile::{certs, pkcs8_private_keys};
-use rustls::{NoClientAuth, ServerConfig};
-
-use std::fs::File;
-use std::io::BufReader;
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use std::io;
 
 pub mod air;
 pub mod fuel_uah;
@@ -131,18 +128,17 @@ async fn main() -> std::io::Result<()> {
     });
 
     println!("Configure cert for websocket server");
-    let mut config = ServerConfig::new(NoClientAuth::new());
-    let cert_file = &mut BufReader::new(File::open("cert.pem").unwrap());
-    let key_file = &mut BufReader::new(File::open("key.pem").unwrap());
-    let cert_chain = certs(cert_file).unwrap();
-    let mut keys = pkcs8_private_keys(key_file).unwrap();
-    config.set_single_cert(cert_chain, keys.remove(0)).unwrap();
+    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    builder
+        .set_private_key_file("key.pem", SslFiletype::PEM)
+        .unwrap();
+    builder.set_certificate_chain_file("cert.pem").unwrap();
 
     let mut listenfd = ListenFd::from_env();
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(l)?
     } else {
-        server.bind_rustls(&constants.ws_server_url, config)?
+        server.bind_openssl(&constants.ws_server_url, builder)?
     };
 
     server.run().await
