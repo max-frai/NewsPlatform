@@ -320,8 +320,8 @@ pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Re
     println!("--- GENERATE JSON FOR CLUSTERING ---");
 
     let popular_clusters = generate_news(
-        // 6,
-        100000,
+        6,
+        // 100000,
         12,
         300,
         // 0.014,
@@ -335,8 +335,8 @@ pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Re
     });
 
     let summary_24h_clusters = generate_news(
-        // 24,
-        100000,
+        24,
+        // 100000,
         50,
         300,
         // 0.013,
@@ -354,8 +354,8 @@ pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Re
     }
 
     let most_recent_clusters = generate_news(
-        // 4,
-        1000000,
+        4,
+        // 1000000,
         50,
         300,
         // 0.018,

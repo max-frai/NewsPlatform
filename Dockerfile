@@ -51,8 +51,8 @@ ADD Cargo.lock .
 COPY --from=cacher /newsplatform/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 RUN ls -la
-RUN ls -la ./target/release
 RUN cargo build --release
+RUN cd news_svelte && npm i && npm run build
 RUN ls -la
 
 # --------------------------------------------------
