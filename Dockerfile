@@ -43,16 +43,13 @@ RUN ls -la
 ADD news_general ./news_general
 ADD news_parser ./news_parser
 ADD news_server ./news_server
-ADD news_svelte ./news_svelte
 ADD news_websocket ./news_websocket
-ADD news_ner ./news_ner
 ADD Cargo.toml .
 ADD Cargo.lock .
 COPY --from=cacher /newsplatform/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 RUN ls -la
 RUN cargo build --release
-RUN cd news_svelte && npm i && npm run build
 RUN ls -la
 
 # --------------------------------------------------
@@ -80,15 +77,17 @@ COPY --from=builder /newsplatform/news_nlp/libgomp-75eea7e8.so.1 /usr/lib/
 COPY --from=builder /newsplatform/news_nlp/libtorch_cpu.so /usr/lib/
 COPY --from=builder /newsplatform/news_nlp/libc10.so /usr/lib/
 COPY --from=builder /newsplatform/news_nlp/libtorch.so /usr/lib/
-COPY --from=builder /newsplatform/news_nlp/configs ./configs
+#COPY --from=builder /newsplatform/news_nlp/configs ./configs
 COPY --from=builder /newsplatform/news_nlp ./news_nlp
 COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy
-COPY --from=builder /newsplatform/news_svelte ./news_svelte
+ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
 ADD news_ner ./news_ner
 ADD postcss.config.js .
 ADD tailwind.config.js .
 ADD Config.toml .
+
+RUN cd news_svelte && npm i && npm run build && cd ..
 
 COPY --from=builder /newsplatform/target/release/news_server .
 COPY --from=builder /newsplatform/target/release/news_parser .
