@@ -83,9 +83,9 @@ COPY --from=builder /newsplatform/news_nlp/libtorch.so /usr/lib/
 COPY --from=builder /newsplatform/news_nlp/configs ./configs
 COPY --from=builder /newsplatform/news_nlp ./news_nlp
 COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy
+COPY --from=builder /newsplatform/news_svelte ./news_svelte
 ADD news_templates ./news_templates
 ADD news_ner ./news_ner
-ADD news_svelte ./news_svelte
 ADD postcss.config.js .
 ADD tailwind.config.js .
 ADD Config.toml .
