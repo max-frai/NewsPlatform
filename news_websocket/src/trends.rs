@@ -259,7 +259,7 @@ async fn generate_trends(
 }
 
 pub async fn parse_trends(state: web::Data<State>) -> anyhow::Result<()> {
-    let morph = MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH);
+    let morph = MorphAnalyzer::from_file("news_rsmorphy/");
 
     let upper_utc_today: DateTime<Utc> = Utc::now();
     let lower_utc_today: DateTime<Utc> = Utc::now() - chrono::Duration::hours(24);
