@@ -236,6 +236,7 @@ impl Handler<Connect> for WsServer {
     fn handle(&mut self, msg: Connect, _: &mut Context<Self>) -> Self::Result {
         // println!("Someone connected");
         let id = self.add_client(msg.addr.clone());
+        println!("Connected to websocket: {}", id);
         for message in &self.last_messages {
             self.send_one(message.1.clone(), &msg.addr);
         }

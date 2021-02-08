@@ -1,1 +1,0 @@
-../../../news_svelte/public/build/bundle.js

@@ -211,7 +211,7 @@ async fn main() -> std::io::Result<()> {
             .service(exact_tag)
             .service(exact_tag_fix)
             .service(exact)
-            .service(Files::new("/static", "./templates/"))
+            .service(Files::new("/static", "./news_templates/"))
     });
 
     let mut listenfd = ListenFd::from_env();

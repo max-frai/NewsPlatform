@@ -3,7 +3,7 @@ use duct::cmd;
 pub async fn process_tailwind() -> std::io::Result<String> {
     // CSS MODULES ----
     let mut css_container = String::new();
-    let modules_dir = "templates/modules/";
+    let modules_dir = "news_templates/modules/";
 
     for entry in std::fs::read_dir(modules_dir)? {
         let entry = entry?;
@@ -20,7 +20,7 @@ pub async fn process_tailwind() -> std::io::Result<String> {
     // CSS SVELTE ----
 
     let mut css_svelte_container = String::new();
-    let css_svelte_dir = "templates/css_svelte/";
+    let css_svelte_dir = "news_templates/css_svelte/";
 
     for entry in std::fs::read_dir(css_svelte_dir)? {
         let entry = entry?.path();
@@ -31,10 +31,10 @@ pub async fn process_tailwind() -> std::io::Result<String> {
 
     // COMBINE CSS ----
 
-    let main_css = std::fs::read_to_string("templates/css/main.scss")?;
+    let main_css = std::fs::read_to_string("news_templates/css/main.scss")?;
     let all_css = format!("{}\n{}\n{}", main_css, css_container, css_svelte_container);
 
-    std::fs::write("templates/css/main.css", all_css)?;
+    std::fs::write("news_templates/css/main.css", all_css)?;
 
-    cmd!("postcss", "templates/css/main.css", "--replace").read()
+    cmd!("postcss", "news_templates/css/main.css", "--replace").read()
 }

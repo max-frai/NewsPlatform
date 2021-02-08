@@ -51,7 +51,7 @@ async fn main() -> std::io::Result<()> {
         constants.exact_card_cache_size,
     ));
 
-    println!("Start websocket server...");
+    println!("Start websocket server: {}", constants.ws_server_url);
     let ws_server_addr = ws_server::WsServer::default().start();
 
     let charts_manager = Arc::new(RwLock::new(Charts::new(ws_server_addr.clone())));

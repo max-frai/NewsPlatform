@@ -14,16 +14,18 @@ models_list=(
     "https://www.dropbox.com/s/5r1mhplhnnfr9xh/ru_idfs.txt"
     "https://www.dropbox.com/s/0up3us2ey999mgc/ru_tfidf_tsvd_embedder.pt"
 
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/en_sentence_embedder.pt?raw=true"
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/en_sentence_embedder_v2.pt?raw=true"
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/en_sentence_embedder_v3.pt?raw=true"
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/ru_sentence_embedder.pt?raw=true"
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/ru_sentence_embedder_v2.pt?raw=true"
-    "https://github.com/IlyaGusev/tgcontest/blob/master/models/ru_sentence_embedder_v3.pt?raw=true"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/en_sentence_embedder.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/en_sentence_embedder_v2.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/en_sentence_embedder_v3.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/ru_sentence_embedder.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/ru_sentence_embedder_v2.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/ru_sentence_embedder_v3.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/ru_sentence_embedder_v4_text.pt"
+    "https://github.com/IlyaGusev/tgcontest/raw/master/models/ru_sentence_embedder_v4_title.pt"
 )
 
 cd news_nlp
-mkdir models
+mkdir -p models
 cd models
 for url in ${models_list[@]}; do
     echo $url

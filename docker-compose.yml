@@ -14,22 +14,6 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./mongo-volume:/data/db
 
-    # deeppavlov:
-    #     image: deeppavlov/base-cpu:latest
-    #     container_name: "deeppavlov"
-    #     expose:
-    #         - "5000"
-    #     # ports:
-    #     #     - 127.0.0.1:5555:5000
-    #     volumes:
-    #         - ./dp_components:/root/.deeppavlov
-    #     environment:
-    #         - CONFIG=ner_ontonotes_bert_mult
-    #     deploy:
-    #         resources:
-    #             limits:
-    #                 memory: 10G
-
     newsplatform:
         restart: always
         build:
@@ -41,8 +25,8 @@ services:
             - ./news_parser/text2wikititle:/newsplatform/text2wikititle
         ports:
             - 127.0.0.1:2086:2086
+            - 127.0.0.1:2087:2087
         links:
             - mongodb_newsplatform
         depends_on:
             - mongodb_newsplatform
-            # - deeppavlov

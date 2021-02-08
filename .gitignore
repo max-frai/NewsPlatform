@@ -3,6 +3,7 @@ node_modules/
 mongo-volume
 mac-*/
 models/
+news_rsmorphy/
 dp_components/
 .DS_Store
 package-lock.json

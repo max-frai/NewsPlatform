@@ -1,6 +1,23 @@
-npm install tailwindcss
-npm install @fullhuman/postcss-purgecss
-cargo install systemfd cargo-watch
+### news_general
+Общие rust классы (карточка новости, ner-тег, загрузчик карточек с кешированием)
 
-<!-- npm i cssnano
-npx tailwindcss build main.scss -->
+### news_ner
+Python-скрипт для получения ner-тегов текстов
+
+### news_nlp
+Бинарник, который умеет выделять категорию текста (экономика, спорт, ...) и кластеризировать новости
+
+### news_rsmoprhy
+Контейнер с моделями для rsmorphy. Используется, например, в trends websocket parser. Загружается в download_models.sh
+
+### news_server
+Actix-сервер сайта
+
+### news_svelte
+Svelte компоненты для сайта. Компилируются в js, css бандлы и вставляются в сайт
+
+### news_templates
+Шаблоны для сайта, используются в news_server
+
+### news_websocket
+Вебсокет с динамической информация для сайта. Например курсы валют, тренды, топ новости

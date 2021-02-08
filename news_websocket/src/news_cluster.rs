@@ -146,6 +146,7 @@ async fn clustering_logic(
     file.sync_all().unwrap();
 
     let news_json_path = env::current_dir().unwrap().join("news.json");
+    // dbg!(&news_json_path);
 
     let prev_cd = env::current_dir().unwrap();
     let cd = Path::new("news_nlp");

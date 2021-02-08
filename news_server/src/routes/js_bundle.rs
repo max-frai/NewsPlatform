@@ -15,7 +15,7 @@ async fn js_bundle(state: web::Data<State>) -> actix_web::Result<impl Responder>
     }
 
     println!("Make js bundle cache");
-    let mut dir = fs::read_dir("./templates/js/").await?;
+    let mut dir = fs::read_dir("./news_templates/js/").await?;
 
     let mut paths = vec![];
     while let Some(child) = dir.next_entry().await? {

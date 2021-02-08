@@ -64,7 +64,7 @@ pub fn markdown2html(args: &HashMap<String, Value>) -> Result<Value> {
 }
 
 pub fn init_tera() -> Arc<Tera> {
-    let mut tera = Tera::new("templates/**/*.tera").expect("Failed to load templates");
+    let mut tera = Tera::new("news_templates/**/*.tera").expect("Failed to load templates");
     tera.register_function("make_card_url", make_card_url);
     tera.register_function("category_name", category_name);
     tera.register_function("markdown2html", markdown2html);
