@@ -8,7 +8,7 @@ edition = "2018"
 name = "news_websocket"
 
 [dependencies]
-actix-web = "4.0.0-beta.1"
+actix-web = {version = "4.0.0-beta.1", features = ["rustls"] }
 actix-files = "0.6.0-beta.1"
 actix-service = "=2.0.0-beta.3"
 actix-rt = "=2.0.0-beta.2"
@@ -30,12 +30,9 @@ listenfd = "0.3"
 rsmorphy = "0.4"
 lazy_static = "1.4"
 chrono = "0.4"
+rustls = "0.19"
 
 reqwest = { version = "0.11", features = ["json"] }
-
-# browser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/browser-rs.git" }
-# rss-parser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/rss-parser-rs.git" }
-# html2md = { git = "https://github.com/max-frai/html2md.git" }
 
 mongodb = "2.0.0-alpha"
 tokio = { version="1.1", features=["fs", "macros", "time"] }
