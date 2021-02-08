@@ -11,6 +11,12 @@ use state::State;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
 
+use rustls::internal::pemfile::{certs, pkcs8_private_keys};
+use rustls::{NoClientAuth, ServerConfig};
+
+use std::fs::File;
+use std::io::BufReader;
+
 pub mod air;
 pub mod fuel_uah;
 pub mod graphs_manager;
@@ -124,11 +130,19 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/ws").route(web::get().to(ws_server::ws_index)))
     });
 
+    println!("Configure cert for websocket server");
+    let mut config = ServerConfig::new(NoClientAuth::new());
+    let cert_file = &mut BufReader::new(File::open("cert.pem").unwrap());
+    let key_file = &mut BufReader::new(File::open("key.pem").unwrap());
+    let cert_chain = certs(cert_file).unwrap();
+    let mut keys = pkcs8_private_keys(key_file).unwrap();
+    config.set_single_cert(cert_chain, keys.remove(0)).unwrap();
+
     let mut listenfd = ListenFd::from_env();
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(l)?
     } else {
-        server.bind(&constants.ws_server_url)?
+        server.bind_rustls(&constants.ws_server_url, config)?
     };
 
     server.run().await

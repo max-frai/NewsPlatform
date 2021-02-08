@@ -86,6 +86,8 @@ ADD news_ner ./news_ner
 ADD postcss.config.js .
 ADD tailwind.config.js .
 ADD Config.toml .
+ADD cert.pem .
+ADD key.pem .
 
 RUN cd news_svelte && npm i && npm run build && cd ..
 
