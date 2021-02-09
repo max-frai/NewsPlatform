@@ -72,12 +72,12 @@ WORKDIR /newsplatform/
 
 ADD news_nlp ./news_nlp
 COPY --from=builder /newsplatform/news_nlp/models ./news_nlp/
+COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy/
 RUN cp news_nlp/libgomp-75eea7e8.so.1 /usr/lib/
 RUN cp news_nlp/libtorch_cpu.so /usr/lib/
 RUN cp news_nlp/libc10.so /usr/lib/
 RUN cp news_nlp/libtorch.so /usr/lib/
 
-ADD news_rsmorphy ./news_rsmorphy
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
 ADD news_ner ./news_ner
