@@ -7,11 +7,7 @@ RUN cargo install cargo-chef
 ADD news_general ./news_general
 ADD news_parser ./news_parser
 ADD news_server ./news_server
-ADD news_svelte ./news_svelte
 ADD news_websocket ./news_websocket
-ADD news_ner ./news_ner
-ADD news_nlp ./news_nlp
-ADD news_templates ./news_templates
 ADD Cargo.toml .
 ADD Cargo.lock .
 RUN cargo chef prepare  --recipe-path recipe.json
@@ -73,13 +69,15 @@ RUN pip3 install -U spacy
 RUN python3 -m spacy download ru_core_news_lg
 
 WORKDIR /newsplatform/
-COPY --from=builder /newsplatform/news_nlp/libgomp-75eea7e8.so.1 /usr/lib/
-COPY --from=builder /newsplatform/news_nlp/libtorch_cpu.so /usr/lib/
-COPY --from=builder /newsplatform/news_nlp/libc10.so /usr/lib/
-COPY --from=builder /newsplatform/news_nlp/libtorch.so /usr/lib/
-#COPY --from=builder /newsplatform/news_nlp/configs ./configs
-COPY --from=builder /newsplatform/news_nlp ./news_nlp
-COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy
+
+ADD news_nlp ./news_nlp
+COPY --from=builder /newsplatform/news_nlp/models ./news_nlp/
+RUN cp news_nlp/libgomp-75eea7e8.so.1 /usr/lib/
+RUN cp news_nlp/libtorch_cpu.so /usr/lib/
+RUN cp news_nlp/libc10.so /usr/lib/
+RUN cp news_nlp/libtorch.so /usr/lib/
+
+ADD news_rsmorphy ./news_rsmorphy
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
 ADD news_ner ./news_ner
