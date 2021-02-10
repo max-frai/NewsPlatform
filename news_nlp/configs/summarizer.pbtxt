@@ -1,2 +1,2 @@
-hosts_rating: "models/pagerank_rating.txt"
-alexa_rating: "models/alexa_rating_4_fixed.txt"
+hosts_rating: "news_nlp/models/pagerank_rating.txt"
+alexa_rating: "news_nlp/models/alexa_rating_4_fixed.txt"

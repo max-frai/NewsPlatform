@@ -100,21 +100,25 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
     let categories_json_path = env::current_dir().unwrap().join("categories.json");
 
-    let prev_cd = env::current_dir().unwrap();
-    let cd = Path::new("news_nlp");
-    env::set_current_dir(&cd).expect("Failed to change current dir to nlp folder");
-
     let handle = cmd!(
-        format!("./nlp_{}", env::consts::OS),
+        format!("./news_nlp/nlp_{}", env::consts::OS),
         "categories",
-        &categories_json_path
+        &categories_json_path,
+        "--server_config",
+        "news_nlp/configs/server.pbtxt",
+        "--annotator_config",
+        "news_nlp/configs/annotator.pbtxt",
+        "--clusterer_config",
+        "news_nlp/configs/clusterer.pbtxt",
+        "--summarizer_config",
+        "news_nlp/configs/summarizer.pbtxt",
+        "--ranker_config",
+        "news_nlp/configs/ranker.pbtxt",
     )
     .stdout_capture()
     .start()
     .expect("Failed to start nlp");
     let parse_result = handle.wait().expect("Failed to wait nlp");
-
-    env::set_current_dir(&prev_cd).expect("Failed to change current dir to prev folder");
 
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
     let threads = serde_json::from_str::<Vec<ClusteringThread>>(response_json).unwrap();

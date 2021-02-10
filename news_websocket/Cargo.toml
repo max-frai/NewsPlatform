@@ -19,6 +19,7 @@ news_general = {path = "../news_general"}
 bson = "1.1"
 rayon = "1.5"
 anyhow = "1.0"
+duct = "0.13"
 env_logger = "0.8"
 maplit = "1.0"
 regex = "1.4"

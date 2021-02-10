@@ -144,7 +144,7 @@
   }
 </script>
 
-<div class="bg-gray-200 rounded-lg">
+<div class="bg-gray-200 rounded-lg" style="min-height: 103px;">
   <div class="InfoBlockWrap mx-auto md:justify-center">
     <SmartScroll classes="py-2 pl-1">
       {#each chartBlocks as block}

@@ -4,6 +4,7 @@ use crate::{
 };
 use actix_web::web;
 use bson::{oid::ObjectId, *};
+use duct::*;
 use futures::StreamExt;
 use news_general::{card::Card, card_queries::last_hours};
 use rayon::prelude::*;
@@ -146,34 +147,29 @@ async fn clustering_logic(
     file.sync_all().unwrap();
 
     let news_json_path = env::current_dir().unwrap().join("news.json");
-    // dbg!(&news_json_path);
 
-    let prev_cd = env::current_dir().unwrap();
-    let cd = Path::new("news_nlp");
-    env::set_current_dir(&cd).expect("Failed to change current dir to nlp folder");
+    let handle = cmd!(
+        format!("./news_nlp/nlp_{}", env::consts::OS),
+        "top",
+        &news_json_path,
+        "--server_config",
+        "news_nlp/configs/server.pbtxt",
+        "--annotator_config",
+        "news_nlp/configs/annotator.pbtxt",
+        "--clusterer_config",
+        "news_nlp/configs/clusterer.pbtxt",
+        "--summarizer_config",
+        "news_nlp/configs/summarizer.pbtxt",
+        "--ranker_config",
+        "news_nlp/configs/ranker.pbtxt",
+    )
+    .stdout_capture()
+    .start()
+    .expect("Failed to start nlp");
+    let cluster_result = handle.wait().expect("Failed to wait nlp");
+    let response_json = std::str::from_utf8(&cluster_result.stdout).unwrap();
 
-    // println!(
-    //     "Execute clustering binary with clustering threshold: {}",
-    //     clustering_distance_threshold
-    // );
-    // ./build/tgnews top test/data/news.json --from_json
-    let output = Command::new(format!("./nlp_{}", env::consts::OS))
-        .arg("top")
-        .arg(&news_json_path)
-        // .arg("--ru_clustering_distance_threshold")
-        // .arg(clustering_distance_threshold.to_string())
-        // .arg("--from_json")
-        .output()
-        .unwrap();
-
-    env::set_current_dir(&prev_cd).expect("Failed to change current dir to prev folder");
-
-    // let stderr = std::str::from_utf8(&output.stderr).unwrap_or_default();
-    // dbg!(&stderr);
-
-    let stdout = std::str::from_utf8(&output.stdout).unwrap_or_default();
-    // dbg!(&stdout);
-    let result = serde_json::from_str::<Vec<ClusteringResult>>(stdout).unwrap();
+    let result = serde_json::from_str::<Vec<ClusteringResult>>(response_json).unwrap();
 
     // dbg!(&result);
 
