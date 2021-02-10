@@ -32,9 +32,12 @@ pub async fn process_tailwind() -> std::io::Result<String> {
     // COMBINE CSS ----
 
     let main_css = std::fs::read_to_string("news_templates/css/main.scss")?;
-    let all_css = format!("{}\n{}\n{}", main_css, css_container, css_svelte_container);
+    let all_css = format!(
+        "{}\n{}\n/*! purgecss start ignore */\n{}\n/*! purgecss end ignore */",
+        main_css, css_container, css_svelte_container
+    );
 
-    std::fs::write("news_templates/css/main.css", all_css)?;
+    std::fs::write("news_templates/css/main.css", all_css.to_owned())?;
 
     cmd!("postcss", "news_templates/css/main.css", "--replace").read()
 }

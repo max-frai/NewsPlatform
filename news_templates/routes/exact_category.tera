@@ -1,23 +1,20 @@
 {% extends "layouts/layout.tera" %}
-
 {% block meta %}
-<title>Новости {{ category_name }} - последние и главные новости на сегодня ➤ HubLoid</title>
-<meta name="description" content="HubLoid {{ category_name | escape }} ➤ Последние новости по теме {{ category_name | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" />
+    <title>Новости {{ category_name }} - последние и главные новости на сегодня ➤ HubLoid</title>
+    <meta
+        content="HubLoid {{ category_name | escape }} ➤ Последние новости по теме {{ category_name | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб
+            новостей!"
+        name="description"/>
 {% endblock %}
-
 {% block center_column %}
-
-<h1>{{ title }}</h1>
-
-<div style="background-image: url(/static/media/{{ category }}.jpg)" class="w-full h-48 bg-cover bg-center rounded-3xl my-3"></div>
-
-{% if center_content %}
-{{ center_content | safe }}
-{% endif %}
+    <h1>{{ title }}</h1>
+    <div class="w-full h-48 bg-cover bg-center rounded-3xl my-3" style="background-image: url(/static/media/{{ category }}.jpg)"></div>
+    {% if center_content %}
+        {{ center_content | safe }}
+    {% endif %}
 {% endblock %}
-
 {% block right_column %}
-{% if right_content %}
-{{ right_content | safe }}
-{% endif %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
 {% endblock %}

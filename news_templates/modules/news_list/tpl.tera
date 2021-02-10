@@ -1,18 +1,15 @@
 {% if title %}
-<h1 class="mb-2">{{ title }}</h1>
+    <h1 class="mb-2">{{ title }}</h1>
 {% endif %}
-
 <div class="GrayBorder text-sm md:p-3 md:px-4">
-
     {% for card in cards %}
-    <div class="mb-1 twoRows" title="{{ card.title | escape }}">
-        <a href="{{ make_card_url(card=card) }}">
-            <span class="dateMark">
-                {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
-            </span>
-            <span class="title">{{ card.title }}</span>
-        </a>
-    </div>
+        <div class="mb-1 twoRows" title="{{ card.title | escape }}">
+            <a href="{{ make_card_url(card=card) }}">
+                <span class="dateMark">
+                    {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
+                </span>
+                <span class="title">{{ card.title }}</span>
+            </a>
+        </div>
     {% endfor %}
-
 </div>

@@ -6,7 +6,7 @@
     <meta content="{{ article_description | escape }}" property="og:description"/>
     <meta
     content="{{ og_image }}" property="og:image"/> {# <meta property="og:image:width" content="617"/>
-        <meta property="og:image:height" content="617"/> #}
+                <meta property="og:image:height" content="617"/> #}
     <meta content="summary" name="twitter:card"/>
     <meta content="{{ article_name | escape }}" name="twitter:title"/>
     <meta content="{{ article_description | escape }}" name="twitter:description"/>
@@ -18,19 +18,18 @@
 {% block after_body %}
     <script type="application/ld+json">
         { "@context": "http://schema.org", "@type": "NewsArticle", "headline": "{{ article_name | escape }}",
-                "description": "{{ article_description | escape }}",
-                "name": "{{ article_name | escape }}
-        ➤ HubLoid",
-                "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}",
-                "mainEntityOfPage": {
-                    "@type": "WebPage",
-                    "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}
+                        "description": "{{ article_description | escape }}",
+                        "name": "{{ article_name | escape }}
+        ➤ HubLoid", "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}",
+                        "mainEntityOfPage": {
+                            "@type": "WebPage",
+                            "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}
         " }, "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
-                "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}
+                        "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}
         ", "author": { "@type": "Organization", "name": "HubLoid" }, "publisher": { "@type": "Organization", "name": "HubLoid", "logo": { "@type": "ImageObject", "url":
         "https://hubloid.com.ua/static/media/logo.svg" } }, "image": { "@type": "ImageObject", "representativeOfPage": "true", "url": "{{ og_image }}"
-                }
-            }
+                        }
+                    }
     </script>
 {% endblock %}
 {% block center_column %}

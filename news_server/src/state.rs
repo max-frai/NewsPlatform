@@ -17,8 +17,4 @@ pub struct State {
 
     pub js_bundle: Arc<RwLock<String>>,
     pub sitemap: Arc<RwLock<String>>,
-    // pub charts_manager: ChartsManager,
-    // pub ws_server_addr: Addr<WsServer>,
-
-    // pub sources_col: Collection,
 }
