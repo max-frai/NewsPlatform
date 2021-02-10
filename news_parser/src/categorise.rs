@@ -6,9 +6,9 @@ use mongodb::{
     Client,
 };
 use news_general::{category::Category, constants::AppConfig};
+use std::io::Write;
 use std::sync::Arc;
 use std::{collections::HashSet, env};
-use std::{io::Write, path::Path};
 
 use bson::oid::ObjectId;
 use chrono::Utc;

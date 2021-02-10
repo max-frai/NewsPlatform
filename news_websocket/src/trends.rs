@@ -6,7 +6,7 @@ use lazy_static::*;
 use maplit::hashmap;
 use news_general::card_queries::last_between_dates;
 use rayon::prelude::*;
-use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*, rsmorphy_dict_ru};
+use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*};
 use std::{
     collections::{BTreeMap, HashMap},
     sync::Mutex,

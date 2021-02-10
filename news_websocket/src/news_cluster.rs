@@ -10,8 +10,8 @@ use news_general::{card::Card, card_queries::last_hours};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::path::Path;
-use std::{collections::HashMap, io::Write, process::Command};
+// use std::path::Path;
+use std::{collections::HashMap, io::Write};
 
 #[derive(Serialize, Deserialize)]
 struct ClusteringItem {
