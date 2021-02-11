@@ -83,7 +83,7 @@ async fn main() {
                 })
                 .await;
 
-                sleep(Duration::from_secs(5)).await;
+                sleep(Duration::from_secs(20)).await;
             }
         });
     }

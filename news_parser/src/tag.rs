@@ -42,7 +42,7 @@ pub async fn tag_news(
 
     let options = FindOptions::builder()
         .sort(doc! {"date" : -1})
-        .limit(40)
+        .limit(20)
         .build();
 
     let news_cursor = news_collection
@@ -90,7 +90,9 @@ pub async fn tag_news(
         // println!("Text:\n{}", text.trim());
 
         let mut final_tags = vec![];
-        if let Some(ner_tags) = news_general::ner::ner_tags(format!("{}. {}", title, text)).await {
+        if let Some(ner_tags) =
+            news_general::ner::ner_tags(&constants.ner_url, format!("{}. {}", title, text)).await
+        {
             for pair in &ner_tags {
                 let word = pair.0.trim();
                 let kind = pair.1.to_owned();
@@ -101,7 +103,10 @@ pub async fn tag_news(
 
                 let mut tags_manager_mut = tags_manager.lock().await;
                 // tags_manager_mut.search_for_tag_in_wiki(word, kind);
-                if let Some(tag) = tags_manager_mut.search_for_tag_in_wiki(word, kind).await {
+                if let Some(tag) = tags_manager_mut
+                    .search_for_tag_in_wiki(&constants.ner_url, word, kind)
+                    .await
+                {
                     let tag_bson = bson::to_document(&tag).unwrap();
                     tags_col.insert_one(tag_bson, None).await;
 

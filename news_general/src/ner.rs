@@ -1,34 +1,32 @@
 use anyhow::*;
-use duct::*;
+// use duct::*;
 // use itertools::Itertools;
 use std::str::FromStr;
 // use strum::IntoEnumIterator;
 
 use crate::tag::TagKind;
 
-async fn ner(mut text: String) -> anyhow::Result<Vec<(String, String)>> {
+async fn ner(ner_link: &str, mut text: String) -> anyhow::Result<Vec<(String, String)>> {
     text = text
         .replace(">", " ")
         .replace("\n", " ")
         .replace("\u{301}", "");
 
-    let handle = cmd!(format!("python3"), "news_ner/process.py")
-        .stdin_bytes(text)
-        .stdout_capture()
-        .start()
-        .expect("Failed to start ner process");
-
-    let parse_result = handle.wait().expect("Failed to wait ner process");
-    let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
-
-    // dbg!(&response_json);
+    let client = reqwest::Client::new();
+    let response_json = client
+        .post(ner_link)
+        .body(text)
+        .send()
+        .await?
+        .text()
+        .await?;
 
     serde_json::from_str::<Vec<(String, String)>>(&response_json)
         .context("Failed to parse ner json")
 }
 
-pub async fn ner_tags(text: String) -> Option<Vec<(String, TagKind)>> {
-    let pairs = ner(text.trim().to_owned())
+pub async fn ner_tags(ner_link: &str, text: String) -> Option<Vec<(String, TagKind)>> {
+    let pairs = ner(ner_link, text.trim().to_owned())
         .await
         .unwrap_or(vec![])
         .iter()
@@ -40,7 +38,7 @@ pub async fn ner_tags(text: String) -> Option<Vec<(String, TagKind)>> {
         })
         .collect::<Vec<(String, TagKind)>>();
 
-    dbg!(&pairs);
+    // dbg!(&pairs);
 
     if pairs.is_empty() {
         // println!("No ner words, skip");

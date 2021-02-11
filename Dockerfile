@@ -65,7 +65,7 @@ RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader c
 # Spacy
 RUN pip3 install --upgrade pip
 RUN pip3 install -U pip setuptools wheel
-RUN pip3 install -U spacy
+RUN pip3 install -U spacy aiohttp
 RUN python3 -m spacy download ru_core_news_lg
 
 WORKDIR /newsplatform/
@@ -80,7 +80,7 @@ COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy/
 
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
-ADD news_ner ./news_ner
+ADD news_ner.py .
 ADD postcss.config.js .
 ADD tailwind.config.js .
 ADD Config.toml .

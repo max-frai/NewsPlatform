@@ -23,4 +23,5 @@ export DISPLAY=:42
 #nohup ./news_parser > parser_LOG &
 #echo "RUN SERVER"
 #./news_server &>> server_LOG
+#python3 news_ner.py
 sleep 1000000
