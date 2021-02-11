@@ -45,8 +45,7 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::parse::parse_news(client, constants).await;
                 })
-                .await
-                .unwrap();
+                .await;
 
                 sleep(Duration::from_secs(60)).await;
             }
@@ -64,8 +63,7 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::translate::translate_news(client, constants.clone()).await;
                 })
-                .await
-                .unwrap();
+                .await;
 
                 sleep(Duration::from_secs(60)).await;
             }
@@ -83,8 +81,8 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::categorise::categorise_news(client, constants.clone()).await;
                 })
-                .await
-                .unwrap();
+                .await;
+
                 sleep(Duration::from_secs(5)).await;
             }
         });
@@ -102,8 +100,7 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::tag::tag_news(client, constants, tags).await;
                 })
-                .await
-                .unwrap();
+                .await;
                 sleep(Duration::from_secs(10)).await;
             }
         });
@@ -120,8 +117,7 @@ async fn main() {
                 tokio::task::spawn(async move {
                     crate::rewrite::rewrite_news(client, constants.clone()).await;
                 })
-                .await
-                .unwrap();
+                .await;
                 sleep(Duration::from_secs(60)).await;
             }
         });

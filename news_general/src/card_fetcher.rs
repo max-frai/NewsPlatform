@@ -51,6 +51,7 @@ impl CardFetcher {
 
     pub async fn fetch(&self, mut query: CardQuery, cache: bool) -> Result<Vec<Card>> {
         let query_hash = query.to_string();
+        // dbg!(&query_hash);
 
         if cache {
             if let Ok(mut cache) = self.cache.lock() {
@@ -90,6 +91,8 @@ impl CardFetcher {
             .build();
 
         let mut cards = self.collection.find(query.query, options).await?;
+
+        // dbg!(&cards);
 
         let mut result = vec![];
         while let Some(card) = cards.next().await {
