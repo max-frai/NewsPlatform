@@ -63,58 +63,72 @@ async fn main() -> std::io::Result<()> {
         fetcher: fetcher.clone(),
         constants: constants.clone(),
         tags_manager: tags_manager.clone(),
-        // tags_cache: Arc::new(RwLock::new(HashMap::new())),
         ws_server_addr: ws_server_addr.clone(),
         charts_manager: charts_manager.clone(),
         sources_col: sources_col.clone(),
     });
 
-    let charts_manager_clone = charts_manager.clone();
+    let charts_manager2 = charts_manager.clone();
+    let charts_manager3 = charts_manager.clone();
+    let clustering1 = state.clone();
+    let clustering2 = state.clone();
+
     tokio::task::spawn(async move {
         loop {
-            stocks::parse_stocks(charts_manager_clone.clone())
-                .await
-                .unwrap();
+            println!("------- PARSE STOCKS -------");
+            let charts = charts_manager.clone();
+            tokio::task::spawn(async move {
+                stocks::parse_stocks(charts).await;
+            })
+            .await;
             sleep(Duration::from_secs(60 * 3)).await;
         }
     });
 
-    let charts_manager_clone2 = charts_manager.clone();
     tokio::task::spawn(async move {
         loop {
-            air::parse_air_quality(charts_manager_clone2.clone())
-                .await
-                .unwrap();
+            println!("------- PARSE AIR -------");
+            let charts = charts_manager2.clone();
+            tokio::task::spawn(async move {
+                air::parse_air_quality(charts).await;
+            })
+            .await;
             sleep(Duration::from_secs(60 * 10)).await;
         }
     });
 
-    let charts_manager_clone3 = charts_manager.clone();
     tokio::task::spawn(async move {
         loop {
-            fuel_uah::parse_black_uah(charts_manager_clone3.clone())
-                .await
-                .unwrap();
+            println!("----- PARSE BLACK UAH, FUEL -----");
+            let charts = charts_manager3.clone();
+            tokio::task::spawn(async move {
+                fuel_uah::parse_black_uah(charts).await;
+            })
+            .await;
             sleep(Duration::from_secs(60 * 4)).await;
         }
     });
 
-    let clustering_state = state.clone();
     tokio::task::spawn(async move {
         loop {
-            news_cluster::generate_json_for_clustering(clustering_state.clone())
-                .await
-                .unwrap();
+            println!("--- GENERATE JSON FOR CLUSTERING ---");
+            let clustering = clustering1.clone();
+            tokio::task::spawn(async move {
+                news_cluster::generate_json_for_clustering(clustering).await;
+            })
+            .await;
             sleep(Duration::from_secs(60 * 4)).await;
         }
     });
 
-    let clustering_state2 = state.clone();
     tokio::task::spawn(async move {
         loop {
-            trends::parse_trends(clustering_state2.clone())
-                .await
-                .unwrap();
+            println!("--- GENERATE TRENDS ---");
+            let clustering = clustering2.clone();
+            tokio::task::spawn(async move {
+                trends::parse_trends(clustering).await;
+            })
+            .await;
             sleep(Duration::from_secs(60 * 10)).await;
         }
     });

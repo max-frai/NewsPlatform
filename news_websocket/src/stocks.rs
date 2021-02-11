@@ -5,8 +5,6 @@ use serde_json::Value;
 use super::graphs_manager::ChartsManager;
 
 pub async fn parse_stocks(charts_manager: ChartsManager) -> anyhow::Result<()> {
-    println!("------- PARSE STOCKS -------");
-
     let day_stock_chart = "https://www.investing.com/common/modules/js_instrument_chart/api/data.php?pair_id=%PAIR_ID%&pair_id_for_news=%PAIR_ID%&chart_type=area&pair_interval=86400&candle_count=120&events=yes&volume_series=yes";
 
     let pairid_to_name = hashmap! {

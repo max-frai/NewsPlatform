@@ -313,8 +313,6 @@ async fn generate_news(
 }
 
 pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Result<()> {
-    println!("--- GENERATE JSON FOR CLUSTERING ---");
-
     let popular_clusters = generate_news(
         6,
         // 100000,

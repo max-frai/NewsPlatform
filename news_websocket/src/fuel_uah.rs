@@ -3,8 +3,6 @@ use maplit::*;
 use serde_json::Value;
 
 async fn parse_uah() -> anyhow::Result<Vec<f64>> {
-    println!("----- PARSE BLACK UAH -----");
-
     let url = "https://finance.i.ua/graph/avg_market/?currency=840";
 
     let json: Value = reqwest::get(url).await?.json().await?;
@@ -21,8 +19,6 @@ async fn parse_uah() -> anyhow::Result<Vec<f64>> {
 }
 
 async fn parse_fuel(fuel_type: &str) -> anyhow::Result<Vec<f64>> {
-    println!("----- PARSE FUEL -----");
-
     let url = format!(
         "https://finance.i.ua/graph/avg_fuel/?id=&fuel_type={}",
         fuel_type
