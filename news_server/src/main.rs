@@ -14,6 +14,7 @@ use listenfd::ListenFd;
 use crate::routes::categories::categories;
 use crate::routes::categories::categories_fix;
 use crate::routes::exact::exact;
+use crate::routes::exact::exact_amp;
 use crate::routes::exact_category::exact_category;
 use crate::routes::exact_category::exact_category_fix;
 use crate::routes::exact_tag::exact_tag;
@@ -211,6 +212,7 @@ async fn main() -> std::io::Result<()> {
             .service(exact_tag)
             .service(exact_tag_fix)
             .service(exact)
+            .service(exact_amp)
             .service(Files::new("/static", "./news_templates/"))
     });
 

@@ -1,0 +1,13 @@
+<div class="Article">
+    <h1 class="title pr-4 md:pr-8">{{ title }}</h1>
+    <a href="/{{ category | lower }}/">{{ category_name(category=category) }}</a>
+    {{ date['$date'] | date(format="%d %b %H:%M",timezone="Europe/Kiev") }}&nbsp;&nbsp;&nbsp;
+    <div class="ArticleContent leading-snug">
+        {{ html | safe }}
+    </div>
+    <div class="tagWrap mt-3">
+        {% for tag in filled_tags %}
+            {% include "modules/tag_item/tpl.tera" %}
+        {% endfor %}
+    </div>
+</div>

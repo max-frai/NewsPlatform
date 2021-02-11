@@ -1,0 +1,9 @@
+{% extends "layouts/layout_amp.tera" %}
+{% block meta %}
+    <title>{{ article_name | escape }} ➤ HubLoid</title>
+{% endblock %}
+{% block center_column %}
+    {% if center_content %}
+        {{ center_content | safe }}
+    {% endif %}
+{% endblock %}

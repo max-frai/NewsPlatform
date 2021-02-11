@@ -255,7 +255,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     let _project = &item.project.clone().unwrap();
 
                     if title.chars().count() < 40 {
-                        println!("Too small title, skip: {}", title);
+                        // println!("Too small title, skip: {}", title);
                         return None;
                     }
 

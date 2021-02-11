@@ -4,8 +4,8 @@ use actix_web::{get, web, HttpResponse, Responder};
 use news_general::card_queries::{last_15, last_25_by_category};
 use tera::Context;
 
-#[get("/{category}/{slug}.html")]
-async fn exact(
+async fn _exact_logic(
+    is_amp: bool,
     state: web::Data<State>,
     web::Path((url_category, slug)): web::Path<(String, String)>,
     mut context: LayoutContext,
@@ -18,12 +18,15 @@ async fn exact(
 
     let card = card.unwrap();
 
+    let exact_card_tpl = if !is_amp {
+        "modules/exact_card/tpl.tera"
+    } else {
+        "modules/exact_card_amp/tpl.tera"
+    };
+
     let center_tpl = state
         .tera
-        .render(
-            "modules/exact_card/tpl.tera",
-            &Context::from_serialize(&card).unwrap(),
-        )
+        .render(exact_card_tpl, &Context::from_serialize(&card).unwrap())
         .unwrap();
 
     let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
@@ -66,7 +69,31 @@ async fn exact(
     context.insert("article_description", &card.description);
     context.insert("og_image", &card.og_image);
 
+    let main_tpl = if !is_amp {
+        "routes/exact.tera"
+    } else {
+        "routes/exact_amp.tera"
+    };
+
     HttpResponse::Ok()
         .content_type("text/html")
-        .body(state.tera.render("routes/exact.tera", &context).unwrap())
+        .body(state.tera.render(main_tpl, &context).unwrap())
+}
+
+#[get("/amp/{category}/{slug}.html")]
+async fn exact_amp(
+    state: web::Data<State>,
+    web::Path((url_category, slug)): web::Path<(String, String)>,
+    context: LayoutContext,
+) -> impl Responder {
+    _exact_logic(true, state, web::Path((url_category, slug)), context).await
+}
+
+#[get("/{category}/{slug}.html")]
+async fn exact(
+    state: web::Data<State>,
+    web::Path((url_category, slug)): web::Path<(String, String)>,
+    context: LayoutContext,
+) -> impl Responder {
+    _exact_logic(false, state, web::Path((url_category, slug)), context).await
 }
