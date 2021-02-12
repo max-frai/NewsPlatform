@@ -22,7 +22,7 @@ regex = "1.4"
 html2md = "0.2"
 serde = "1.0"
 serde_json = "1.0"
-fluent = "0.14"
+fluent = "0.15"
 duct = "0.13"
 env_logger = "0.8"
 lru-cache = "0.1"
@@ -42,5 +42,5 @@ alphanumeric-sort = "1.4"
 strum = "0.18"
 strum_macros = "0.18"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }
-tokio = { version="1.1", features=["macros", "time", "fs"] }
+tokio = { version="1.2", features=["macros", "time", "fs"] }
 reqwest = { version = "0.11", features = ["json"] }

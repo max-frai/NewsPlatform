@@ -31,4 +31,4 @@ chrono = "0.4"
 unicode-normalization = "0.1"
 lru-cache = "0.1"
 
-tokio = { version="1.1", features=["macros", "time", "fs"] }
+tokio = { version="1.2", features=["macros", "time", "fs"] }
