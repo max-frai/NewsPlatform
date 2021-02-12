@@ -1,6 +1,6 @@
 use mongodb::Client;
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 use tokio::time::{sleep, Duration};
 
 use news_general::constants::*;
@@ -37,13 +37,16 @@ async fn main() {
     if constants.parser_parse {
         let parse_client = client.clone();
         let parse_constants = constants.clone();
+        let failed_to_parse_links = Arc::new(RwLock::new(Vec::<String>::new()));
+
         tokio::task::spawn(async move {
             loop {
                 println!("!!!!!!!!!!!!!!!!!!!!!!! Parse news.......");
                 let client = parse_client.clone();
                 let constants = parse_constants.clone();
+                let failed = failed_to_parse_links.clone();
                 tokio::task::spawn(async move {
-                    crate::parse::parse_news(client, constants).await;
+                    crate::parse::parse_news(client, constants, failed).await;
                 })
                 .await;
 

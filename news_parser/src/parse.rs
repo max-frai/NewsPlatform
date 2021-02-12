@@ -6,9 +6,10 @@ use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
-use std::env;
 use std::sync::Arc;
 use std::time::Duration;
+use std::{env, sync::Mutex};
+use tokio::sync::RwLock;
 use url::Url;
 use whatlang::{detect, Lang};
 
@@ -118,7 +119,16 @@ fn object_id_from_timestamp(timestamp: u32) -> ObjectId {
     ObjectId::with_bytes(buf)
 }
 
-pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
+enum ParseResult {
+    Correct(bson::Document),
+    Failed(String), // url slug
+}
+
+pub async fn parse_news(
+    client: Arc<Client>,
+    constants: Arc<AppConfig>,
+    failed_to_parse: Arc<RwLock<Vec<String>>>,
+) {
     let browser = Arc::new(Browser::new(
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
         Duration::from_secs(10),
@@ -139,14 +149,25 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .await
         .expect("Failed to get news for filtering");
 
-    let last_news_slug = last_news
+    let mut last_news_slug = last_news
         .collect::<Vec<Result<Document, mongodb::error::Error>>>()
         .await
         .iter()
         .map(|item| extract_bson_string(item.as_ref().unwrap().get("link")).unwrap_or_default())
         .collect::<Vec<String>>();
 
-    // println!("Last news slug length: {}", last_news_slug.len());
+    println!("Last news slug length: {}", last_news_slug.len());
+
+    // Append failed slugs to last slug
+    {
+        let failed = failed_to_parse.read().await;
+        last_news_slug.append(&mut failed.clone());
+    }
+
+    println!(
+        "Last news slug length WITH FAILED APPENDED: {}",
+        last_news_slug.len()
+    );
 
     // println!("Get all sources...");
     let _options = FindOptions::builder().limit(1).build();
@@ -230,7 +251,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         result_rss_items.shuffle(&mut rand::thread_rng());
 
         // println!("Parsing & inserting...");
-        let models: Vec<Document> = result_rss_items
+        let results: Vec<ParseResult> = result_rss_items
                 .par_iter()
                 .map(|item| {
                     if item.link.is_none()
@@ -242,7 +263,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                         || !item.link.clone().unwrap().has_host()
                     {
                         // println!("Empty link or title or wrong date, skip it");
-                        return None;
+                        // failed.lock().unwrap().push(link.to_string());
+                        // return ParseResult::Failed(link.to_string());
                     }
 
                     let link = item.link.clone().unwrap();
@@ -256,17 +278,17 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
                     if title.chars().count() < 40 {
                         // println!("Too small title, skip: {}", title);
-                        return None;
+                        return ParseResult::Failed(link.to_string());
                     }
 
                     // Skip very old articles
                     // if date < (Utc::now() - chrono::Duration::days(1)) {
                     if date < (Utc::now() - chrono::Duration::hours(4)) {
-                        return None;
+                        return ParseResult::Failed(link.to_string());
                     }
 
                     if date > Utc::now() {
-                        return None;
+                        return ParseResult::Failed(link.to_string());
                     }
 
                     // println!("Parse: {:?}", link);
@@ -279,18 +301,14 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                     .start();
 
                     if handle.is_err() {
-                        return None;
+                        return ParseResult::Failed(link.to_string());
                     }
 
                     let handle = handle.unwrap();
-                    // .unwrap();
-                    // .expect("Failed to execute parsebinary");
-
                     let parse_result = handle.wait();
 
                     if parse_result.is_err() {
-                        // dbg!(parse_result);
-                        return None;
+                        return ParseResult::Failed(link.to_string());
                     }
 
                     if let Ok(json) = serde_json::from_str::<Value>(
@@ -310,10 +328,6 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                             // URL should be the last regex!
                             regex::RegexBuilder::new(r"(([\w]+:)?//)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,63}(:[\d]+)?(/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?").size_limit(50 * (1 << 20)).build().unwrap()
                         ];
-
-                        // println!("================================");
-                        // dbg!(&html);
-                        // println!("================================");
 
                         let mut marks = vec![];
                         for re in mark_regex {
@@ -341,10 +355,6 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                                 .to_string();
                         }
 
-                        // for (from, to) in FAST_FIX.iter() {
-                        //     html = html.replace(from, to);
-                        // }
-
                         let markdown = html2md::parse_html(&html);
                         let lang = detect(&markdown)
                             .map(|info| info.lang())
@@ -352,20 +362,8 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                             .code()
                             .to_string();
 
-                        // if lang != "rus" {
-                        //     println!("Not russia text, skip this item");
-                        //     return None;
-                        // }
-
                         let _lower_content =
                             format!("{} {}", title.to_lowercase(), html.to_lowercase());
-
-                        // for stop in &constants.stop_words {
-                        //     if lower_content.contains(&stop.to_lowercase()) {
-                        //         println!("\tFound stop word: {}", stop);
-                        //         return None;
-                        //     }
-                        // }
 
                         let item = Card {
                             _id: ObjectId::new(),
@@ -391,16 +389,31 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                             tagged: false
                         };
 
-                        return Some(bson::to_bson(&item).unwrap().as_document().unwrap().clone());
+                        return ParseResult::Correct(bson::to_bson(&item).unwrap().as_document().unwrap().clone());
                     } else {
+                        return ParseResult::Failed(link.to_string());
                         // println!("Wrong returned json from parsebinary");
                     }
 
-                    None
+                    // ParseResult::Failed(link.to_string())
                 })
-                .filter(|model| model.is_some())
-                .map(|model| model.unwrap())
+                // .filter(|model| model.is_some())
+                // .map(|model| model.unwrap())
                 .collect();
+
+        let mut models = vec![];
+        let mut failed = vec![];
+        for item in results {
+            match item {
+                ParseResult::Correct(doc) => models.push(doc),
+                ParseResult::Failed(slug) => failed.push(slug),
+            };
+        }
+
+        {
+            println!("Failed slugs count: {}", failed.len());
+            failed_to_parse.write().await.append(&mut failed);
+        }
 
         println!("Models count: {}", models.len());
 
@@ -409,7 +422,6 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 .insert_many(models, InsertManyOptions::builder().ordered(false).build())
                 .await
                 .unwrap();
-            // .expect("Failed to insert news");
         }
     }
 }
