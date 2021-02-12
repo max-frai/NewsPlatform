@@ -101,7 +101,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     // dbg!(&response_json);
 
     if let Ok(json) = serde_json::from_str::<Value>(&response_json) {
-        println!("Rewrite finished, parse results");
+        // println!("Rewrite finished, parse results");
         // dbg!(&json);
 
         for item in json.as_array().unwrap() {

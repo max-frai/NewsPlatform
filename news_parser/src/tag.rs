@@ -97,9 +97,7 @@ pub async fn tag_news(
                 let word = pair.0.trim();
                 let kind = pair.1.to_owned();
 
-                println!("----------------------");
-                dbg!(word);
-                dbg!(&kind);
+                // println!("{} - {}", word, kind);
 
                 let mut tags_manager_mut = tags_manager.lock().await;
                 // tags_manager_mut.search_for_tag_in_wiki(word, kind);

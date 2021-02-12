@@ -123,7 +123,7 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let response_json = std::str::from_utf8(&parse_result.stdout).unwrap();
     let threads = serde_json::from_str::<Vec<ClusteringThread>>(response_json).unwrap();
 
-    dbg!(&threads);
+    // dbg!(&threads);
 
     println!("Update threads categories...");
     for thread in threads {

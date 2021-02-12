@@ -146,9 +146,9 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .map(|item| extract_bson_string(item.as_ref().unwrap().get("link")).unwrap_or_default())
         .collect::<Vec<String>>();
 
-    println!("Last news slug length: {}", last_news_slug.len());
+    // println!("Last news slug length: {}", last_news_slug.len());
 
-    println!("Get all sources...");
+    // println!("Get all sources...");
     let _options = FindOptions::builder().limit(1).build();
     // let options = FindOptions::builder().build();
     let mut result_rss_items: Vec<RssItemFull> = Vec::with_capacity(50);
@@ -159,7 +159,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .await
         .expect("Failed to get sources");
 
-    println!("Collect sources...");
+    // println!("Collect sources...");
     let mut all_sources = data_result
         .collect::<Vec<Result<Document, mongodb::error::Error>>>()
         .await
@@ -167,7 +167,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
         .map(|i| i.as_ref().unwrap().clone())
         .collect::<Vec<Document>>();
 
-    println!("Sources count: {}", all_sources.len());
+    // println!("Sources count: {}", all_sources.len());
     all_sources.shuffle(&mut rand::thread_rng());
 
     for source_chunk in all_sources.chunks(50) {
@@ -179,7 +179,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
                 let rss = RssProcessor::<RssItemFull>::new(ParseMode::Latest(100));
 
                 let rss_link = source.get("rss").unwrap().as_str().unwrap_or_default();
-                println!("Parse rss: {:?}", rss_link);
+                // println!("Parse rss: {:?}", rss_link);
 
                 let url = url::Url::parse(rss_link).unwrap();
                 let xml = browser
@@ -229,7 +229,7 @@ pub async fn parse_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
         result_rss_items.shuffle(&mut rand::thread_rng());
 
-        println!("Parsing & inserting...");
+        // println!("Parsing & inserting...");
         let models: Vec<Document> = result_rss_items
                 .par_iter()
                 .map(|item| {
