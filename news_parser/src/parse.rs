@@ -9,6 +9,7 @@ use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
 use std::sync::Arc;
 use std::time::Duration;
 use std::{env, sync::Mutex};
+use three_set_compare::ThreeSetCompare;
 use tokio::sync::RwLock;
 use url::Url;
 use whatlang::{detect, Lang};
@@ -149,9 +150,18 @@ pub async fn parse_news(
         .await
         .expect("Failed to get news for filtering");
 
-    let mut last_news_slug = last_news
+    let last_news_docs = last_news
         .collect::<Vec<Result<Document, mongodb::error::Error>>>()
-        .await
+        .await;
+
+    let last_news_title = last_news_docs
+        .iter()
+        .map(|item| extract_bson_string(item.as_ref().unwrap().get("title")).unwrap_or_default())
+        .collect::<Vec<String>>();
+
+    // dbg!(&last_news_title);
+
+    let mut last_news_slug = last_news_docs
         .iter()
         .map(|item| extract_bson_string(item.as_ref().unwrap().get("link")).unwrap_or_default())
         .collect::<Vec<String>>();
@@ -289,6 +299,14 @@ pub async fn parse_news(
 
                     if date > Utc::now() {
                         return ParseResult::Failed(link.to_string());
+                    }
+
+                    let comparator = ThreeSetCompare::new();
+                    for parsed_title in &last_news_title {
+                        if comparator.similarity(&title, parsed_title) > 0.85 {
+                            println!("Similar:\n{}\n{}\n-------------", title, parsed_title);
+                            return ParseResult::Failed(link.to_string());
+                        }
                     }
 
                     // println!("Parse: {:?}", link);
