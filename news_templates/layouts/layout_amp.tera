@@ -91,7 +91,7 @@
         </noscript>
     </head>
     <body>
-        {% block after_body %}{% endblock after_body %}
-        {% block center_column %}{% endblock center_column %}
-    </body>
-</html>
+        <div class="Article"> {% block after_body %}{% endblock after_body %}{% block center_column %}{% endblock center_column %}
+            </div>
+        </body>
+    </html>

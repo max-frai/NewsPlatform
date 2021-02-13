@@ -36,6 +36,7 @@ async fn exact_category(
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: None,
                 cards: category_cards,
+                is_amp: false,
             })
             .unwrap(),
         )
@@ -49,6 +50,7 @@ async fn exact_category(
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(String::from("Последнее")),
                 cards: last_cards,
+                is_amp: false,
             })
             .unwrap(),
         )

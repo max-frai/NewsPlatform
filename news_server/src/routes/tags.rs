@@ -60,6 +60,7 @@ async fn tag_logic(
             &Context::from_serialize(&crate::modules::news_list::NewsListTpl {
                 title: Some(String::from("Последнее")),
                 cards: last_cards,
+                is_amp: false,
             })
             .unwrap(),
         )

@@ -16,7 +16,7 @@ pub(crate) async fn generate_sitemap_xml(state: web::Data<State>) -> Result<Stri
         let url = format!(
             "{}{}",
             state.constants.full_domain,
-            make_card_url_raw(&card)
+            make_card_url_raw(&card, false)
         );
 
         urlwriter.url(url)?;

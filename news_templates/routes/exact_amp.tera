@@ -6,4 +6,7 @@
     {% if center_content %}
         {{ center_content | safe }}
     {% endif %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
 {% endblock %}

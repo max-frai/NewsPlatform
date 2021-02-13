@@ -1,20 +1,16 @@
 {% import "parts/lined_title.tera" as lined_title %}
-
 {% if title %}
-{{ lined_title::generate(title="<h2>" ~ title ~ "</h2>") }}
+    {{ lined_title::generate(title="<h2>" ~ title ~ "</h2>") }}
 {% endif %}
-
 <div class="text-sm mt-3 tracking-tight">
-
     {% for card in cards %}
-    <div class="mb-3 leading-tight" title="{{ card.title | escape }}">
-        <a href="{{ make_card_url(card=card) }}">
-            <span class="text-xs mr-1 font-bold text-gray-600 inline-block">
-                {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
-            </span>
-            <span class="title">{{ card.title }}</span>
-        </a>
-    </div>
+        <div class="mb-3 leading-tight" title="{{ card.title | escape }}">
+            <a href="{{ make_card_url(card=card, is_amp=is_amp) }}">
+                <span class="text-xs mr-1 font-bold text-gray-600 inline-block">
+                    {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
+                </span>
+                <span class="title">{{ card.title }}</span>
+            </a>
+        </div>
     {% endfor %}
-
 </div>

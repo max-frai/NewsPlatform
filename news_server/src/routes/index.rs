@@ -14,6 +14,7 @@ async fn index(state: web::Data<State>, mut context: LayoutContext) -> impl Resp
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(String::from("Последние новости")),
                 cards: index_cards,
+                is_amp: false,
             })
             .unwrap(),
         )

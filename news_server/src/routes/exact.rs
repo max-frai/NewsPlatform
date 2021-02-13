@@ -55,6 +55,7 @@ async fn _exact_logic(
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(String::from("Последнее")),
                 cards: last_cards,
+                is_amp,
             })
             .unwrap(),
         )
@@ -74,6 +75,7 @@ async fn _exact_logic(
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(card.category.to_description().to_string()),
                 cards: category_cards,
+                is_amp,
             })
             .unwrap(),
         )

@@ -5,4 +5,5 @@ use serde::{Deserialize, Serialize};
 pub struct NewsListTpl {
     pub title: Option<String>,
     pub cards: Vec<Card>,
+    pub is_amp: bool,
 }
