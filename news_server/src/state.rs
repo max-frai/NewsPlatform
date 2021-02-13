@@ -1,4 +1,4 @@
-use crate::tag_cache::TagCache;
+use crate::{node_helper::DomHelper, tag_cache::TagCache};
 // use actix::prelude::*;
 // use mongodb::Collection;
 use news_general::{card_fetcher::CardFetcher, tag::TagsManager};
@@ -17,4 +17,6 @@ pub struct State {
 
     pub js_bundle: Arc<RwLock<String>>,
     pub sitemap: Arc<RwLock<String>>,
+
+    pub dom_helper: Arc<DomHelper>,
 }

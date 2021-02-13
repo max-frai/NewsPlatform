@@ -1,5 +1,6 @@
 target/
 node_modules/
+node_modules
 mongo-volume
 mac-*/
 models/
@@ -14,3 +15,5 @@ categories.json
 news_templates/css/main.css
 news_server/package-lock.json
 Cargo.lock
+news.json
+news_server/news.json

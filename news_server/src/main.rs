@@ -28,6 +28,7 @@ use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
 use strum::IntoEnumIterator;
 
+use crate::node_helper::DomHelper;
 use config;
 use mongodb::Client;
 use news_general::tag::*;
@@ -42,6 +43,7 @@ pub mod indecies;
 pub mod layout_context;
 pub mod lowercase_middleware;
 pub mod modules;
+pub mod node_helper;
 pub mod routes;
 pub mod state;
 pub mod tag_cache;
@@ -102,6 +104,7 @@ async fn main() -> std::io::Result<()> {
         tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
+        dom_helper: Arc::new(DomHelper::new()),
     });
 
     // Tags reloader

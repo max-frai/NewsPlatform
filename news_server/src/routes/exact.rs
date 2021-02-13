@@ -24,10 +24,28 @@ async fn _exact_logic(
         "modules/exact_card_amp/tpl.tera"
     };
 
-    let center_tpl = state
+    let mut center_tpl = state
         .tera
         .render(exact_card_tpl, &Context::from_serialize(&card).unwrap())
         .unwrap();
+
+    if is_amp {
+        let root_node = state.dom_helper.parse_html(&center_tpl);
+        for img in state.dom_helper.select(&root_node, "img") {
+            state.dom_helper.set_node_attribute(&img, "layout", "fill");
+            let wrapper = state.dom_helper.wrap_with_element(&img, "div");
+            state
+                .dom_helper
+                .set_node_attribute(&wrapper, "class", "imgWrap");
+            state.dom_helper.rename_node(&img, "amp-img");
+        }
+
+        let mut result_html_buf: Vec<u8> = vec![];
+        root_node.serialize(&mut result_html_buf).unwrap();
+        center_tpl = std::str::from_utf8(&result_html_buf)
+            .unwrap_or_default()
+            .to_string();
+    }
 
     let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
     let right_tpl = state
