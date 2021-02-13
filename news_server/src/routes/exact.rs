@@ -88,6 +88,7 @@ async fn _exact_logic(
     context.insert("article_name", &card.title);
     context.insert("article_description", &card.description);
     context.insert("og_image", &card.og_image);
+    context.insert("is_amp", &is_amp);
 
     let main_tpl = if !is_amp {
         "routes/exact.tera"
