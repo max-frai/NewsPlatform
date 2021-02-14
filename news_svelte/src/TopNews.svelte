@@ -1,6 +1,6 @@
 <script>
   import { WsMainStore } from "./ws_store.js";
-  import { crc32 } from "./utils.js";
+  import { cardUrl, crc32 } from "./utils.js";
   import SmartScroll from "./components/SmartScroll.svelte";
   import SvgFilters from "./components/SvgFilters.svelte";
   import { _ } from "svelte-i18n";
@@ -60,13 +60,12 @@
   <div class="TopNewsWrap GrayBorder">
     <SmartScroll classes="py-3 px-3" scroll_koef={0.03}>
       {#each cluster.threads as thread}
-        <a class="link linkWidth" href="#">
+        <a class="link linkWidth" href={cardUrl(thread.main_item)}>
           <div
             class="item "
             style="background-color: rgb({filters2bg[
               thread.filter
-            ]}); filter:
-              url(#{thread.filter});"
+            ]}); filter: url(#{thread.filter});"
           >
             <div
               class="bg-cover w-full h-full"

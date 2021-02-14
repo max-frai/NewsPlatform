@@ -1,5 +1,6 @@
 <script>
     import { WsMainStore } from "./ws_store.js";
+    import { cardUrl } from "./utils.js";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
     import { tick } from "svelte";
@@ -75,7 +76,7 @@
             <div class="FavoritedMoving" bind:this={threadContainer}>
                 {#each threads as thread}
                     <div class="flex-none ">
-                        <a href="#">
+                        <a href={cardUrl(thread.main_item)}>
                             {thread.main_item.title}
                         </a>
                         &nbsp;&nbsp;
