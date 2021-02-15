@@ -1,7 +1,16 @@
 {% extends "layouts/layout_amp.tera" %}
 {% block meta %}
     <title>{{ article_name | escape }} ➤ HubLoid</title>
+    <meta content="HubLoid {{ article_category | escape }} ➤ {{ article_description | escape }}" name="description"/>
+    <meta content="{{ article_name | escape }}" property="og:title"/>
+    <meta content="{{ article_description | escape }}" property="og:description"/>
+    <meta content="{{ og_image }}" property="og:image"/>
+    <meta content="summary" name="twitter:card"/>
+    <meta content="{{ article_name | escape }}" name="twitter:title"/>
+    <meta content="{{ article_description | escape }}" name="twitter:description"/>
+    <meta content="{{ og_image }}" name="twitter:image"/>
     <link href="{{ PROJECT_DOMAIN }}{{ make_card_url(card=card, is_amp=false) }}" rel="canonical"/>
+    {% include "parts/ldjson.tera" %}
 {% endblock %}
 {% block center_column %}
     {% if center_content %}

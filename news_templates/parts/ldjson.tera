@@ -1,0 +1,33 @@
+<script type="application/ld+json">
+    {
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "headline": "{{ article_name | escape}}",
+    "description": "{{ article_description | escape}}",
+    "name": "{{ article_name | escape}} ➤ HubLoid",
+    "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card,is_amp=is_amp) }}",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card,is_amp=is_amp) }}"
+    },
+    "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
+    "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
+    "author": {
+        "@type": "Organization",
+        "name": "HubLoid"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "HubLoid",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://hubloid.com.ua/static/media/logo.svg"
+        }
+    },
+    "image": {
+        "@type": "ImageObject",
+        "representativeOfPage": "true",
+        "url": "{{ og_image }}"
+    }
+}
+</script>

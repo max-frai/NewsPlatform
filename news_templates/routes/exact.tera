@@ -10,19 +10,12 @@
     <meta content="{{ article_description | escape }}" name="twitter:description"/>
     <meta content="{{ og_image }}" name="twitter:image"/>
     <link href="{{ PROJECT_DOMAIN }}{{ make_card_url(card=card, is_amp=true) }}" rel="amphtml"/>
+    {% include "parts/ldjson.tera" %}
 {% endblock %}
 {% block left_column %}
     {% include "parts/popular_tags.tera" %}
 {% endblock %}
 {% block after_body %}
-    <script type="application/ld+json">
-        { "@context": "http://schema.org", "@type": "NewsArticle", "headline": "{{ article_name | escape }}",
-                                "description": "{{ article_description | escape }} ", "name": "{{ article_name | escape }}
-        ➤ HubLoid", "url": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }} ", "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ PROJECT_DOMAIN ~ make_card_url(card=card) }}
-        " }, "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }} ", "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}
-        ", "author": { "@type": "Organization", "name": "HubLoid" }, "publisher": { "@type": "Organization", "name": "HubLoid", "logo": { "@type": "ImageObject", "url":
-        "https://hubloid.com.ua/static/media/logo.svg" } }, "image": { "@type": "ImageObject", "representativeOfPage": "true", "url": "{{ og_image }} " } }
-    </script>
 {% endblock %}
 {% block center_column %}
     {% if center_content %}
