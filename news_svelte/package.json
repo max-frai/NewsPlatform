@@ -22,7 +22,9 @@
   },
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
+    "countup": "^1.8.2",
     "sirv-cli": "^1.0",
-    "svelte-i18n": "^3.3.0"
+    "svelte-i18n": "^3.3.0",
+    "svelte-watch-resize": "^1.0.3"
   }
 }

@@ -25,9 +25,26 @@ pub mod trends;
 pub mod ws_client;
 pub mod ws_server;
 
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+#[structopt(name = "running", about = "Analytics Platform")]
+struct Args {
+    /// Activate debug mode
+    #[structopt(short = "d", long = "dev")]
+    dev: bool,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
+
+    let args = Args::from_args();
+    let is_dev = args.dev;
+
+    if is_dev {
+        println!("------- DEVELOPMENT --------");
+    }
 
     let mut settings = config::Config::default();
     settings
@@ -166,7 +183,11 @@ async fn main() -> std::io::Result<()> {
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(l)?
     } else {
-        server.bind_openssl(&constants.ws_server_url, builder)?
+        if is_dev {
+            server.bind(&constants.ws_server_url)?
+        } else {
+            server.bind_openssl(&constants.ws_server_url, builder)?
+        }
     };
 
     server.run().await
