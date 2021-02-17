@@ -1,4 +1,6 @@
-use crate::{news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient};
+use crate::{
+    covid::CovidData, news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient,
+};
 use actix::prelude::*;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
@@ -66,9 +68,9 @@ pub struct MostRecentClusterMessage {
 //     pub tweets: Vec<Tweets>,
 // }
 
-// #[derive(Message, Serialize, Debug)]
-// #[rtype(result = "()")]
-// pub struct CovidTimeMessage(pub CovidData);
+#[derive(Message, Serialize, Debug)]
+#[rtype(result = "()")]
+pub struct CovidTimeMessage(pub CovidData);
 
 // #[derive(Message, Serialize, Debug)]
 // #[rtype(result = "()")]
@@ -206,13 +208,13 @@ impl Handler<SummaryClusterMessage> for WsServer {
     }
 }
 
-// impl Handler<CovidTimeMessage> for WsServer {
-//     type Result = ();
+impl Handler<CovidTimeMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: CovidTimeMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: CovidTimeMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 // impl Handler<CovidMapMessage> for WsServer {
 //     type Result = ();

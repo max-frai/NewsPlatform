@@ -15,6 +15,7 @@ use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 // use std::io;
 
 pub mod air;
+pub mod covid;
 pub mod fuel_uah;
 pub mod graphs_manager;
 pub mod news_cluster;
@@ -72,6 +73,7 @@ async fn main() -> std::io::Result<()> {
     let charts_manager3 = charts_manager.clone();
     let clustering1 = state.clone();
     let clustering2 = state.clone();
+    let covid_state = state.clone();
 
     tokio::task::spawn(async move {
         loop {
@@ -127,6 +129,18 @@ async fn main() -> std::io::Result<()> {
             let clustering = clustering2.clone();
             tokio::task::spawn(async move {
                 trends::parse_trends(clustering).await;
+            })
+            .await;
+            sleep(Duration::from_secs(60 * 10)).await;
+        }
+    });
+
+    tokio::task::spawn(async move {
+        loop {
+            println!("--- PARSE COVID ---");
+            let covid = covid_state.clone();
+            tokio::task::spawn(async move {
+                covid::parse_covid(covid).await;
             })
             .await;
             sleep(Duration::from_secs(60 * 10)).await;

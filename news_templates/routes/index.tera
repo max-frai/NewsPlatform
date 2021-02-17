@@ -6,6 +6,7 @@
 {% block center_column %}
     {% include "parts/graphs.tera" %}
     <div id="SvelteTrends"></div>
+    <div id="SvelteCovid"></div>
     <div id="SvelteTopNews"></div>
     {% if center_content %}
         {{ center_content | safe }}
