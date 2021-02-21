@@ -127,10 +127,14 @@ h1 {
     @apply cursor-pointer bg-gray-100;
 }
 
+.menuRows {
+    @apply flex justify-center border-gray-200 border-t border-b;
+}
+
 
 .leftMenuItemActive,
 .leftMenuItem:hover {
-    @apply bg-gray-100;
+    color: #cda877 !important;
 }
 
 .leftMenuItem:active {
@@ -138,7 +142,8 @@ h1 {
 }
 
 .leftMenuItem {
-    @apply mb-2 py-2 px-2 rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200;
+    @apply py-2 px-4 text-sm font-medium rounded-full inline-flex items-center cursor-pointer transform select-none transition-all duration-200 text-gray-600;
+    font-family: "ysans-serif" !important;
 }
 
 
@@ -146,18 +151,13 @@ h1 {
     @apply hidden xl:block;
 }
 
-.MenuContainerFixed {
-    @apply fixed h-full text-center;
-    width: 50px;
-}
 
 .MenuContainer {
-    @apply relative hidden;
-    width: 50px;
+    @apply relative  w-full;
 }
 
 #content {
-    @apply w-full md:px-5 lg:px-8 xl:px-10;
+    @apply w-full pr-8;
 }
 
 #sidebar {
@@ -177,9 +177,6 @@ h1 {
         width: 600px;
     }
 
-    .MenuContainer {
-        @apply block;
-    }
 
     #sidebar {
         width: 250px;
@@ -208,15 +205,6 @@ h1 {
 
 
 @screen xl {
-    .MenuContainer, .MenuContainerFixed {
-        width: 200px;
-        @apply text-left;
-    }
-
-    .leftMenuItem {
-        @apply w-full text-lg font-medium px-4;
-    }
-
     #content {
         width: 700px;
     }

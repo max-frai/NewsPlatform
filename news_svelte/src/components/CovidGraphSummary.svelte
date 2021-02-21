@@ -47,7 +47,7 @@
     }
 </script>
 
-<div class="absolute left-0 w-64 h-24 pl-2 md:pl-5 pt-2">
+<div class="absolute left-0 w-64 h-24">
     <div class="maintitle">{title}</div>
 
     <div class="body">
@@ -71,15 +71,6 @@
             </div>
         </div>
     </div>
-
-    {#if deathsRate}
-        <div class="summaryWrap">
-            <div class="title">Смертность</div>
-            <div class="value ">
-                <span>{formatInterval(deathsRate)}%</span>
-            </div>
-        </div>
-    {/if}
 </div>
 
 <style type="text/postcss">

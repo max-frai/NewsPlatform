@@ -26,7 +26,10 @@
     }
 
     function startAnimation(container) {
-        if (!container) return;
+        if (!container) {
+            console.log("Container is null, return startAnimation runningLine");
+            return;
+        }
 
         let firstElement = container.firstElementChild;
         let lastElement = container.lastElementChild;
@@ -34,7 +37,7 @@
         let width = rect.width;
 
         translateX = -Math.round(width);
-        transitionDuration = Math.round(width * 20);
+        transitionDuration = Math.round(width * 18);
 
         window.setTimeout(async () => {
             swapSibling(firstElement, lastElement);
@@ -63,7 +66,7 @@
 </script>
 
 {#if threads.length >= 3}
-    <div class="Wrap mb-2 md:mb-3">
+    <div class="Wrap py-2">
         <div class="WhiteShadeoutLeft" />
         <div
             class="transition-all"

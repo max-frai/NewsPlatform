@@ -303,7 +303,7 @@ pub async fn parse_news(
 
                     let comparator = ThreeSetCompare::new();
                     for parsed_title in &last_news_title {
-                        if comparator.similarity(&title, parsed_title) > 0.92 {
+                        if comparator.similarity(&title, parsed_title) > 0.95 {
                             println!("Similar:\n{}\n{}\n-------------", title, parsed_title);
                             return ParseResult::Failed(link.to_string());
                         }

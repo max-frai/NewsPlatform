@@ -40,7 +40,6 @@
     if (!jsonData) return;
     if (jsonData.kind != "PopularClusterMessage") return;
     jsonData = JSON.parse(jsonData.data);
-    console.log(jsonData);
     clusters = jsonData.clusters;
     for (var i = 0; i < clusters.length; i++) {
       let threads = clusters[i].threads;

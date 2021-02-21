@@ -74,7 +74,7 @@
     green: "rgb(37,184,100)",
     blue: "rgb(54, 162, 235)",
     purple: "rgb(153, 102, 255)",
-    grey: "rgb(201, 203, 207)"
+    grey: "rgb(201, 203, 207)",
   };
 
   function updateGraph(jsonData) {
@@ -209,7 +209,14 @@
     CovidStore.deathRateUa(totalConfirmedUa, totalDeathsUa);
     // ----------
 
-    diffConfirmedUa = totalConfirmedUa - confirmed[confirmed.length - 1];
+    // console.log("totalConfirmedUa:");
+    // console.log(totalConfirmedUa);
+
+    // console.log(confirmed[confirmed.length - 1]);
+    // console.log(confirmed[confirmed.length - 2]);
+
+    diffConfirmedUa = confirmedDiff[confirmedDiff.length - 1];
+    // diffConfirmedUa = totalConfirmedUa - confirmed[confirmed.length - 1];
     diffRecoveredUa = totalRecoveredUa - recovered[recovered.length - 1];
     diffDeathsUa = totalDeathsUa - deaths[deaths.length - 1];
 
@@ -236,7 +243,7 @@
           y: svgHeight - height,
           width: barWidth,
           height,
-          fill
+          fill,
         });
       }
 
@@ -299,24 +306,8 @@
   }
 </script>
 
-<style type="text/postcss">
-  .GraphWrap {
-    @apply relative overflow-hidden w-full mt-1;
-  }
-
-  .GraphWrapHeight {
-    height: 140px;
-  }
-
-  @screen md {
-    .GraphWrapHeight {
-      height: 135px;
-    }
-  }
-</style>
-
-<div class="w-1/2" use:watchResize={renderGraph}>
-  <div
+<div class="w-full" use:watchResize={renderGraph}>
+  <!-- <div
     class="GraphWrap GraphWrapHeight"
     bind:clientWidth={svgWidth}
     bind:clientHeight={svgHeight}>
@@ -334,15 +325,20 @@
         <rect {...deathsAllRects[index]} />
       {/each}
     </svg>
-  </div>
+  </div> -->
 
-  <div class="GraphWrap GraphWrapHeight">
+  <div
+    class="GraphWrap GraphWrapHeight"
+    bind:clientWidth={svgWidth}
+    bind:clientHeight={svgHeight}
+  >
     <CovidGraphSummary
-      title="Украина — всего"
+      title="Коронавирус в Украине"
       confirmed={totalConfirmedUa}
       deaths={totalDeathsUa}
       recovered={totalRecoveredUa}
-      deathsRate={$CovidStore.deathsRateUa} />
+      deathsRate={$CovidStore.deathsRateUa}
+    />
     <svg width="100%" height="100%">
       {#each [...Array(timestamps.length).keys()] as index}
         <rect {...confirmedRects[index]} />
@@ -353,8 +349,8 @@
   </div>
 </div>
 
-<div class="w-1/2">
-  <div class="GraphWrap GraphWrapHeight">
+<!-- <div class="w-1/2"> -->
+<!-- <div class="GraphWrap GraphWrapHeight">
     <CovidGraphSummary
       title="Весь мир — сегодня"
       predictValues={true}
@@ -368,14 +364,16 @@
         <rect {...deathsAllDiffRects[index]} />
       {/each}
     </svg>
-  </div>
+  </div> -->
 
-  <div class="GraphWrap GraphWrapHeight">
+<!-- <div class="GraphWrap GraphWrapHeight">
     <CovidGraphSummary
       title="Украина — сегодня"
+      predictValues={true}
       confirmed={diffConfirmedUa}
       deaths={diffDeathsUa}
-      recovered={diffRecoveredUa} />
+      recovered={diffRecoveredUa}
+    />
     <svg width="100%" height="100%">
       {#each [...Array(timestamps.length).keys()] as index}
         <rect {...confirmedDiffRects[index]} />
@@ -384,4 +382,19 @@
       {/each}
     </svg>
   </div>
-</div>
+</div> -->
+<style type="text/postcss">
+  .GraphWrap {
+    @apply relative overflow-hidden w-full;
+  }
+
+  .GraphWrapHeight {
+    height: 140px;
+  }
+
+  @screen md {
+    .GraphWrapHeight {
+      height: 100px;
+    }
+  }
+</style>

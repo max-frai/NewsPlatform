@@ -3,8 +3,7 @@ use actix_web::web;
 use bson::{bson, doc, oid::ObjectId, Bson};
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
-use serde_json::{Result, Value};
-use std::{cmp, collections::HashMap, io::Read, sync::Arc};
+use std::{cmp, collections::HashMap};
 use ws_server::CovidTimeMessage;
 
 pub type CovidPoints = Vec<(i64, i64)>;
@@ -198,10 +197,10 @@ pub async fn parse_covid(state: web::Data<State>) -> anyhow::Result<()> {
     let overall_better = "https://www.worldometers.info/coronavirus/";
     let tkmedia = "https://tk.media/coronavirus";
 
-    let (confirmed_points, confirmed_points_all) = generate_timing(confirmed, 218).await?;
-    let (deaths_points, deaths_points_all) = generate_timing(deaths, 218).await?;
+    let (confirmed_points, confirmed_points_all) = generate_timing(confirmed, 254).await?;
+    let (deaths_points, deaths_points_all) = generate_timing(deaths, 254).await?;
     let (recovered_points, recovered_points_all) = generate_timing(recovered, 188).await?;
-    // dbg!(&recovered_points);
+    // dbg!(&deaths_points);
 
     let ukraine_results_tkmedia = parse_ukraine_tkmedia(tkmedia).await?;
     let overall_results = parse_overall(overall).await?;
@@ -248,14 +247,35 @@ pub async fn parse_covid(state: web::Data<State>) -> anyhow::Result<()> {
 
     // dbg!(&overall_results);
 
+    let skip_step = 3;
     state.ws_server_addr.do_send(CovidTimeMessage(CovidData {
-        confirmed_points,
-        deaths_points,
-        recovered_points,
+        confirmed_points: confirmed_points
+            .iter()
+            .step_by(skip_step)
+            .cloned()
+            .collect(),
+        deaths_points: deaths_points.iter().step_by(skip_step).cloned().collect(),
+        recovered_points: recovered_points
+            .iter()
+            .step_by(skip_step)
+            .cloned()
+            .collect(),
 
-        confirmed_points_all,
-        deaths_points_all,
-        recovered_points_all,
+        confirmed_points_all: confirmed_points_all
+            .iter()
+            .step_by(skip_step)
+            .cloned()
+            .collect(),
+        deaths_points_all: deaths_points_all
+            .iter()
+            .step_by(skip_step)
+            .cloned()
+            .collect(),
+        recovered_points_all: recovered_points_all
+            .iter()
+            .step_by(skip_step)
+            .cloned()
+            .collect(),
 
         confirmed_ua: (overall_results_final.0).0,
         deaths_ua: (overall_results_final.0).1,

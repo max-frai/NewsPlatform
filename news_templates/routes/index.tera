@@ -6,13 +6,13 @@
 {% block center_column %}
     {% include "parts/graphs.tera" %}
     <div id="SvelteTrends"></div>
-    <div id="SvelteCovid"></div>
     <div id="SvelteTopNews"></div>
     {% if center_content %}
         {{ center_content | safe }}
     {% endif %}
 {% endblock %}
 {% block right_column %}
+    <div id="SvelteCovid"></div>
     <h1>Популярные люди</h1>
     <div class="tagWrap mt-3">
         {% for tag in top_persons %}
