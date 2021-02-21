@@ -48,7 +48,7 @@
 </script>
 
 <div class="absolute left-0 w-64 h-24">
-    <div class="maintitle">{title}</div>
+    <!-- <div class="maintitle">{title}</div> -->
 
     <div class="body">
         <div class="summaryWrap">

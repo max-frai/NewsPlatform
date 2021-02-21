@@ -84,7 +84,7 @@ strong {
 }
 
 h1 {
-    @apply text-xl my-3;
+    @apply text-lg my-3;
 }
 
 
@@ -147,9 +147,6 @@ h1 {
 }
 
 
-.leftMenuText {
-    @apply hidden xl:block;
-}
 
 
 .MenuContainer {

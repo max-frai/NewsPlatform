@@ -11,36 +11,33 @@
     </head>
     <body>
         {% block after_body %}{% endblock after_body %}
-        <div id="SvelteRunningLine" style="min-height: 28px;"></div>
         <div class="MenuContainer">
             <div class="relative h-full w-full">
                 {% include "parts/menu.tera" %}
                 {% block left_column %}{% endblock left_column %}
             </div>
         </div>
+        <div class="mt-2" id="SvelteRunningLine" style="min-height: 28px;"></div>
         <div class="stickycontainer" id="MainContainer">
-            <div class="MenuContainerMobile md:hidden h-16 flex items-center font-bold text-lg mb-3">
-                <a class="h-4/6 w-full" href="/">
-                    <img alt="HubLoid" class="h-full" src="/static/media/logo.svg"/>
-                </a>
-            </div>
             <div id="content"> {% block center_column %}{% endblock center_column %}
                 </div>
                 <div id="sidebar">
-                    <div class="sidebar__inner"> {% block right_column %}{% endblock right_column %}
-                        </div>
+                    <div class="sidebar__inner">
+                        <div id="SvelteCovid"></div>
+                        {% block right_column %}{% endblock right_column %}
                     </div>
                 </div>
-                <script async src="/bundle.js?v=6"></script>
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YLXEFT0BQ"></script>
-                <script>
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag() {
-                        dataLayer.push(arguments);
-                    }
-                    gtag("js", new Date());
-                    gtag("config", "G-6YLXEFT0BQ");
-                </script>
-            </body>
-        </html>
+            </div>
+            <script async src="/bundle.js?v=6"></script>
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-6YLXEFT0BQ"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag() {
+                    dataLayer.push(arguments);
+                }
+                gtag("js", new Date());
+                gtag("config", "G-6YLXEFT0BQ");
+            </script>
+        </body>
+    </html>

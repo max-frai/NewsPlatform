@@ -12,7 +12,6 @@
     {% endif %}
 {% endblock %}
 {% block right_column %}
-    <div id="SvelteCovid"></div>
     <h1>Популярные люди</h1>
     <div class="tagWrap mt-3">
         {% for tag in top_persons %}

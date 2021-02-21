@@ -3,7 +3,7 @@
         <img class="h-12" src="/static/media/logo.svg"/>
     </a>
 </div>
-<div class="menuRows my-3">
+<div class="menuRows mt-3">
     <a href="/">
         <div class="leftMenuItem">
             <span class="leftMenuText">

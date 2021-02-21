@@ -56,6 +56,7 @@ export function websocketStore(url, initialValue, socketOptions) {
                     data = data.replace(/\\\\\\"/gi, '"');
                 }
                 initialValue = JSON.parse(data);
+                console.log(initialValue);
                 subscriptions.forEach(subscription => subscription(initialValue));
             } catch (e) {
                 subscriptions.forEach(subscription => subscription({}));
