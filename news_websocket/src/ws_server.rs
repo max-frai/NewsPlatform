@@ -1,5 +1,6 @@
 use crate::{
-    covid::CovidData, news_cluster::ClusteringResult, state::State, ws_client::WebSocketClient,
+    covid::CovidData, news_cluster::ClusteringResult, state::State, twitter::Tweets,
+    ws_client::WebSocketClient,
 };
 use actix::prelude::*;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
@@ -62,11 +63,11 @@ pub struct MostRecentClusterMessage {
     pub cluster: ClusteringResult,
 }
 
-// #[derive(Message, Serialize, Debug)]
-// #[rtype(result = "()")]
-// pub struct TweetsMessage {
-//     pub tweets: Vec<Tweets>,
-// }
+#[derive(Message, Serialize, Debug)]
+#[rtype(result = "()")]
+pub struct TweetsMessage {
+    pub tweets: Vec<Tweets>,
+}
 
 #[derive(Message, Serialize, Debug)]
 #[rtype(result = "()")]
@@ -192,13 +193,13 @@ impl Handler<PopularClusterMessage> for WsServer {
     }
 }
 
-// impl Handler<TweetsMessage> for WsServer {
-//     type Result = ();
+impl Handler<TweetsMessage> for WsServer {
+    type Result = ();
 
-//     fn handle(&mut self, msg: TweetsMessage, _: &mut Context<Self>) {
-//         handle_message(self, msg);
-//     }
-// }
+    fn handle(&mut self, msg: TweetsMessage, _: &mut Context<Self>) {
+        handle_message(self, msg);
+    }
+}
 
 impl Handler<SummaryClusterMessage> for WsServer {
     type Result = ();

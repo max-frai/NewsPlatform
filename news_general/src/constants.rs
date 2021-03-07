@@ -21,4 +21,5 @@ pub struct AppConfig {
     pub cards_collection_name: String,
     pub tags_collection_name: String,
     pub sources_collection_name: String,
+    pub twitter_collection_name: String,
 }

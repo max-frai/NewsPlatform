@@ -7,13 +7,13 @@ models/
 news_rsmorphy/
 dp_components/
 .DS_Store
-package-lock.json
+# package-lock.json
 rewritebinary_macos
 nlp_macos
 parserbinary_macos
 categories.json
 news_templates/css/main.css
-news_server/package-lock.json
+# news_server/package-lock.json
 Cargo.lock
 news.json
 news_server/news.json

@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 // use crate::graphs_manager::Charts;
 use actix::prelude::*;
@@ -22,6 +22,7 @@ pub mod news_cluster;
 pub mod state;
 pub mod stocks;
 pub mod trends;
+pub mod twitter;
 pub mod ws_client;
 pub mod ws_server;
 
@@ -62,6 +63,7 @@ async fn main() -> std::io::Result<()> {
     let sources_col = db.collection(&constants.sources_collection_name);
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
+    let twitter_col = db.collection(&constants.twitter_collection_name);
 
     let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
 
@@ -84,6 +86,9 @@ async fn main() -> std::io::Result<()> {
         ws_server_addr: ws_server_addr.clone(),
         charts_manager: charts_manager.clone(),
         sources_col: sources_col.clone(),
+        twitter_col: twitter_col.clone(),
+        tweets_cache: Arc::new(RwLock::new(HashMap::new())),
+        is_dev,
     });
 
     let charts_manager2 = charts_manager.clone();
@@ -91,6 +96,7 @@ async fn main() -> std::io::Result<()> {
     let clustering1 = state.clone();
     let clustering2 = state.clone();
     let covid_state = state.clone();
+    let twitter_state = state.clone();
 
     tokio::task::spawn(async move {
         loop {
@@ -161,6 +167,18 @@ async fn main() -> std::io::Result<()> {
             })
             .await;
             sleep(Duration::from_secs(60 * 10)).await;
+        }
+    });
+
+    tokio::task::spawn(async move {
+        loop {
+            println!("--- PARSE TWITTER ---");
+            let state = twitter_state.clone();
+            tokio::task::spawn(async move {
+                twitter::parse_twitter(state).await;
+            })
+            .await;
+            sleep(Duration::from_secs(60 * 15)).await;
         }
     });
 

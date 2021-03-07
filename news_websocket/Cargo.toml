@@ -30,6 +30,7 @@ config = "0.10"
 futures = "0.3"
 listenfd = "0.3"
 rsmorphy = "0.4"
+#egg-mode = "0.15"
 lazy_static = "1.4"
 chrono = "0.4"
 structopt = "0.3"
@@ -39,3 +40,5 @@ reqwest = { version = "0.11", features = ["json"] }
 
 mongodb = "2.0.0-alpha"
 tokio = { version="1.2", features=["fs", "macros", "time"] }
+
+"egg-mode" = { git = "https://github.com/RAnders00/egg-mode", branch = "tokio-v1.0-upgrade", features = ["rustls"], default-features = false }
