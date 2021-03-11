@@ -43,8 +43,8 @@ pub fn last_25() -> CardQuery {
 
 pub fn all_sitemap() -> CardQuery {
     CardQuery {
-        lifetime: Duration::seconds(60),
-        limit: Some(1000000),
+        lifetime: Duration::seconds(500),
+        limit: Some(20000),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {},
         projection: None,
