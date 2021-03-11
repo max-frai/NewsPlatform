@@ -14,26 +14,43 @@ init({
     initialLocale: 'ru'
 });
 
+
 import Charts from './Charts.svelte';
+var charts_handle = document.querySelector('#SvelteCharts');
+if (charts_handle) {
+    new Charts({
+        target: charts_handle
+    });
+}
+
 import RunningLine from './RunningLine.svelte';
+var running_handle = document.querySelector('#SvelteRunningLine');
+if (running_handle) {
+    new RunningLine({
+        target: running_handle
+    });
+}
+
 import TopNews from './TopNews.svelte';
+var top_news_handle = document.querySelector('#SvelteTopNews');
+if (top_news_handle) {
+    new TopNews({
+        target: top_news_handle
+    });
+}
+
 import Trends from './Trends.svelte';
+var trends_handle = document.querySelector('#SvelteTrends');
+if (trends_handle) {
+    new Trends({
+        target: trends_handle
+    });
+}
+
 import Covid from './Covid.svelte';
-
-new Charts({
-    target: document.querySelector('#SvelteCharts')
-});
-new RunningLine({
-    target: document.querySelector('#SvelteRunningLine')
-});
-new TopNews({
-    target: document.querySelector('#SvelteTopNews')
-});
-new Trends({
-    target: document.querySelector('#SvelteTrends')
-});
-new Covid({
-    target: document.querySelector('#SvelteCovid')
-});
-
-// export default app;
+var covid_handle = document.querySelector('#SvelteCovid')
+if (covid_handle) {
+    new Covid({
+        target: covid_handle
+    });
+}
