@@ -200,6 +200,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .service(yandex_verification)
             .service(robots)
             .service(js_bundle)
             .service(sitemap_xml)
@@ -220,7 +221,6 @@ async fn main() -> std::io::Result<()> {
             .service(exact_tag_fix)
             .service(exact)
             .service(exact_amp)
-            .service(yandex_verification)
             .service(Files::new("/static", "./news_templates/"))
     });
 
