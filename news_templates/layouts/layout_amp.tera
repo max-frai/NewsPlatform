@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8"/>
         <script async src="https://cdn.ampproject.org/v0.js"></script>
+        <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
         {% block meta %}{% endblock %}
         <meta content="width=device-width" name="viewport"/>
         <style amp-boilerplate>
@@ -90,6 +91,11 @@
         </noscript>
     </head>
     <body>
+        <amp-analytics data-credentials="include" type="gtag">
+            <script type="application/json">
+                { "vars" : { "gtag_id": "UA-192189246-1", "config" : { "UA-192189246-1": { "groups": "default" } } } }
+            </script>
+        </amp-analytics>
         <div class="Article"> {% block after_body %}{% endblock after_body %}{% block center_column %}{% endblock center_column %}
             </div>
         </body>

@@ -1,4 +1,4 @@
-use routes::sitemap_xml::generate_sitemap_xml;
+use routes::{sitemap_xml::generate_sitemap_xml, yandex_verification::yandex_verification};
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
 use tokio::sync::RwLock;
@@ -26,6 +26,8 @@ use crate::routes::search_console::search_console;
 use crate::routes::sitemap_xml::sitemap_xml;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
+// use crate::routes::tweets::tweets as tweets_route;
+// use crate::routes::tweets::tweets_fix as tweets_fix_route;
 use strum::IntoEnumIterator;
 
 use crate::node_helper::DomHelper;
@@ -189,7 +191,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to generate sitemap");
 
-    println!("Create server");
+    println!("Create server: {}", constants.server_url);
     let mut server = HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
@@ -210,12 +212,15 @@ async fn main() -> std::io::Result<()> {
             .service(test)
             .service(categories)
             .service(categories_fix)
+            // .service(tweets_route)
+            // .service(tweets_fix_route)
             .service(exact_category)
             .service(exact_category_fix)
             .service(exact_tag)
             .service(exact_tag_fix)
             .service(exact)
             .service(exact_amp)
+            .service(yandex_verification)
             .service(Files::new("/static", "./news_templates/"))
     });
 

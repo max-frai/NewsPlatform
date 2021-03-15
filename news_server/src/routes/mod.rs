@@ -10,3 +10,5 @@ pub mod search_console;
 pub mod sitemap_xml;
 pub mod tags;
 pub mod test;
+// pub mod tweets;
+pub mod yandex_verification;
