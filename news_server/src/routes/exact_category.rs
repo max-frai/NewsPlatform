@@ -8,18 +8,90 @@ use news_general::{
 use std::str::FromStr;
 use tera::Context;
 
-#[get("/{category}")]
-async fn exact_category_fix(web::Path(category): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/{}/", category))
+#[get("/society")]
+pub async fn society_category_fix() -> HttpResponse {
+    redirect("/society/")
 }
 
-#[get("/{category}/")]
-async fn exact_category(
+#[get("/entertainment")]
+pub async fn entertainment_category_fix() -> HttpResponse {
+    redirect("/entertainment/")
+}
+
+#[get("/economy")]
+pub async fn economy_category_fix() -> HttpResponse {
+    redirect("/economy/")
+}
+
+#[get("/technology")]
+pub async fn technology_category_fix() -> HttpResponse {
+    redirect("/technology/")
+}
+
+#[get("/sports")]
+pub async fn sports_category_fix() -> HttpResponse {
+    redirect("/sports/")
+}
+
+#[get("/science")]
+pub async fn science_category_fix() -> HttpResponse {
+    redirect("/science/")
+}
+
+#[get("/other")]
+pub async fn other_category_fix() -> HttpResponse {
+    redirect("/other/")
+}
+
+// ----------------------------------------------------------------
+
+#[get("/society/")]
+pub async fn society_category(state: web::Data<State>, context: LayoutContext) -> impl Responder {
+    _exact_category(state, "society", context).await
+}
+
+#[get("/entertainment/")]
+pub async fn entertainment_category(
     state: web::Data<State>,
-    web::Path(category): web::Path<String>,
+    context: LayoutContext,
+) -> impl Responder {
+    _exact_category(state, "entertainment", context).await
+}
+
+#[get("/economy/")]
+pub async fn economy_category(state: web::Data<State>, context: LayoutContext) -> impl Responder {
+    _exact_category(state, "economy", context).await
+}
+
+#[get("/technology/")]
+pub async fn technology_category(
+    state: web::Data<State>,
+    context: LayoutContext,
+) -> impl Responder {
+    _exact_category(state, "technology", context).await
+}
+
+#[get("/sports/")]
+pub async fn sports_category(state: web::Data<State>, context: LayoutContext) -> impl Responder {
+    _exact_category(state, "sports", context).await
+}
+
+#[get("/science/")]
+pub async fn science_category(state: web::Data<State>, context: LayoutContext) -> impl Responder {
+    _exact_category(state, "science", context).await
+}
+
+#[get("/other/")]
+pub async fn other_category(state: web::Data<State>, context: LayoutContext) -> impl Responder {
+    _exact_category(state, "other", context).await
+}
+
+async fn _exact_category(
+    state: web::Data<State>,
+    category: &str,
     mut context: LayoutContext,
 ) -> impl Responder {
-    let category = Category::from_str(&category).unwrap_or(Category::Other);
+    let category = Category::from_str(category).unwrap_or(Category::Other);
     let category_str = format!("{:?}", category);
 
     let category_cards = state

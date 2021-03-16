@@ -1,4 +1,12 @@
-use routes::{sitemap_xml::generate_sitemap_xml, yandex_verification::yandex_verification};
+use routes::{
+    exact_category::{
+        economy_category, economy_category_fix, entertainment_category, entertainment_category_fix,
+        other_category, other_category_fix, science_category, science_category_fix,
+        society_category, society_category_fix, sports_category, sports_category_fix,
+        technology_category, technology_category_fix,
+    },
+    sitemap_xml::generate_sitemap_xml,
+};
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
 use tokio::sync::RwLock;
@@ -15,8 +23,6 @@ use crate::routes::categories::categories;
 use crate::routes::categories::categories_fix;
 use crate::routes::exact::exact;
 use crate::routes::exact::exact_amp;
-use crate::routes::exact_category::exact_category;
-use crate::routes::exact_category::exact_category_fix;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::exact_tag::exact_tag_fix;
 use crate::routes::index::index;
@@ -195,12 +201,10 @@ async fn main() -> std::io::Result<()> {
     let mut server = HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            // .wrap(ErrorHandlers::new().handler(http::StatusCode::INTERNAL_SERVER_ERROR, render_500))
             .wrap(lowercase_middleware::LowercaseRequest)
             .wrap(canonical_middleware::CanonicalRequest)
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .service(yandex_verification)
             .service(robots)
             .service(js_bundle)
             .service(sitemap_xml)
@@ -213,15 +217,28 @@ async fn main() -> std::io::Result<()> {
             .service(test)
             .service(categories)
             .service(categories_fix)
-            // .service(tweets_route)
-            // .service(tweets_fix_route)
-            .service(exact_category)
-            .service(exact_category_fix)
             .service(exact_tag)
             .service(exact_tag_fix)
             .service(exact)
             .service(exact_amp)
+            // Exact cateogories --------------------------------
+            .service(society_category_fix)
+            .service(entertainment_category_fix)
+            .service(economy_category_fix)
+            .service(technology_category_fix)
+            .service(sports_category_fix)
+            .service(science_category_fix)
+            .service(other_category_fix)
+            .service(society_category)
+            .service(entertainment_category)
+            .service(economy_category)
+            .service(technology_category)
+            .service(sports_category)
+            .service(science_category)
+            .service(other_category)
+            // Exact cateogories --------------------------------
             .service(Files::new("/static", "./news_templates/"))
+            .service(Files::new("/", "./news_templates/static/"))
     });
 
     let mut listenfd = ListenFd::from_env();
