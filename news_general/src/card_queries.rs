@@ -63,7 +63,7 @@ pub fn last_n(num: i64) -> CardQuery {
 
 pub fn last_25_by_category(category: &str) -> CardQuery {
     CardQuery {
-        lifetime: Duration::seconds(60),
+        lifetime: Duration::seconds(160),
         limit: Some(25),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {
@@ -73,10 +73,22 @@ pub fn last_25_by_category(category: &str) -> CardQuery {
     }
 }
 
-pub fn last_15_by_tag(tag_id: ObjectId) -> CardQuery {
+pub fn last_40_by_category(category: &str) -> CardQuery {
     CardQuery {
-        lifetime: Duration::seconds(60),
-        limit: Some(15),
+        lifetime: Duration::seconds(160),
+        limit: Some(40),
+        sort: Some(doc! { "date" : -1 }),
+        query: doc! {
+            "category" : category,
+        },
+        projection: None,
+    }
+}
+
+pub fn last_40_by_tag(tag_id: ObjectId) -> CardQuery {
+    CardQuery {
+        lifetime: Duration::seconds(160),
+        limit: Some(40),
         sort: Some(doc! { "date" : -1 }),
         query: doc! {
             "tags" : tag_id

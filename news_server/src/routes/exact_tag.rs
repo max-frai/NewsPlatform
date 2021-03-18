@@ -2,7 +2,7 @@ use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use news_general::{
-    card_queries::{last_15_by_tag, last_25},
+    card_queries::{last_25, last_40_by_tag},
     tag::TagKind,
 };
 use std::str::FromStr;
@@ -31,7 +31,7 @@ async fn exact_tag(
 
     let tag_cards = state
         .fetcher
-        .fetch(last_15_by_tag(tag._id.to_owned()), true)
+        .fetch(last_40_by_tag(tag._id.to_owned()), true)
         .await
         .unwrap();
 

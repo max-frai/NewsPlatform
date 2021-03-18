@@ -277,6 +277,10 @@ pub async fn parse_news(
                         // return ParseResult::Failed(link.to_string());
                     }
 
+                    if item.link.is_none() {
+                        return ParseResult::Failed("Link is none".to_string());
+                    }
+
                     let link = item.link.clone().unwrap();
                     let title = item.title.clone().unwrap();
                     let slug = item.slug.clone().unwrap();

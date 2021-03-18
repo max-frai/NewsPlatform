@@ -2,7 +2,7 @@ use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use news_general::{
-    card_queries::{last_15, last_25_by_category},
+    card_queries::{last_25, last_40_by_category},
     category::Category,
 };
 use std::str::FromStr;
@@ -96,7 +96,7 @@ async fn _exact_category(
 
     let category_cards = state
         .fetcher
-        .fetch(last_25_by_category(&category_str), true)
+        .fetch(last_40_by_category(&category_str), true)
         .await
         .unwrap();
 
@@ -114,7 +114,7 @@ async fn _exact_category(
         )
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();
     let right_tpl = state
         .tera
         .render(

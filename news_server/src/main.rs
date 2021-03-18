@@ -1,11 +1,12 @@
-use routes::{
-    exact_category::{
-        economy_category, economy_category_fix, entertainment_category, entertainment_category_fix,
-        other_category, other_category_fix, science_category, science_category_fix,
-        society_category, society_category_fix, sports_category, sports_category_fix,
-        technology_category, technology_category_fix,
-    },
-    sitemap_xml::generate_sitemap_xml,
+use crate::sitemap::generate_categories_sitemap;
+use crate::sitemap::generate_head_sitemap;
+use crate::sitemap::generate_posts_sitemap;
+use crate::sitemap::generate_tags_sitemap;
+use routes::exact_category::{
+    economy_category, economy_category_fix, entertainment_category, entertainment_category_fix,
+    other_category, other_category_fix, science_category, science_category_fix, society_category,
+    society_category_fix, sports_category, sports_category_fix, technology_category,
+    technology_category_fix,
 };
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -29,7 +30,6 @@ use crate::routes::index::index;
 use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
 use crate::routes::search_console::search_console;
-use crate::routes::sitemap_xml::sitemap_xml;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
 // use crate::routes::tweets::tweets as tweets_route;
@@ -53,6 +53,7 @@ pub mod lowercase_middleware;
 pub mod modules;
 pub mod node_helper;
 pub mod routes;
+pub mod sitemap;
 pub mod state;
 pub mod tag_cache;
 pub mod tailwind;
@@ -192,10 +193,17 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
-    println!("Generate sitemap...");
-    generate_sitemap_xml(state.clone())
-        .await
-        .expect("Failed to generate sitemap");
+    let sitemap_state = state.clone();
+    tokio::task::spawn(async move {
+        loop {
+            println!("Run sitemap generation...");
+            generate_posts_sitemap(sitemap_state.clone()).await;
+            generate_categories_sitemap(sitemap_state.clone()).await;
+            generate_tags_sitemap(sitemap_state.clone()).await;
+            generate_head_sitemap(sitemap_state.clone()).await;
+            sleep(Duration::from_secs(60 * 10)).await;
+        }
+    });
 
     println!("Create server: {}", constants.server_url);
     let mut server = HttpServer::new(move || {
@@ -207,7 +215,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(robots)
             .service(js_bundle)
-            .service(sitemap_xml)
             .service(search_console)
             .service(tags_all)
             .service(tags_all_fix)
