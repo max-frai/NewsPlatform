@@ -17,7 +17,7 @@
         {% if query_string_meta is defined %}
             {{ query_string_meta }}
         {% endif %}
-        <link href="/static/css/main.css?v=6" rel="stylesheet"/>
+        <link href="/static/css/main.css?v={{ BUILD_VERSION }}" rel="stylesheet"/>
     </head>
     <body>
         {% block after_body %}{% endblock after_body %}
@@ -38,6 +38,6 @@
                     </div>
                 </div>
             </div>
-            <script async src="/bundle.js?v=8"></script>
+            <script async src="/bundle.js?v={{ BUILD_VERSION }}"></script>
         </body>
     </html>

@@ -8,6 +8,7 @@ use tera::Tera;
 use tokio::sync::RwLock;
 
 pub struct State {
+    pub build_random_number: u64,
     pub fetcher: Arc<CardFetcher>,
     pub constants: Arc<AppConfig>,
     pub tera: Arc<Tera>,

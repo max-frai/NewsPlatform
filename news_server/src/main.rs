@@ -59,10 +59,29 @@ pub mod tag_cache;
 pub mod tailwind;
 pub mod templates;
 
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+#[structopt(name = "running", about = "Analytics Platform")]
+struct Args {
+    /// Activate debug mode
+    #[structopt(short = "d", long = "dev")]
+    dev: bool,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
+
+    let args = Args::from_args();
+    let is_dev = args.dev;
+
+    if is_dev {
+        println!("------- DEVELOPMENT --------");
+    } else {
+        println!("------- PROD UCTION --------");
+    }
 
     let mut settings = config::Config::default();
     settings
@@ -72,12 +91,14 @@ async fn main() -> std::io::Result<()> {
     let constants: Arc<AppConfig> =
         Arc::new(settings.try_into().expect("Wrong configuration format"));
 
-    println!("Start css processing...");
-    if let Err(e) = process_tailwind().await {
-        println!("Failed to process tailwind modules");
-        dbg!(e);
+    if is_dev {
+        println!("Start css processing...");
+        if let Err(e) = process_tailwind().await {
+            println!("Failed to process tailwind modules");
+            dbg!(e);
+        }
+        println!("Css is processed now");
     }
-    println!("Css is processed now");
 
     println!("Load tera templates...");
     let tera = templates::init_tera();
@@ -96,8 +117,10 @@ async fn main() -> std::io::Result<()> {
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
 
+    println!("Create tags manager");
     let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
 
+    println!("Create cards fetcher");
     let fetcher = Arc::new(CardFetcher::new(
         news_col,
         tags_manager.clone(),
@@ -105,7 +128,9 @@ async fn main() -> std::io::Result<()> {
         constants.exact_card_cache_size,
     ));
 
+    println!("Create state");
     let state = web::Data::new(State {
+        build_random_number: random_number::random!(),
         fetcher: fetcher.clone(),
         constants: constants.clone(),
         tera: tera.clone(),
@@ -116,11 +141,13 @@ async fn main() -> std::io::Result<()> {
         dom_helper: Arc::new(DomHelper::new()),
     });
 
+    println!("Unique build number: {}", state.build_random_number);
+
     // Tags reloader
     let worker_tags_manager = tags_manager.clone();
     tokio::task::spawn(async move {
         loop {
-            println!("Reload tags for tags manager...");
+            println!("Reload tags for tags manager in spawned task...");
             let (tags, tags_lookup) = {
                 let tags_manager = worker_tags_manager.read().await;
                 tags_manager.load().await
@@ -140,7 +167,7 @@ async fn main() -> std::io::Result<()> {
         // First time wait for tags manager to load
         sleep(Duration::from_secs(20)).await;
         loop {
-            println!("Load day exact top of tags...");
+            println!("Load day exact top of tags in spawned task...");
             {
                 let tags_manager = worker_state.tags_manager.read().await;
                 for tag in TagKind::iter() {
@@ -164,7 +191,7 @@ async fn main() -> std::io::Result<()> {
         // First time wait for tags manager to load
         sleep(Duration::from_secs(20)).await;
         loop {
-            println!("Load two week exact top of tags...");
+            println!("Load two week exact top of tags in spawned task...");
             {
                 let tags_manager = worker_state.tags_manager.read().await;
                 for tag in TagKind::iter() {
@@ -196,7 +223,7 @@ async fn main() -> std::io::Result<()> {
     let sitemap_state = state.clone();
     tokio::task::spawn(async move {
         loop {
-            println!("Run sitemap generation...");
+            println!("Run sitemap generation in spawned task...");
             generate_posts_sitemap(sitemap_state.clone()).await;
             generate_categories_sitemap(sitemap_state.clone()).await;
             generate_tags_sitemap(sitemap_state.clone()).await;
@@ -205,7 +232,10 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
-    println!("Create server: {}", constants.server_url);
+    println!(
+        "~~~~~~~~~~~ CREATE SERVER: {} ~~~~~~~~~~~~",
+        constants.server_url
+    );
     let mut server = HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
