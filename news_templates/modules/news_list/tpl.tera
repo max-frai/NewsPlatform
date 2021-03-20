@@ -2,14 +2,24 @@
     <h1 class="mb-2">{{ title }}</h1>
 {% endif %}
 <div class="GrayBorder text-sm md:p-3 md:px-4">
+    {% set last_date = "00" %}
     {% for card in cards %}
-        <div class="mb-2 md:mb-1 twoRows" title="{{ card.title | escape }}">
-            <a href="{{ make_card_url(card=card, is_amp=is_amp) }}">
-                <span class="dateMark">
-                    {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
-                </span>
-                <span class="title">{{ card.title }}</span>
-            </a>
+        <div>
+            {% set iteration_date = card['date']['$date'] | date(format="%d") %}
+            {% if iteration_date != last_date %}
+                <div class="font-bold text-gray-700 mb-1">
+                    {% set_global last_date = cards[0]['date']['$date'] | date(format="%d") %}
+                    {{ card['date']['$date'] | date(format="%d %B",timezone="Europe/Kiev") }}
+                </div>
+            {% endif %}
+            <div class="mb-2 md:mb-1 twoRows" title="{{ card.title | escape }}">
+                <a href="{{ make_card_url(card=card, is_amp=is_amp) }}">
+                    <span class="dateMark">
+                        {{ card['date']['$date'] | date(format="%H:%M",timezone="Europe/Kiev") }}
+                    </span>
+                    <span class="title">{{ card.title }}</span>
+                </a>
+            </div>
         </div>
     {% endfor %}
 </div>

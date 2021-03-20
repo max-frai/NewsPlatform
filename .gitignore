@@ -12,8 +12,9 @@ rewritebinary_macos
 nlp_macos
 parserbinary_macos
 categories.json
-news_templates/css/main.css
+#news_templates/css/main.css
 # news_server/package-lock.json
+news_templates/static/*_sitemap.xml
 Cargo.lock
 news.json
 news_server/news.json
