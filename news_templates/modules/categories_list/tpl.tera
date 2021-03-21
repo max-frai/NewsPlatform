@@ -1,14 +1,15 @@
-<h1 class="my-3 mb-5">Категории новостей</h1>
-
+<h2 class="my-3 mb-5">Категории новостей</h2>
 <div class="flex flex-wrap justify-between">
     {% for category in categories %}
-    {% if category.1 == "" %}{% continue %}{% endif %}
-    <a href="/{{ category.0 }}/" class="w-1/2 pb-2 inline-block px-1">
-        <div class="categoriesItem" style="background-image: url(/static/media/{{category.0}}.jpg)">
-            <div class="categoriesItemFade">
-                <h2>{{ category.1 }}</h2>
+        {% if category.1 == "" %}
+            {% continue %}
+        {% endif %}
+        <a class="w-1/2 pb-2 inline-block px-1" href="/{{ category.0 }}/">
+            <div class="categoriesItem" style="background-image: url(/static/media/{{ category.0 }}.jpg)">
+                <div class="categoriesItemFade">
+                    <h2>{{ category.1 }}</h2>
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
     {% endfor %}
 </div>

@@ -27,8 +27,10 @@ duct = "0.13"
 env_logger = "0.8"
 lru-cache = "0.1"
 lazy_static = "1.4"
+structopt = "0.3"
 # tera = "1.6"
-tera = {git = "https://github.com/max-frai/tera"}
+random-number = "0.1"
+tera = "1.7"
 bson = "1.1"
 mongodb = "2.0.0-alpha"
 futures = "0.3"
@@ -44,5 +46,5 @@ alphanumeric-sort = "1.4"
 strum = "0.18"
 strum_macros = "0.18"
 chrono = { version = "0.4", features = ["serde", "unstable-locales"] }
-tokio = { version="1.2", features=["macros", "time", "fs"] }
+tokio = { version="1.4", features=["macros", "time", "fs"] }
 reqwest = { version = "0.11", features = ["json"] }

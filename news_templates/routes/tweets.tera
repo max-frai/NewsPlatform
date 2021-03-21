@@ -1,0 +1,16 @@
+{% extends "layouts/layout.tera" %}
+{% block meta %}
+    <title>Популярные твиты ➤ HubLoid</title>
+{% endblock %}
+{% block center_column %}
+    {% include "parts/graphs.tera" %}
+    {% if center_content %}
+        {{ center_content | safe }}
+    {% endif %}
+    <div id="SvelteTweets"></div>
+{% endblock %}
+{% block right_column %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
+{% endblock %}

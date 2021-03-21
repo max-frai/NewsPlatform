@@ -55,7 +55,7 @@
 <SvgFilters />
 
 {#each clusters as cluster}
-  <h1 class="BlockTitle">{categoryTitle(cluster)}</h1>
+  <h2 class="BlockTitle">{categoryTitle(cluster)}</h2>
   <div class="TopNewsWrap GrayBorder">
     <SmartScroll classes="py-3 px-3" scroll_koef={0.03}>
       {#each cluster.threads as thread}

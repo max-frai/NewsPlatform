@@ -1,29 +1,21 @@
 {% extends "layouts/layout.tera" %}
-
 {% block meta %}
-<title>{{ meta_title }} ➤ HubLoid</title>
-<meta name="description" content="{{ meta_description | escape }} ≡ Ваш персональный хаб новостей!" />
+    <title>{{ meta_title }} ➤ HubLoid</title>
+    <meta content="{{ meta_description | escape }} ≡ Ваш персональный хаб новостей!" name="description"/>
 {% endblock %}
-
 {% block center_column %}
-
-<h1>{{ title }}</h1>
-
-<div class="leading-none">
-    <div class="w-24 h-24 bg-cover bg-center shadow-lg border border-gray-200 rounded-lg float-left inline-block mr-4" style="background-image: url({{ tag.image }})">
+    <h2>{{ title }}</h2>
+    <div class="leading-none">
+        <div class="w-24 h-24 bg-cover bg-center shadow-lg border border-gray-200 rounded-lg float-left inline-block mr-4" style="background-image: url({{ tag.image }})"></div>
+        <span class="text-gray-700 text-sm">{{ tag.summary | truncate(length=600) }}</span>
     </div>
-    <span class="text-gray-700 text-sm">{{ tag.summary | truncate(length=600) }}</span>
-</div>
-
-<div class="clear-both pt-4"></div>
-
-{% if center_content %}
-{{ center_content | safe }}
-{% endif %}
+    <div class="clear-both pt-4"></div>
+    {% if center_content %}
+        {{ center_content | safe }}
+    {% endif %}
 {% endblock %}
-
 {% block right_column %}
-{% if right_content %}
-{{ right_content | safe }}
-{% endif %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
 {% endblock %}

@@ -71,11 +71,15 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
             .limit(limit)
             .build();
 
+        // dbg!(&filter);
+        dbg!(&date);
+
         let mut tweets_iter = collection
             .find(
-                doc! {
-                    "when": { "$gte" :  date }
-                },
+                // doc! {
+                // "when": { "$gte" :  date }
+                // },
+                None,
                 Some(filter),
             )
             .await?;
@@ -84,6 +88,8 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
         while let Some(tweet) = tweets_iter.next().await {
             tweets.push(bson::from_bson::<Tweet>(bson::Bson::Document(tweet.unwrap())).unwrap());
         }
+
+        println!("Tweets gethered: {}", tweets.len());
 
         tweets.sort_by(|a, b| b.retweets.partial_cmp(&a.retweets).unwrap());
 
@@ -153,50 +159,57 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
 pub async fn parse_twitter(state: web::Data<State>) -> anyhow::Result<()> {
     generate_tweets(state.clone()).await?;
 
-    if !state.is_dev {
-        let consumer_token =
-            egg_mode::KeyPair::new(CONSUMER_KEY.to_owned(), CONSUMER_SECRET.to_owned());
-        let access_token = egg_mode::KeyPair::new(ACCESS_KEY.to_owned(), ACCESS_SECRET.to_owned());
+    // if !state.is_dev {
+    let consumer_token =
+        egg_mode::KeyPair::new(CONSUMER_KEY.to_owned(), CONSUMER_SECRET.to_owned());
+    let access_token = egg_mode::KeyPair::new(ACCESS_KEY.to_owned(), ACCESS_SECRET.to_owned());
 
-        let token = egg_mode::Token::Access {
-            consumer: consumer_token,
-            access: access_token,
-        };
+    let token = egg_mode::Token::Access {
+        consumer: consumer_token,
+        access: access_token,
+    };
 
-        let mut timeline_tweets = vec![];
+    let mut timeline_tweets = vec![];
 
-        let mut timeline = egg_mode::tweet::home_timeline(&token).with_page_size(200);
+    let mut timeline = egg_mode::tweet::home_timeline(&token).with_page_size(200);
 
-        println!("Parse tweets first time");
-        let (timeline_returned_0, mut this_tweets) = parse_twitter_logic(timeline, true).await?;
-        timeline = timeline_returned_0;
-        timeline_tweets.append(&mut this_tweets);
+    println!("Parse tweets first time");
+    let (timeline_returned_0, mut this_tweets) = parse_twitter_logic(timeline, true).await?;
+    timeline = timeline_returned_0;
+    timeline_tweets.append(&mut this_tweets);
 
-        for _ in 0..10 {
-            println!("\t parse...");
-            let (timeline_returned, mut this_tweets) = parse_twitter_logic(timeline, false).await?;
-            timeline = timeline_returned;
-            timeline_tweets.append(&mut this_tweets);
-            println!("Current tweets length is: {}", timeline_tweets.len());
-        }
-
-        for tweet in timeline_tweets {
-            let update_options = UpdateOptions::builder().upsert(true).build();
-            let tweet_bson = bson::to_bson(&tweet).unwrap();
-            state
-                .twitter_col
-                .update_one(
-                    doc! {
-                        "id" : tweet.id
-                    },
-                    doc! {
-                        "$set" : tweet_bson
-                    },
-                    Some(update_options),
-                )
-                .await?;
+    for _ in 0..3 {
+        match parse_twitter_logic(timeline, false).await {
+            Ok((timeline_returned, mut this_tweets)) => {
+                timeline = timeline_returned;
+                timeline_tweets.append(&mut this_tweets);
+                println!("Current tweets length is: {}", timeline_tweets.len());
+            }
+            Err(reason) => {
+                dbg!(reason);
+                break;
+            }
         }
     }
+
+    println!("Insert tweets");
+    for tweet in timeline_tweets {
+        let update_options = UpdateOptions::builder().upsert(true).build();
+        let tweet_bson = bson::to_bson(&tweet).unwrap();
+        state
+            .twitter_col
+            .update_one(
+                doc! {
+                    "id" : tweet.id
+                },
+                doc! {
+                    "$set" : tweet_bson
+                },
+                Some(update_options),
+            )
+            .await?;
+    }
+    // }
 
     generate_tweets(state.clone()).await?;
 

@@ -7,7 +7,7 @@
         name="description"/>
 {% endblock %}
 {% block center_column %}
-    <h1>{{ title }}</h1>
+    <h2>{{ title }}</h2>
     <div class="w-full h-48 bg-cover bg-center rounded-3xl my-3" style="background-image: url(/static/media/{{ category }}.jpg)"></div>
     {% if center_content %}
         {{ center_content | safe }}

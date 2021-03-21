@@ -1,27 +1,19 @@
 {% extends "layouts/layout.tera" %}
-
 {% block meta %}
-<title>{{ meta_title }} ➤ HubLoid</title>
-<meta name="description" content="{{ meta_description | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" />
+    <title>{{ meta_title }} ➤ HubLoid</title>
+    <meta content="{{ meta_description | escape }} - вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" name="description"/>
 {% endblock %}
-
 {% block center_column %}
-<h1 class="my-3 mb-5">Теги новостей</h1>
-
-{% include "modules/group_buttons/tpl.tera" %}
-
-<hr class="mb-1" />
-
-<div class="tagWrap">
-{% for tag in tags %}
-    {% include "modules/tag_item/tpl.tera" %}
-{% endfor %}
-</div>
-
+    <h2 class="my-3 mb-5">Теги новостей</h2>
+    {% include "modules/group_buttons/tpl.tera" %} <hr class="mb-1"/>
+    <div class="tagWrap">
+        {% for tag in tags %}
+            {% include "modules/tag_item/tpl.tera" %}
+        {% endfor %}
+    </div>
 {% endblock %}
-
 {% block right_column %}
-{% if right_content %}
-{{ right_content | safe }}
-{% endif %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
 {% endblock %}

@@ -11,7 +11,7 @@
     }
 </script>
 
-<h1 class="BlockTitle">Тренды на сегодня</h1>
+<h2 class="BlockTitle">Тренды на сегодня</h2>
 <div class="GrayBorder p-1 md:p-3 flex flex-wrap text-xs text-center">
     {#each trends as trend}
         <div

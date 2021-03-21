@@ -32,8 +32,8 @@ use crate::routes::robots::robots;
 use crate::routes::search_console::search_console;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
-// use crate::routes::tweets::tweets as tweets_route;
-// use crate::routes::tweets::tweets_fix as tweets_fix_route;
+use crate::routes::tweets::tweets as tweets_route;
+use crate::routes::tweets::tweets_fix as tweets_fix_route;
 use strum::IntoEnumIterator;
 
 use crate::node_helper::DomHelper;
@@ -256,6 +256,8 @@ async fn main() -> std::io::Result<()> {
             .service(categories_fix)
             .service(exact_tag)
             .service(exact_tag_fix)
+            .service(tweets_route)
+            .service(tweets_fix_route)
             .service(exact)
             .service(exact_amp)
             // Exact cateogories --------------------------------

@@ -87,6 +87,10 @@ h1 {
     @apply text-lg my-3;
 }
 
+h2 {
+    @apply text-lg my-3;
+}
+
 
 .height1px {
     height: 1px;
@@ -147,6 +151,9 @@ h1 {
 }
 
 
+.FlexAllCenter {
+    @apply flex items-center content-center self-center;
+}
 
 
 .MenuContainer {

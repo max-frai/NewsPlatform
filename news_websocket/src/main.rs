@@ -175,7 +175,9 @@ async fn main() -> std::io::Result<()> {
             println!("--- PARSE TWITTER ---");
             let state = twitter_state.clone();
             tokio::task::spawn(async move {
-                twitter::parse_twitter(state).await;
+                if let Err(why) = twitter::parse_twitter(state).await {
+                    dbg!(why);
+                }
             })
             .await;
             sleep(Duration::from_secs(60 * 15)).await;

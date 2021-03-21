@@ -1,5 +1,5 @@
 {% if title %}
-    <h1 class="mb-2">{{ title }}</h1>
+    <h2 class="mb-2">{{ title }}</h2>
 {% endif %}
 <div class="GrayBorder text-sm md:p-3 md:px-4">
     {% set last_date = "00" %}

@@ -7,7 +7,7 @@
     </div>
     <div class="shade"></div>
     <div class="info pl-4 md:pl-5">
-        <h1 class="title pr-4 md:pr-8">{{ title }}</h1>
+        <h2 class="title pr-4 md:pr-8">{{ title }}</h2>
         <div class="flex flex-1 justify-between items-center mt-4 text-xs">
             <div class="category">
                 <a href="/{{ category | lower }}/">{{ category_name(category=category) }}</a>

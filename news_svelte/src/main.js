@@ -54,3 +54,11 @@ if (covid_handle) {
         target: covid_handle
     });
 }
+
+import Tweets from './Tweets.svelte';
+var tweets_handle = document.querySelector('#SvelteTweets')
+if (tweets_handle) {
+    new Tweets({
+        target: tweets_handle
+    });
+}

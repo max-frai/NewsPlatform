@@ -3,7 +3,7 @@
     // import CovidInfoSummary from "./components/CovidInfoSummary.svelte";
 </script>
 
-<h1 class="BlockTitle">Коронавирус в Украине</h1>
+<h2 class="BlockTitle">Коронавирус в Украине</h2>
 <!-- <div class="GrayBorder overflow-hidden"> -->
 <div class="w-full relative flex">
     <CovidTimeGraph />
