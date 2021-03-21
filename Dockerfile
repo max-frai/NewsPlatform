@@ -58,7 +58,7 @@ RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.l
 # Chromium & NodeJS
 RUN apt update && apt install -y curl xvfb chromium psmisc
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev python3-pip vim
+RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev python3-pip magic-wormhole vim wget
 RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
 
@@ -73,10 +73,11 @@ WORKDIR /newsplatform/
 ADD news_nlp ./news_nlp
 COPY --from=builder /newsplatform/news_nlp/models ./news_nlp/models
 COPY --from=builder /newsplatform/news_rsmorphy ./news_rsmorphy/
-# RUN cp news_nlp/libgomp-75eea7e8.so.1 /usr/lib/
-# RUN cp news_nlp/libtorch_cpu.so /usr/lib/
-# RUN cp news_nlp/libc10.so /usr/lib/
-# RUN cp news_nlp/libtorch.so /usr/lib/
+
+RUN cd /usr/lib && wget https://www.dropbox.com/s/yqgqiasz1weej96/libc10.so?dl=0 -O libc10.so
+RUN cd /usr/lib && wget https://www.dropbox.com/s/gny94fzwggussjd/libgomp-75eea7e8.so.1?dl=0 -O libgomp-75eea7e8.so.1
+RUN cd /usr/lib && wget https://www.dropbox.com/s/c209ske4r4do6fm/libtorch_cpu.so?dl=0 -O libtorch_cpu.so
+RUN cd /usr/lib && wget https://www.dropbox.com/s/v38nr9q5c11ic5s/libtorch.so?dl=0 -O libtorch.so
 
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
