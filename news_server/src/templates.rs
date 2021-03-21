@@ -11,6 +11,36 @@ pub fn make_card_url_raw(card: &Card, is_amp: bool) -> String {
     format!("{}{}/{}.html", link_type, card.category, card.slug)
 }
 
+pub fn month_name(args: &HashMap<String, Value>) -> Result<Value> {
+    let months = vec![
+        "Январь",
+        "Февраль",
+        "Март",
+        "Апрель",
+        "Май",
+        "Июнь",
+        "Июль",
+        "Август",
+        "Сентябрь",
+        "Ноябрь",
+        "Декабрь",
+    ];
+
+    match args.get("month") {
+        Some(val) => match from_value::<String>(val.clone()) {
+            Ok(month_index) => {
+                Ok(to_value(months[month_index.parse::<usize>().unwrap_or(0) - 1]).unwrap())
+            }
+            Err(_) => Err(Error::msg(
+                "Function `month_name` received `month`, but with wrong type",
+            )),
+        },
+        None => Err(Error::msg(
+            "Function `month_name` was called without a `month` argument",
+        )),
+    }
+}
+
 pub fn make_card_url(args: &HashMap<String, Value>) -> Result<Value> {
     match args.get("card") {
         Some(val) => match from_value::<Card>(val.clone()) {
@@ -76,6 +106,7 @@ pub fn init_tera() -> Arc<Tera> {
     tera.register_function("make_card_url", make_card_url);
     tera.register_function("category_name", category_name);
     tera.register_function("markdown2html", markdown2html);
+    tera.register_function("month_name", month_name);
 
     Arc::new(tera)
 }
