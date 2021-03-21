@@ -23,6 +23,8 @@
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "countup": "^1.8.2",
+    "dateformat": "^4.5.1",
+    "masonry-layout": "^4.2.2",
     "sirv-cli": "^1.0",
     "svelte-i18n": "^3.3.0",
     "svelte-watch-resize": "^1.0.3"
