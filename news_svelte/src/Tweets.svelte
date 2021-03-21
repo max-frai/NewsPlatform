@@ -13,6 +13,7 @@
     import OverlayPopup from "./components/OverlayPopup.svelte";
     import DateFormat from "dateformat";
     let tweets = [];
+    let tweetsCache = {};
     let active = "12 часов";
     let masonryHandle = null;
     let popupTweet = null;
@@ -44,15 +45,16 @@
         if (!jsonData) return;
         if (jsonData.kind != "TweetsMessage") return;
         jsonData = JSON.parse(jsonData.data);
-        console.log("TWEETS MESSAGE:");
-        console.log(jsonData);
+
         for (let i = 0; i < jsonData.tweets.length; i++) {
             let data = jsonData.tweets[i];
-            console.log(data);
+            tweetsCache[data.kind] = data.tweets;
+
             if (val2title[data.kind] == active) {
                 tweets = data.tweets;
             }
         }
+
         await tick();
         createMasonry();
     }
@@ -100,16 +102,16 @@
         active = button.detail.active;
         await loadTweets(active);
     }
-    async function loadTweets(period) {
-        tweets = await fetchTweets(title2val[active]);
+    async function loadTweets(active) {
+        tweets = tweetsCache[title2val[active]];
         await tick();
         createMasonry();
     }
-    onMount(async () => {
-        if (!tweets.length) {
-            await loadTweets(active);
-        }
-    });
+    // onMount(async () => {
+    //     if (!tweets.length) {
+    //         await loadTweets(active);
+    //     }
+    // });
 </script>
 
 <div class="container mx-auto">

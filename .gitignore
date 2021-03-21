@@ -18,3 +18,5 @@ news_templates/static/*_sitemap.xml
 Cargo.lock
 news.json
 news_server/news.json
+news.json
+package-lock.json
