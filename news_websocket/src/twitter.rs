@@ -34,7 +34,7 @@ pub struct Entity {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Tweet {
     pub id: String,
-    pub when: DateTime<Utc>,
+    pub when: bson::DateTime,
     pub favorites: i32,
     pub retweets: i32,
     pub rt_and_fav: i32,
@@ -71,15 +71,11 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
             .limit(limit)
             .build();
 
-        // dbg!(&filter);
-        dbg!(&date);
-
         let mut tweets_iter = collection
             .find(
-                // doc! {
-                // "when": { "$gte" :  date }
-                // },
-                None,
+                doc! {
+                "when": { "$gte" :  date }
+                },
                 Some(filter),
             )
             .await?;
@@ -248,7 +244,7 @@ async fn parse_twitter_logic(
         }
 
         let id = tweet.id as i64;
-        let when = tweet.created_at;
+        let when = bson::DateTime(tweet.created_at);
         let text = url_re.replace_all(&tweet.text, "").to_string();
 
         let mut user_id = 0 as i64;

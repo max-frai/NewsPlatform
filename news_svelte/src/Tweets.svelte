@@ -217,7 +217,7 @@
                                 <div class="FlexAllCenter">
                                     <Clock />
                                     &nbsp; {DateFormat(
-                                        Date.parse(tweet.when),
+                                        Date.parse(tweet.when.$date),
                                         "HH:MM • dd.mm"
                                     )}
                                 </div>
