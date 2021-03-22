@@ -87,6 +87,7 @@ RUN wget https://www.dropbox.com/s/8qwq0v9rkxsx3wz/ruwikiruscorpora_upos_skipgra
 
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
+ADD tessdata ./tessdata
 ADD news_ner.py .
 ADD postcss.config.js .
 ADD tailwind.config.js .
