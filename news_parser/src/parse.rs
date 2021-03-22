@@ -569,7 +569,8 @@ pub async fn parse_news(
                     dbg!(num_words);
 
                     if num_words >= 3 {
-                        model.og_image = path;
+                        dbg!(format!("{}/{}", constants.full_domain, path));
+                        model.og_image = format!("{}/{}", constants.full_domain, path);
                     }
                 }
             }
