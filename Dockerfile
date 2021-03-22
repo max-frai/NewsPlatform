@@ -29,6 +29,8 @@ FROM rust:1.48-buster as builder
 RUN echo "PREPARE CARGO CHEF BUILDER"
 WORKDIR /newsplatform/
 
+RUN apt-get install -y libleptonica-dev libtesseract-dev clang
+
 # Possibly move models downloading to cacher or planner
 ADD news_nlp ./news_nlp
 RUN ls -la
