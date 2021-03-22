@@ -2,7 +2,6 @@ use finalfusion::prelude::*;
 use leptess::LepTess;
 use mongodb::Client;
 use rsmorphy::prelude::*;
-use rsmorphy_dict_ru;
 use std::io::BufReader;
 use std::{cell::RefCell, fs::File};
 use std::{rc::Rc, sync::Arc};
@@ -60,7 +59,7 @@ async fn main() {
         let embeddings = Rc::new(Embeddings::read_word2vec_binary(&mut reader).unwrap());
 
         println!("Read morphy dictionaries ----------");
-        let morph = Rc::new(MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH));
+        let morph = Rc::new(MorphAnalyzer::from_file("news_rsmorphy/"));
 
         println!("Run local tokio task");
         local.spawn_local(async move {

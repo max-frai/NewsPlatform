@@ -38,7 +38,6 @@ clap = "3.0.0-beta.2"
 wikipedia = "0.3"
 three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
 rsmorphy = "0.4"
-rsmorphy-dict-ru = "0.1"
 scraper = "0.12.0"
 scanlex = "0.1"
 image = "0.23"
