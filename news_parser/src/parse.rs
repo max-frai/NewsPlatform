@@ -560,7 +560,7 @@ pub async fn parse_news(
         let mut ocr = ocr.borrow_mut();
         for model in models.iter_mut() {
             if let Ok(path) = save_og_image(&model.og_image).await {
-                ocr.set_image(path.to_string());
+                ocr.set_image(&path);
                 ocr.set_source_resolution(70);
                 if let Ok(text) = ocr.get_utf8_text() {
                     dbg!(&text);
