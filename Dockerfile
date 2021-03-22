@@ -3,6 +3,7 @@
 FROM rust:1.48-buster as planner
 RUN echo "PREPARE CARGO CHEF PLANNER"
 WORKDIR /newsplatform/
+RUN apt-get install -y libleptonica-dev libtesseract-dev clang cmake build-essential
 RUN cargo install cargo-chef
 ADD news_general ./news_general
 ADD news_parser ./news_parser
@@ -18,6 +19,7 @@ RUN ls -la
 FROM rust:1.48-buster as cacher
 RUN echo "PREPARE CARGO CHEF CACHER"
 WORKDIR /newsplatform/
+RUN apt-get install -y libleptonica-dev libtesseract-dev clang cmake build-essential
 RUN cargo install cargo-chef
 COPY --from=planner /newsplatform/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
@@ -29,7 +31,7 @@ FROM rust:1.48-buster as builder
 RUN echo "PREPARE CARGO CHEF BUILDER"
 WORKDIR /newsplatform/
 
-RUN apt-get install -y libleptonica-dev libtesseract-dev clang
+RUN apt-get install -y libleptonica-dev libtesseract-dev clang cmake build-essential
 
 # Possibly move models downloading to cacher or planner
 ADD news_nlp ./news_nlp
