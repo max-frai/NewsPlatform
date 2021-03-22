@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "RUN SERVER"
+nohup ./news_server > server_LOG &
+server_process_id=$!
+
 echo "Kill Xvfb"
 killall -9 Xvfb
 
@@ -28,5 +32,4 @@ nohup ./news_websocket > websocket_LOG &
 echo "RUN PARSER"
 nohup ./news_parser > parser_LOG &
 
-echo "RUN SERVER"
-./news_server
+wait $server_process_id
