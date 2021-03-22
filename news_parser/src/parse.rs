@@ -1,14 +1,25 @@
 use browser_rs::Browser;
 use chrono::prelude::*;
+use finalfusion::prelude::*;
+use finalfusion::similarity::WordSimilarity;
+use finalfusion::storage::NdArray;
+use finalfusion::vocab::SimpleVocab;
 use futures::stream::StreamExt;
 use html2md;
+use leptess::LepTess;
+use mongodb::options::InsertManyOptions;
 use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
+use ordered_float::NotNan;
 use rand::seq::SliceRandom;
 use rayon::prelude::*;
+use rsmorphy::MorphAnalyzer;
+use rsmorphy::Source;
 use rss_parser_rs::{ParseMode, RssItem, RssProcessor};
-use std::sync::Arc;
+use scanlex::{Scanner, Token};
+use std::cell::RefCell;
+use std::env;
 use std::time::Duration;
-use std::{env, sync::Mutex};
+use std::{rc::Rc, sync::Arc};
 use three_set_compare::ThreeSetCompare;
 use tokio::sync::RwLock;
 use url::Url;
@@ -20,7 +31,7 @@ use byteorder::ByteOrder;
 use duct::*;
 use mongodb::{
     bson::{doc, document::Document, Bson},
-    options::{FindOptions, InsertManyOptions},
+    options::FindOptions,
     Client,
 };
 use serde_json::Value;
@@ -121,13 +132,121 @@ fn object_id_from_timestamp(timestamp: u32) -> ObjectId {
 }
 
 enum ParseResult {
-    Correct(bson::Document),
+    Correct(Card),
     Failed(String), // url slug
+}
+
+async fn save_og_image(link: &str) -> anyhow::Result<String> {
+    let og_response = reqwest::get(link).await?;
+    let image_bytes = og_response.bytes().await?;
+    let original = image::load_from_memory(&image_bytes)?;
+
+    let timestamp = Utc::now().timestamp().to_string();
+    let mut chars = timestamp.chars().rev();
+    let dir = format!(
+        "og_images/{}/{}/",
+        chars.next().unwrap_or('0'),
+        chars.next().unwrap_or('0'),
+    );
+    let preview_path = format!("{}{}.jpg", dir, timestamp.to_string());
+
+    std::fs::create_dir_all(dir)?;
+    original.save(&preview_path)?;
+
+    Ok(preview_path)
+}
+
+fn opencorpora_tag_to_universal(mut pos: String) -> String {
+    if pos == "ADJF" || pos == "ADJS" {
+        pos = String::from("ADJ");
+    }
+
+    if pos == "ADVB" {
+        pos = String::from("ADV");
+    }
+
+    if pos == "NUMR" {
+        pos = String::from("NUM");
+    }
+
+    if pos == "PRTF" || pos == "RPTS" {
+        pos = String::from("PART");
+    }
+
+    pos
+}
+
+fn calculate_russian_words(
+    text: &str,
+    morph: Rc<MorphAnalyzer>,
+    embeddings: Rc<Embeddings<SimpleVocab, NdArray>>,
+) -> i32 {
+    let fixed_text = text
+        .replace("»", " ")
+        .replace("«", " ")
+        .replace("(", " ")
+        .replace(")", " ")
+        .replace("|", " ")
+        .replace("\"", " ");
+
+    // dbg!(&fixed_text);
+
+    let mut scan = Scanner::new(&fixed_text);
+    let mut russian_words_found = 0;
+
+    while let Some(s) = scan.next() {
+        match s {
+            Token::Str(s) | Token::Iden(s) => {
+                let search_word = s.to_lowercase();
+                // dbg!(&search_word);
+                if search_word.chars().count() <= 4 {
+                    continue;
+                }
+
+                let lexems = morph.parse(&search_word);
+                if lexems.is_empty() {
+                    continue;
+                }
+
+                let lex = lexems[0].lex.get_lemma(&morph);
+                let mut pos = lex
+                    .get_tag(&morph)
+                    .string
+                    .split(",")
+                    .next()
+                    .unwrap_or("")
+                    .to_string();
+
+                pos = opencorpora_tag_to_universal(pos);
+                let normal_form = lex.get_normal_form(&morph).to_string();
+
+                if let Some(similar_words) =
+                    embeddings.word_similarity(&format!("{}_{}", normal_form, pos), 1)
+                {
+                    // dbg!(&similar_words[0]);
+                    if similar_words[0].cosine_similarity() >= *NotNan::new(0.59).unwrap() {
+                        russian_words_found += 1;
+
+                        if russian_words_found >= 5 {
+                            println!("Found more than 5 russian words, force break search loop");
+                            break;
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    russian_words_found
 }
 
 pub async fn parse_news(
     client: Arc<Client>,
     constants: Arc<AppConfig>,
+    ocr: Rc<RefCell<LepTess>>,
+    morph: Rc<MorphAnalyzer>,
+    embeddings: Rc<Embeddings<SimpleVocab, NdArray>>,
     failed_to_parse: Arc<RwLock<Vec<String>>>,
 ) {
     let browser = Arc::new(Browser::new(
@@ -411,7 +530,7 @@ pub async fn parse_news(
                             tagged: false
                         };
 
-                        return ParseResult::Correct(bson::to_bson(&item).unwrap().as_document().unwrap().clone());
+                        return ParseResult::Correct(item);
                     } else {
                         return ParseResult::Failed(link.to_string());
                         // println!("Wrong returned json from parsebinary");
@@ -437,11 +556,41 @@ pub async fn parse_news(
             failed_to_parse.write().await.append(&mut failed);
         }
 
-        println!("Models count: {}", models.len());
+        let mut bson_cards = vec![];
+        let mut ocr = ocr.borrow_mut();
+        for model in models.iter_mut() {
+            if let Ok(path) = save_og_image(&model.og_image).await {
+                ocr.set_image(path.to_string());
+                ocr.set_source_resolution(70);
+                if let Ok(text) = ocr.get_utf8_text() {
+                    dbg!(&text);
+                    let num_words =
+                        calculate_russian_words(&text, morph.clone(), embeddings.clone());
+                    dbg!(num_words);
+
+                    if num_words >= 3 {
+                        model.og_image = path;
+                    }
+                }
+            }
+
+            bson_cards.push(
+                bson::to_bson(&model)
+                    .unwrap()
+                    .as_document()
+                    .unwrap()
+                    .clone(),
+            );
+        }
+
+        println!("Models count: {}", bson_cards.len());
 
         if !models.is_empty() {
             news_collection
-                .insert_many(models, InsertManyOptions::builder().ordered(false).build())
+                .insert_many(
+                    bson_cards,
+                    InsertManyOptions::builder().ordered(false).build(),
+                )
                 .await
                 .unwrap();
         }

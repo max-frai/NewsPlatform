@@ -58,7 +58,7 @@ RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.l
 # Chromium & NodeJS
 RUN apt update && apt install -y curl xvfb chromium psmisc
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev python3-pip magic-wormhole vim wget
+RUN apt-get install -y nodejs cmake libboost-all-dev build-essential libjsoncpp-dev uuid-dev protobuf-compiler libprotobuf-dev python3-pip magic-wormhole vim wget libleptonica-dev libtesseract-dev clang
 RUN npm install --save-dev autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
 RUN npm install -g autoprefixer tailwindcss postcss postcss-cli postcss-loader cssnano
 

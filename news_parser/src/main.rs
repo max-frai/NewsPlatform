@@ -1,7 +1,16 @@
+use finalfusion::prelude::*;
+use leptess::LepTess;
 use mongodb::Client;
-use std::sync::Arc;
-use tokio::sync::{Mutex, RwLock};
+use rsmorphy::prelude::*;
+use rsmorphy_dict_ru;
+use std::io::BufReader;
+use std::{cell::RefCell, fs::File};
+use std::{rc::Rc, sync::Arc};
 use tokio::time::{sleep, Duration};
+use tokio::{
+    sync::{Mutex, RwLock},
+    task,
+};
 
 use news_general::constants::*;
 use news_general::tag::*;
@@ -34,24 +43,47 @@ async fn main() {
 
     let tags_manager = Arc::new(Mutex::new(TagsManagerWriter::new(tags_col).await));
 
+    let local = task::LocalSet::new();
     if constants.parser_parse {
         let parse_client = client.clone();
         let parse_constants = constants.clone();
         let failed_to_parse_links = Arc::new(RwLock::new(Vec::<String>::new()));
 
-        tokio::task::spawn(async move {
-            loop {
-                println!("!!!!!!!!!!!!!!!!!!!!!!! Parse news.......");
-                let client = parse_client.clone();
-                let constants = parse_constants.clone();
-                let failed = failed_to_parse_links.clone();
-                tokio::task::spawn(async move {
-                    crate::parse::parse_news(client, constants, failed).await;
-                })
-                .await;
+        println!("Load image and process ORC --------");
+        let ocr_handle = Rc::new(RefCell::new(
+            LepTess::new(Some("./tessdata"), "rus").unwrap(),
+        ));
 
-                sleep(Duration::from_secs(60)).await;
-            }
+        println!("Read word embedings ---------------");
+        let mut reader =
+            BufReader::new(File::open("ruwikiruscorpora_upos_skipgram_300_2_2019.bin").unwrap());
+        let embeddings = Rc::new(Embeddings::read_word2vec_binary(&mut reader).unwrap());
+
+        println!("Read morphy dictionaries ----------");
+        let morph = Rc::new(MorphAnalyzer::from_file(rsmorphy_dict_ru::DICT_PATH));
+
+        println!("Run local tokio task");
+        local.spawn_local(async move {
+            println!("Inside run until, spawn local task");
+            tokio::task::spawn_local(async move {
+                loop {
+                    println!("!!!!!!!!!!!!!!!!!!!!!!! Parse news.......");
+                    let client = parse_client.clone();
+                    let constants = parse_constants.clone();
+                    let failed = failed_to_parse_links.clone();
+                    let morph = morph.clone();
+                    let ocr = ocr_handle.clone();
+                    let embeddings = embeddings.clone();
+                    tokio::task::spawn_local(async move {
+                        crate::parse::parse_news(client, constants, ocr, morph, embeddings, failed)
+                            .await;
+                    })
+                    .await;
+
+                    sleep(Duration::from_secs(60)).await;
+                }
+            })
+            .await;
         });
     }
 
@@ -126,5 +158,7 @@ async fn main() {
         });
     }
 
-    std::future::pending::<()>().await;
+    // std::future::pending::<()>().await;
+    println!("Await local set");
+    local.await;
 }
