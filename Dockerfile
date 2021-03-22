@@ -79,6 +79,8 @@ RUN cd /usr/lib && wget https://www.dropbox.com/s/gny94fzwggussjd/libgomp-75eea7
 RUN cd /usr/lib && wget https://www.dropbox.com/s/c209ske4r4do6fm/libtorch_cpu.so?dl=0 -O libtorch_cpu.so
 RUN cd /usr/lib && wget https://www.dropbox.com/s/v38nr9q5c11ic5s/libtorch.so?dl=0 -O libtorch.so
 
+RUN wget https://www.dropbox.com/s/8qwq0v9rkxsx3wz/ruwikiruscorpora_upos_skipgram_300_2_2019.bin?dl=0 -O ruwikiruscorpora_upos_skipgram_300_2_2019.bin
+
 ADD news_svelte ./news_svelte
 ADD news_templates ./news_templates
 ADD news_ner.py .
