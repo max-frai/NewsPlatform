@@ -26,8 +26,9 @@ serde = "1.0"
 duct = "0.13"
 strum = "0.18"
 strum_macros = "0.18"
+leptess = "0.11"
+finalfusion = "0.15"
 comrak = "0.9"
-image = "0.23"
 bytes = "1.0"
 base64="0.13"
 lazy_static = "1.4"
@@ -37,7 +38,11 @@ clap = "3.0.0-beta.2"
 wikipedia = "0.3"
 three-set-compare = {git = "https://github.com/max-frai/three-set-compare-rs"}
 rsmorphy = "0.4"
+rsmorphy-dict-ru = "0.1"
 scraper = "0.12.0"
+scanlex = "0.1"
+image = "0.23"
+ordered-float = "2.1"
 
 reqwest = { version = "0.11", features = ["json"] }
 
