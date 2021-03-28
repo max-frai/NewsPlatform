@@ -43,7 +43,7 @@ pub async fn generate_tags_sitemap(state: web::Data<State>) -> anyhow::Result<()
     let sitemap_writer = SiteMapWriter::new(&mut output);
     let mut urlwriter = sitemap_writer.start_urlset()?;
 
-    for (_, tag) in state.tags_manager.read().await.tags.iter() {
+    for (_, tag) in state.tags_manager.read().await.tags.iter().take(20000) {
         let url = format!(
             "{}/{}/{}/",
             state.constants.full_domain,
