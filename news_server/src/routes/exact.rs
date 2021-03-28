@@ -24,10 +24,10 @@ async fn _exact_logic(
         "modules/exact_card_amp/tpl.tera"
     };
 
-    let mut center_tpl = state
-        .tera
-        .render(exact_card_tpl, &Context::from_serialize(&card).unwrap())
-        .unwrap();
+    let mut card_ctx = Context::from_serialize(&card).unwrap();
+    card_ctx.extend(context.clone());
+
+    let mut center_tpl = state.tera.render(exact_card_tpl, &card_ctx).unwrap();
 
     if is_amp {
         let root_node = state.dom_helper.parse_html(&center_tpl);

@@ -12,6 +12,8 @@ pub struct AppConfig {
     pub platform_hash: String,
     pub full_domain: String,
 
+    pub authors: Vec<String>,
+
     pub parser_parse: bool,
     pub parser_rewrite: bool,
     pub parser_tag: bool,

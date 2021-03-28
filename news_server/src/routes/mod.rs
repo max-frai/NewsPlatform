@@ -1,4 +1,5 @@
 // pub mod error_500;
+pub mod authors;
 pub mod categories;
 pub mod exact;
 pub mod exact_category;

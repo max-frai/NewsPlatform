@@ -2,11 +2,14 @@ use crate::sitemap::generate_categories_sitemap;
 use crate::sitemap::generate_head_sitemap;
 use crate::sitemap::generate_posts_sitemap;
 use crate::sitemap::generate_tags_sitemap;
-use routes::exact_category::{
-    economy_category, economy_category_fix, entertainment_category, entertainment_category_fix,
-    other_category, other_category_fix, science_category, science_category_fix, society_category,
-    society_category_fix, sports_category, sports_category_fix, technology_category,
-    technology_category_fix,
+use routes::{
+    authors::{authors, authors_fix},
+    exact_category::{
+        economy_category, economy_category_fix, entertainment_category, entertainment_category_fix,
+        other_category, other_category_fix, science_category, science_category_fix,
+        society_category, society_category_fix, sports_category, sports_category_fix,
+        technology_category, technology_category_fix,
+    },
 };
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -260,6 +263,8 @@ async fn main() -> std::io::Result<()> {
             .service(tweets_fix_route)
             .service(exact)
             .service(exact_amp)
+            .service(authors)
+            .service(authors_fix)
             // Exact cateogories --------------------------------
             .service(society_category_fix)
             .service(entertainment_category_fix)

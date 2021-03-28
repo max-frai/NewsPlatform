@@ -11,6 +11,7 @@ use mongodb::options::InsertManyOptions;
 use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
 use ordered_float::NotNan;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use rayon::prelude::*;
 use rsmorphy::MorphAnalyzer;
 use rsmorphy::Source;
@@ -506,6 +507,8 @@ pub async fn parse_news(
                         let _lower_content =
                             format!("{} {}", title.to_lowercase(), html.to_lowercase());
 
+                        let mut rng = rand::thread_rng();
+
                         let item = Card {
                             _id: ObjectId::new(),
                             source_id,
@@ -524,6 +527,7 @@ pub async fn parse_news(
                             marks,
                             tags: vec![],
                             filled_tags: vec![],
+                            author:  rng.gen_range(0..constants.authors.len()) as i64,
 
                             rewritten: false,
                             categorised: false,

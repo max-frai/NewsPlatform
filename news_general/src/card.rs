@@ -2,10 +2,16 @@ use bson::oid::ObjectId;
 use chrono::Utc;
 use comrak::{format_html, parse_document, Arena, ComrakOptions};
 use lazy_static::lazy_static;
+use rand::Rng;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::{category::Category, tag::Tag};
+
+fn default_author() -> i64 {
+    let mut rng = rand::thread_rng();
+    rng.gen_range(0..=3) as i64
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Card {
@@ -27,6 +33,9 @@ pub struct Card {
     pub marks: Vec<String>,
     pub tags: Vec<ObjectId>,
     pub filled_tags: Vec<Tag>,
+
+    #[serde(default = "default_author")]
+    pub author: i64,
 
     pub rewritten: bool,
     pub categorised: bool,
@@ -56,6 +65,7 @@ impl Default for Card {
             rewritten: false,
             categorised: false,
             tagged: false,
+            author: 0,
         }
     }
 }

@@ -7,6 +7,9 @@ edition = "2018"
 [[bin]]
 name = "news_server"
 
+[profile.dev]
+split-debuginfo = "unpacked"
+
 [dependencies]
 news_general = {path = "../news_general"}
 

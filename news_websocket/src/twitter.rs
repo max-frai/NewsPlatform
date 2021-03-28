@@ -85,7 +85,7 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
             tweets.push(bson::from_bson::<Tweet>(bson::Bson::Document(tweet.unwrap())).unwrap());
         }
 
-        println!("Tweets gethered: {}", tweets.len());
+        // println!("Tweets gethered: {}", tweets.len());
 
         tweets.sort_by(|a, b| b.retweets.partial_cmp(&a.retweets).unwrap());
 

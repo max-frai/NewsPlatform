@@ -13,8 +13,8 @@
     "datePublished": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
     "dateModified": "{{ card.date['$date'] | date(format="%+", timezone="Europe/Kiev") }}",
     "author": {
-        "@type": "Organization",
-        "name": "HubLoid"
+        "@type": "Person",
+        "name": "{{ AUTHORS[card.author] }}"
     },
     "publisher": {
         "@type": "Organization",

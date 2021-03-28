@@ -6,3 +6,6 @@ members = [
     "news_server",
     "news_websocket",
 ]
+
+[profile.dev]
+split-debuginfo = "unpacked"

@@ -51,6 +51,7 @@ where
         if let Some(state) = req.app_data::<Data<State>>() {
             context.insert("PROJECT_DOMAIN", &state.constants.full_domain);
             context.insert("BUILD_VERSION", &state.build_random_number);
+            context.insert("AUTHORS", &state.constants.authors);
         }
 
         if !req.query_string().is_empty() {

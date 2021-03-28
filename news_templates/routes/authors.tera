@@ -1,0 +1,26 @@
+{% extends "layouts/layout.tera" %}
+{% block meta %}
+    <title>Редакция ➤ HubLoid</title>
+    <meta content="Вся важная информация ✔ Свежие обновления каждый день ≡ Ваш персональный хаб новостей!" name="description"/>
+{% endblock %}
+{% block center_column %}
+    {% include "parts/graphs.tera" %}
+    <h1 class="text-center pt-2">
+        Мы пишем о политике, бизнесе, образовании, культуре, технологиях в Украине и мире - обо всем, что важно знать современному человеку.
+    </h1>
+    <div class="flex flex-wrap justify-evenly">
+        {% for author in AUTHORS %}
+            <div class="flex flex-col items-center justify-center mb-3">
+                <img class="inline-block w-20 h-20 rounded-full" src="/static/media/editors/{{ loop.index }}.jpeg"/>
+                <div>
+                    {{ author }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block right_column %}
+    {% if right_content %}
+        {{ right_content | safe }}
+    {% endif %}
+{% endblock %}
