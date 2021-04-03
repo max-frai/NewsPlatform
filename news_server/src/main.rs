@@ -10,7 +10,6 @@ use routes::{
         society_category, society_category_fix, sports_category, sports_category_fix,
         technology_category, technology_category_fix,
     },
-    exact_tag::{fix_gpe_exact_tag, fix_person_exact_tag},
 };
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -30,6 +29,7 @@ use crate::routes::exact::exact;
 use crate::routes::exact::exact_amp;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::exact_tag::exact_tag_fix;
+use crate::routes::exact_tag::{fix_gpe_exact_tag, fix_person_exact_tag};
 use crate::routes::index::index;
 use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
@@ -258,10 +258,10 @@ async fn main() -> std::io::Result<()> {
             .service(test)
             .service(categories)
             .service(categories_fix)
-            .service(exact_tag)
             .service(fix_person_exact_tag)
             .service(fix_gpe_exact_tag)
             .service(exact_tag_fix)
+            .service(exact_tag)
             .service(tweets_route)
             .service(tweets_fix_route)
             .service(exact)

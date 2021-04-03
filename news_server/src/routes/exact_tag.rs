@@ -8,19 +8,19 @@ use news_general::{
 use std::str::FromStr;
 use tera::Context;
 
-#[get("/tags/gpe/{slug}")]
-pub async fn fix_gpe_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/tags/loc/{}/", slug))
-}
-
-#[get("/tags/person/{slug}")]
-pub async fn fix_person_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/tags/per/{}/", slug))
-}
-
 #[get("/tags/{kind}/{slug}")]
 async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> HttpResponse {
     redirect(&format!("/tags/{}/{}/", kind, slug))
+}
+
+#[get("/tags/gpe/{slug}/")]
+async fn fix_gpe_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/loc/{}/", slug))
+}
+
+#[get("/tags/person/{slug}/")]
+async fn fix_person_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/per/{}/", slug))
 }
 
 #[get("/tags/{kind}/{slug}/")]
