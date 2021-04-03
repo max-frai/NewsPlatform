@@ -8,6 +8,16 @@ use news_general::{
 use std::str::FromStr;
 use tera::Context;
 
+#[get("/tags/gpe/{slug}")]
+pub async fn fix_gpe_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/loc/{}/", slug))
+}
+
+#[get("/tags/person/{slug}")]
+pub async fn fix_person_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/per/{}/", slug))
+}
+
 #[get("/tags/{kind}/{slug}")]
 async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> HttpResponse {
     redirect(&format!("/tags/{}/{}/", kind, slug))
@@ -70,7 +80,7 @@ async fn exact_tag(
     context.insert("title", &title);
 
     let meta_title = match &kind {
-        TagKind::Gpe => format!("{} последние новости - главное на сегодня", tag.wiki_title),
+        TagKind::Loc => format!("{} последние новости - главное на сегодня", tag.wiki_title),
         TagKind::Per => format!(
             "{} последние новости - свежие статьи и информация",
             tag.wiki_title
@@ -82,7 +92,7 @@ async fn exact_tag(
     };
 
     let meta_desc = match kind {
-        TagKind::Gpe => format!("HubLoid {} ➤ Главные и последние новости по {} ✔ Важные обновления каждый день", tag.wiki_title, tag.wiki_title),
+        TagKind::Loc => format!("HubLoid {} ➤ Главные и последние новости по {} ✔ Важные обновления каждый день", tag.wiki_title, tag.wiki_title),
         TagKind::Per => format!("HubLoid {} ➤ Последние новости и статьи по персоне {} ✔ Информация и все упоминания", tag.wiki_title, tag.wiki_title),
         _ => format!("HubLoid {} ➤ Последние новости по {} - вся важная информация ✔ Свежие обновления каждый день", tag.wiki_title, tag.wiki_title)
     };

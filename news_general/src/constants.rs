@@ -13,6 +13,7 @@ pub struct AppConfig {
     pub full_domain: String,
 
     pub authors: Vec<String>,
+    pub stop_tags: Vec<String>,
 
     pub parser_parse: bool,
     pub parser_rewrite: bool,

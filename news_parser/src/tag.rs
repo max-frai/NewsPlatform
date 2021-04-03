@@ -97,6 +97,10 @@ pub async fn tag_news(
                 let word = pair.0.trim();
                 let kind = pair.1.to_owned();
 
+                if constants.stop_tags.contains(&word.to_lowercase()) {
+                    continue;
+                }
+
                 // println!("{} - {}", word, kind);
 
                 let mut tags_manager_mut = tags_manager.lock().await;

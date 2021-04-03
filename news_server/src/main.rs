@@ -10,6 +10,7 @@ use routes::{
         society_category, society_category_fix, sports_category, sports_category_fix,
         technology_category, technology_category_fix,
     },
+    exact_tag::{fix_gpe_exact_tag, fix_person_exact_tag},
 };
 use std::{collections::HashMap, sync::Arc, time::Duration};
 use tag_cache::TagCache;
@@ -258,6 +259,8 @@ async fn main() -> std::io::Result<()> {
             .service(categories)
             .service(categories_fix)
             .service(exact_tag)
+            .service(fix_person_exact_tag)
+            .service(fix_gpe_exact_tag)
             .service(exact_tag_fix)
             .service(tweets_route)
             .service(tweets_fix_route)

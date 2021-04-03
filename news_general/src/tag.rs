@@ -30,8 +30,6 @@ pub enum TagKind {
     Norp,
     Org,
     Loc,
-    Gpe,
-    Person,
     Event,
     Product,
     Facility,
@@ -41,11 +39,9 @@ impl TagKind {
     pub fn to_description(&self) -> &'static str {
         match self {
             TagKind::Per => "Люди",
-            TagKind::Person => "Люди",
             TagKind::Norp => "Группы",
             TagKind::Org => "Организации",
             TagKind::Loc => "Локации",
-            TagKind::Gpe => "Локации",
             TagKind::Event => "События",
             TagKind::Product => "Продукты",
             TagKind::Facility => "Объекты",
