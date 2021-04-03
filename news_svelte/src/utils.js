@@ -1,5 +1,5 @@
 export function cardUrl(card) {
-    return `${card.category.toLowerCase()}/${card.slug}.html`;
+    return `/${card.category.toLowerCase()}/${card.slug}.html`;
 }
 
 export function formatInterval(ms) {
