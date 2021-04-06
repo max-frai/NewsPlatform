@@ -75,7 +75,7 @@ struct Args {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // std::env::set_var("RUST_LOG", "actix_web=debug");
+    std::env::set_var("RUST_LOG", "actix_web=debug");
     env_logger::init();
 
     let args = Args::from_args();
