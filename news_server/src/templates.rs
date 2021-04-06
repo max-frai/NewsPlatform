@@ -22,6 +22,7 @@ pub fn month_name(args: &HashMap<String, Value>) -> Result<Value> {
         "Июль",
         "Август",
         "Сентябрь",
+        "Октябрь",
         "Ноябрь",
         "Декабрь",
     ];
