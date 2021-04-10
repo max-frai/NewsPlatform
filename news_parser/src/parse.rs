@@ -329,6 +329,16 @@ pub async fn parse_news(
             .map(|source| {
                 let rss = RssProcessor::<RssItemFull>::new(ParseMode::Latest(100));
 
+                let is_enabled = source
+                    .get("enabled")
+                    .map(|item| item.as_bool())
+                    .flatten()
+                    .unwrap_or(true);
+
+                if !is_enabled {
+                    return Vec::default();
+                }
+
                 let rss_link = source.get("rss").unwrap().as_str().unwrap_or_default();
                 // println!("Parse rss: {:?}", rss_link);
 
