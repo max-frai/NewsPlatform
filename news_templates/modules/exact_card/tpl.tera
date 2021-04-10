@@ -29,6 +29,7 @@
     {{ html | safe }}
 </div>
 <div class="tagWrap mt-3">
+    {% set_global allowAutoCompactTags = true  %}
     {% for tag in filled_tags %}
         {% include "modules/tag_item/tpl.tera" %}
     {% endfor %}

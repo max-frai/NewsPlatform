@@ -1,10 +1,22 @@
-<a href="/tags/{{ tag.kind | lower }}/{{ tag.slug }}/" class="block w-full">
+{% set kind = "block" %}
+{% set a_kind = "w-full" %}
+{% set compactIteration = false %}
+
+{% if allowAutoCompactTags is defined and loop.index >= 6 %}
+    {% set compactIteration = true %}
+    {% set kind = "inline-block" %}
+    {% set a_kind = "w-auto" %}
+{% endif %}
+
+
+<a href="/tags/{{ tag.kind | lower }}/{{ tag.slug }}/" class="{{ kind }} {{ a_kind }}">
     <div class="tagItem">
         <div class="tagImage" style="background-image: url({{ tag.image }})"></div>
         <div>
             <h3 class="capitalize">{{ tag.title }}</h3>
-            {% if compactTag is undefined %}
-            <div class="tagDesc">{{ tag.sentence | truncate(length=300) }}</div>
+
+            {% if compactTag is undefined and compactIteration == false %}
+                <div class="tagDesc">{{ tag.sentence | truncate(length=300) }}</div>
             {% endif %}
         </div>
     </div>
