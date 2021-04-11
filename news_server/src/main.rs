@@ -33,6 +33,7 @@ use crate::routes::exact_tag::{fix_gpe_exact_tag, fix_person_exact_tag};
 use crate::routes::index::index;
 use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
+use crate::routes::rss::feed;
 use crate::routes::search_console::search_console;
 use crate::routes::tags::{tags_all, tags_all_fix, tags_scope, tags_scope_fix};
 use crate::routes::test::test;
@@ -248,6 +249,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(robots)
+            .service(feed)
             .service(js_bundle)
             .service(search_console)
             .service(tags_all)
