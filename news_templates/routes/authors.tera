@@ -11,7 +11,7 @@
     <div class="flex flex-wrap justify-evenly">
         {% for author in AUTHORS %}
             <div class="flex flex-col items-center justify-center mb-3">
-                <img class="inline-block w-20 h-20 rounded-full" src="/static/media/editors/{{ loop.index }}.jpeg"/>
+                <img class="inline-block w-20 h-20 rounded-full" src="/static/media/editors/{{ loop.index0 }}.jpeg"/>
                 <div>
                     {{ author }}
                 </div>
