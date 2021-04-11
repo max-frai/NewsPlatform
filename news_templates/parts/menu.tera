@@ -39,10 +39,10 @@
             </span>
         </div>
     </a>
-    <a href="/terms-of-use">
+    <a href="/rss.xml">
         <div class="leftMenuItem">
             <span class="leftMenuText">
-                Правила
+                Rss
             </span>
         </div>
     </a>

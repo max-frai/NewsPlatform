@@ -3,7 +3,7 @@ use actix_web::{get, web, HttpResponse, Responder};
 use news_general::card_queries::last_25;
 use rss::ChannelBuilder;
 
-#[get("/feed")]
+#[get("/rss.xml")]
 async fn feed(state: web::Data<State>) -> impl Responder {
     let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();
 
