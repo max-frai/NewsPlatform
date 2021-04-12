@@ -7,7 +7,13 @@
     {% if center_content %}
         {{ center_content | safe }}
     {% endif %}
-    <div id="SvelteTweets"></div>
+    <div id="SvelteTweets">
+        <div class="flex flex-wrap">
+            {% for tweet in tweets %}
+                <div class="w-1/3 m-2"><span class="tweetAuthor">{{ tweet.user_name }}</span> {{ tweet.text }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
 {% block right_column %}
     {% if right_content %}

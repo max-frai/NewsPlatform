@@ -6,3 +6,4 @@ pub mod constants;
 pub mod helper;
 pub mod ner;
 pub mod tag;
+pub mod tweet;

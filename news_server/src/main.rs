@@ -121,6 +121,7 @@ async fn main() -> std::io::Result<()> {
     println!("Select news and tags collections");
     let news_col = db.collection(&constants.cards_collection_name);
     let tags_col = db.collection(&constants.tags_collection_name);
+    let twitter_col = db.collection(&constants.twitter_collection_name);
 
     println!("Create tags manager");
     let tags_manager = Arc::new(RwLock::new(TagsManager::new(tags_col, news_col.clone())));
@@ -144,6 +145,8 @@ async fn main() -> std::io::Result<()> {
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
         dom_helper: Arc::new(DomHelper::new()),
+
+        twitter_col: twitter_col.clone(),
     });
 
     println!("Unique build number: {}", state.build_random_number);

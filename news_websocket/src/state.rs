@@ -3,9 +3,11 @@ use mongodb::Collection;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
-use news_general::{card_fetcher::CardFetcher, constants::AppConfig, tag::TagsManager};
+use news_general::{
+    card_fetcher::CardFetcher, constants::AppConfig, tag::TagsManager, tweet::Tweet,
+};
 
-use crate::{graphs_manager::ChartsManager, twitter::Tweet, ws_server::WsServer};
+use crate::{graphs_manager::ChartsManager, ws_server::WsServer};
 
 pub struct State {
     pub fetcher: Arc<CardFetcher>,
