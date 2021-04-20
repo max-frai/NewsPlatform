@@ -5,7 +5,10 @@
   import SvgFilters from "./components/SvgFilters.svelte";
   import { _ } from "svelte-i18n";
   let clusters = [];
-  let possibleNews = ["Важные", "Последние"];
+  //   let allowCategories = ["society", "economy", "technology"];
+  export let allowCategories = [];
+
+  //   let possibleNews = ["Важные", "Последние"];
   let filters = [
     "duotone-one",
     "duotone-two",
@@ -32,6 +35,7 @@
     "duotone-six":
       "opacity: 0.6; background: linear-gradient(rgba(20, 62, 143, 0), rgb(71, 76, 203));",
   };
+
   function categoryTitle(cluster) {
     return $_("topnews." + cluster.category);
   }
@@ -55,34 +59,36 @@
 <SvgFilters />
 
 {#each clusters as cluster}
-  <h2 class="BlockTitle">{categoryTitle(cluster)}</h2>
-  <div class="TopNewsWrap GrayBorder">
-    <SmartScroll classes="py-3 px-3" scroll_koef={0.03}>
-      {#each cluster.threads as thread}
-        <a class="link linkWidth" href={cardUrl(thread.main_item)}>
-          <div
-            class="item "
-            style="background-color: rgb({filters2bg[
-              thread.filter
-            ]}); filter: url(#{thread.filter});"
-          >
+  {#if allowCategories.includes(cluster.category)}
+    <h2 class="BlockTitle">{categoryTitle(cluster)}</h2>
+    <div class="TopNewsWrap GrayBorder">
+      <SmartScroll classes="py-3 px-3" scroll_koef={0.03}>
+        {#each cluster.threads as thread}
+          <a class="link linkWidth" href={cardUrl(thread.main_item)}>
             <div
-              class="bg-cover w-full h-full"
-              style="background-image: url({thread.main_item.og_image})"
-            />
-          </div>
-          <div
-            class="absolute w-full h-full left-0 top-0 right-0 bottom-0
+              class="item "
+              style="background-color: rgb({filters2bg[
+                thread.filter
+              ]}); filter: url(#{thread.filter});"
+            >
+              <div
+                class="bg-cover w-full h-full"
+                style="background-image: url({thread.main_item.og_image})"
+              />
+            </div>
+            <div
+              class="absolute w-full h-full left-0 top-0 right-0 bottom-0
               rounded-lg"
-            style={filters2overlay[thread.filter]}
-          />
-          <div class="title pl-4 md:pl-5 pr-4 md:pr-8">
-            {@html thread.title}
-          </div>
-        </a>
-      {/each}
-    </SmartScroll>
-  </div>
+              style={filters2overlay[thread.filter]}
+            />
+            <div class="title pl-4 md:pl-5 pr-4 md:pr-8">
+              {@html thread.title}
+            </div>
+          </a>
+        {/each}
+      </SmartScroll>
+    </div>
+  {/if}
 {/each}
 
 <style type="text/postcss">

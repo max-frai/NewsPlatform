@@ -33,8 +33,15 @@ if (running_handle) {
 import TopNews from "./TopNews.svelte";
 var top_news_handle = document.querySelector("#SvelteTopNews");
 if (top_news_handle) {
+  var props = top_news_handle.getAttribute("data-props");
+  if (!props) {
+    props = { allowCategories: ["society", "economy", "technology"] };
+  } else {
+    props = JSON.parse(props);
+  }
   new TopNews({
     target: top_news_handle,
+    props: props,
   });
 }
 

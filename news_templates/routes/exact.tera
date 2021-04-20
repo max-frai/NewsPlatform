@@ -21,7 +21,7 @@
     {% if center_content %}
         {{ center_content | safe }}
     {% endif %}
-    <div id="SvelteTopNews"></div>
+    <div id="SvelteTopNews" data-props='{"allowCategories" : ["society"]}'></div>
 {% endblock %}
 {% block right_column %}
     {% if right_content %}

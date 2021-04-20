@@ -177,10 +177,10 @@ async fn clustering_logic(
     for mut cluster in result {
         if cluster.category == "any"
             || cluster.category == "other"
-            || cluster.category == "entertainment"
-            || cluster.category == "technology"
-            || cluster.category == "sports"
-            || cluster.category == "science"
+            // || cluster.category == "entertainment"
+            // || cluster.category == "technology"
+            // || cluster.category == "sports"
+            // || cluster.category == "science"
             || cluster.threads.is_empty()
         {
             continue;
@@ -227,7 +227,6 @@ async fn generate_news(
     for_hours: i64,
     limit_threads: usize,
     limit_articles: usize,
-    // clusering_distance: f64,
     title_sorting: NewsTitleSorting,
     state: web::Data<State>,
     allow_all_categories: bool,
@@ -236,7 +235,6 @@ async fn generate_news(
         for_hours,
         limit_threads,
         limit_articles,
-        // clusering_distance,
         state.clone(),
         allow_all_categories,
     )
@@ -313,27 +311,17 @@ async fn generate_news(
 }
 
 pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Result<()> {
-    let popular_clusters = generate_news(
-        6,
-        // 100000,
-        12,
-        300,
-        // 0.014,
-        NewsTitleSorting::DoNotSort,
-        state.clone(),
-        true,
-    )
-    .await;
+    let popular_clusters =
+        generate_news(7, 12, 500, NewsTitleSorting::DoNotSort, state.clone(), true).await;
+
     state.ws_server_addr.do_send(PopularClusterMessage {
         clusters: popular_clusters,
     });
 
     let summary_24h_clusters = generate_news(
         24,
-        // 100000,
         50,
-        300,
-        // 0.013,
+        500,
         NewsTitleSorting::Descending,
         state.clone(),
         false,
@@ -349,10 +337,8 @@ pub async fn generate_json_for_clustering(state: web::Data<State>) -> anyhow::Re
 
     let most_recent_clusters = generate_news(
         4,
-        // 1000000,
         50,
-        300,
-        // 0.018,
+        500,
         NewsTitleSorting::Ascending,
         state.clone(),
         false,
