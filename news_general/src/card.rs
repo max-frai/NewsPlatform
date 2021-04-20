@@ -34,6 +34,9 @@ pub struct Card {
     pub tags: Vec<ObjectId>,
     pub filled_tags: Vec<Tag>,
 
+    #[serde(default)]
+    pub trends: Vec<String>,
+
     #[serde(default = "default_author")]
     pub author: i64,
 
@@ -61,6 +64,7 @@ impl Default for Card {
             category: Category::Unknown,
             marks: vec![],
             tags: vec![],
+            trends: vec![],
             filled_tags: vec![],
             rewritten: false,
             categorised: false,

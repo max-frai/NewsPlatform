@@ -8,7 +8,9 @@ use futures::stream::StreamExt;
 use html2md;
 use leptess::LepTess;
 use mongodb::options::InsertManyOptions;
-use news_general::{card::*, category::Category::Unknown, constants::AppConfig};
+use news_general::{
+    card::*, category::Category::Unknown, constants::AppConfig, normalize_words::normalize_words,
+};
 use ordered_float::NotNan;
 use rand::seq::SliceRandom;
 use rand::Rng;
@@ -157,26 +159,6 @@ async fn save_og_image(link: &str) -> anyhow::Result<String> {
     Ok(preview_path)
 }
 
-fn opencorpora_tag_to_universal(mut pos: String) -> String {
-    if pos == "ADJF" || pos == "ADJS" {
-        pos = String::from("ADJ");
-    }
-
-    if pos == "ADVB" {
-        pos = String::from("ADV");
-    }
-
-    if pos == "NUMR" {
-        pos = String::from("NUM");
-    }
-
-    if pos == "PRTF" || pos == "RPTS" {
-        pos = String::from("PART");
-    }
-
-    pos
-}
-
 fn calculate_russian_words(
     text: &str,
     morph: Rc<MorphAnalyzer>,
@@ -192,50 +174,29 @@ fn calculate_russian_words(
 
     // dbg!(&fixed_text);
 
-    let mut scan = Scanner::new(&fixed_text);
+    let words = normalize_words(&fixed_text, &morph, false);
+
     let mut russian_words_found = 0;
 
-    while let Some(s) = scan.next() {
-        match s {
-            Token::Str(s) | Token::Iden(s) => {
-                let search_word = s.to_lowercase();
-                // dbg!(&search_word);
-                if search_word.chars().count() <= 4 {
-                    continue;
-                }
+    for (normal_form, pos) in words {
+        let search_word = normal_form.to_lowercase();
+        // dbg!(&search_word);
+        if search_word.chars().count() <= 4 {
+            continue;
+        }
 
-                let lexems = morph.parse(&search_word);
-                if lexems.is_empty() {
-                    continue;
-                }
+        if let Some(similar_words) =
+            embeddings.word_similarity(&format!("{}_{}", normal_form, pos), 1)
+        {
+            // dbg!(&similar_words[0]);
+            if similar_words[0].cosine_similarity() >= *NotNan::new(0.59).unwrap() {
+                russian_words_found += 1;
 
-                let lex = lexems[0].lex.get_lemma(&morph);
-                let mut pos = lex
-                    .get_tag(&morph)
-                    .string
-                    .split(",")
-                    .next()
-                    .unwrap_or("")
-                    .to_string();
-
-                pos = opencorpora_tag_to_universal(pos);
-                let normal_form = lex.get_normal_form(&morph).to_string();
-
-                if let Some(similar_words) =
-                    embeddings.word_similarity(&format!("{}_{}", normal_form, pos), 1)
-                {
-                    // dbg!(&similar_words[0]);
-                    if similar_words[0].cosine_similarity() >= *NotNan::new(0.59).unwrap() {
-                        russian_words_found += 1;
-
-                        if russian_words_found >= 5 {
-                            println!("Found more than 5 russian words, force break search loop");
-                            break;
-                        }
-                    }
+                if russian_words_found >= 5 {
+                    println!("Found more than 5 russian words, force break search loop");
+                    break;
                 }
             }
-            _ => {}
         }
     }
 
@@ -535,6 +496,7 @@ pub async fn parse_news(
                             markdown: markdown.to_string(),
                             markdown_original: markdown.to_string(),
                             marks,
+                            trends: vec![],
                             tags: vec![],
                             filled_tags: vec![],
                             author:  rng.gen_range(0..constants.authors.len()) as i64,
@@ -588,6 +550,11 @@ pub async fn parse_news(
                     }
                 }
             }
+
+            model.trends = normalize_words(&model.title, &morph, true)
+                .iter()
+                .map(|item| item.0.to_owned())
+                .collect();
 
             bson_cards.push(
                 bson::to_bson(&model)

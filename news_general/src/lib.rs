@@ -5,5 +5,6 @@ pub mod category;
 pub mod constants;
 pub mod helper;
 pub mod ner;
+pub mod normalize_words;
 pub mod tag;
 pub mod tweet;

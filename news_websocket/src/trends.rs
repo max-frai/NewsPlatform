@@ -4,7 +4,7 @@ use bson::doc;
 use chrono::prelude::*;
 use lazy_static::*;
 use maplit::hashmap;
-use news_general::card_queries::last_between_dates;
+use news_general::{card_queries::last_between_dates, normalize_words::normalize_words};
 use rayon::prelude::*;
 use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*};
 use std::{
@@ -12,180 +12,6 @@ use std::{
     sync::Mutex,
 };
 // use whatlang::{detect, Lang, Script};
-
-lazy_static! {
-    static ref IGNORE_START_WORDS: Vec<&'static str> = vec![
-        "человек",
-        "час",
-        "июнь",
-        "июль",
-        "август",
-        "сентябр",
-        "ноябр",
-        "октябр",
-        "декабр",
-        "вересн",
-        "январ",
-        "феврал",
-        "апрел",
-        "май",
-        "сума",
-        "украин",
-        "росси",
-        "америк",
-        "европ",
-        "прездиент",
-        "понад",
-        "затримал",
-        "област",
-        "треба",
-        "район",
-        "фото",
-        "сутки",
-        "тысяч",
-        "миллион",
-        "беларус",
-        "белорус",
-        "киян",
-        "росий",
-        "будут",
-        "назвал",
-        "киевл",
-        "рассказ",
-        "главн",
-        "новы",
-        "гривен",
-        "киив",
-        "росии",
-        "киев",
-        "промес",
-        "после",
-        "оценил",
-        "заявил",
-        "возможн",
-        "сообщ",
-        "будет"
-    ];
-    static ref IGNORE_WORDS: Vec<&'static str> = vec![
-        "сша",
-        "клуб",
-        "рынок",
-        "умерший",
-        "заражение",
-        "время",
-        "день",
-        "год",
-        "як",
-        "школа",
-        "выбор",
-        "дело",
-        "видео",
-        "время",
-        "фото",
-        "март",
-        "також",
-        "який",
-        "пише",
-        "така",
-        "стали",
-        "голова",
-        "украина",
-        "тысяча",
-        "украинец",
-        "случай",
-        "человек",
-        "киев",
-        "область",
-        "количество",
-        "борьба",
-        "дом",
-        "мир",
-        "страна",
-        "работа",
-        "подозрение",
-        "ситуация",
-        "женщина",
-        "режим",
-        "кабмина",
-        "мужчина",
-        "власть",
-        "житель",
-        "условие",
-        "состояние",
-        "глава",
-        "город",
-        "неделя",
-        "заседание",
-        "сеть",
-        "правительство",
-        "гражданин",
-        "совет",
-        "деньга",
-        "цена",
-        "центр",
-        "число",
-        "продукт",
-        "ограничение",
-        "жизнь",
-        "эксперт",
-        "народ",
-        "решение",
-        "место",
-        "бизнес",
-        "подробность",
-        "средство",
-        "водитель",
-        "прогноз",
-        "нарушение",
-        "период",
-        "погода",
-        "буковин",
-        "полицейский",
-        "евро",
-        "правило",
-        "заявление",
-        "полиция",
-        "ребёнок",
-        "львов",
-        "помощь",
-        "доллар",
-        "депутат",
-        "врач",
-        "матч",
-        "путин",
-        "трамп",
-        "днепр",
-        "одесса",
-        "крым",
-        "динамо",
-        "нардеп",
-        "харьков",
-        "дорога",
-        "миллиард",
-        "журналист",
-        "зона",
-        "группа",
-        "месяц",
-        "закон",
-        "президент"
-    ];
-}
-
-fn normal_form(word: &str, morph: &MorphAnalyzer) -> Option<String> {
-    let parsed = morph.parse(word);
-    if !parsed.is_empty() {
-        let lex = parsed[0].lex.clone();
-        if let Some(part) = lex.get_tag(morph).pos {
-            return if part == Noun {
-                Some(lex.get_normal_form(morph).to_string())
-            } else {
-                None
-            };
-        }
-    }
-
-    None
-}
 
 async fn generate_trends(
     state: web::Data<State>,
@@ -199,44 +25,22 @@ async fn generate_trends(
         .await
         .unwrap();
 
-    let word_re = regex::Regex::new(r"(\w+)").unwrap();
     let statistics: Mutex<BTreeMap<String, (i32, String)>> = Mutex::new(BTreeMap::new());
 
     all_docs.par_iter().for_each(|article| {
         let title = article.title.replace("ё", "е");
 
-        for capture in word_re.captures_iter(&title) {
-            let original_word = capture.get(1).unwrap().as_str().to_lowercase();
-            if original_word.chars().count() <= 3 {
-                continue;
-            }
+        let words: Vec<String> = normalize_words(&title, &morph, true)
+            .iter()
+            .map(|item| item.0.to_owned())
+            .collect();
+        let mut writeable = statistics.lock().unwrap();
+        for normal_word in words {
+            let counter = writeable
+                .entry(normal_word.clone())
+                .or_insert((0, normal_word.clone()));
 
-            if let Some(normal_word) = normal_form(&original_word, &morph) {
-                let mut break_now = false;
-                if IGNORE_WORDS.contains(&normal_word.as_str())
-                    || IGNORE_WORDS.contains(&original_word.as_str())
-                {
-                    continue;
-                }
-
-                for entry in IGNORE_START_WORDS.iter() {
-                    if normal_word.starts_with(entry) || original_word.starts_with(entry) {
-                        break_now = true;
-                        break;
-                    }
-                }
-
-                if break_now {
-                    continue;
-                }
-
-                let mut writeable = statistics.lock().unwrap();
-                let counter = writeable
-                    .entry(normal_word.clone())
-                    .or_insert((0, normal_word.clone()));
-
-                (*counter).0 += 1;
-            }
+            (*counter).0 += 1;
         }
     });
 
