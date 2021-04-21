@@ -97,6 +97,18 @@ pub fn last_40_by_tag(tag_id: ObjectId) -> CardQuery {
     }
 }
 
+pub fn last_40_by_trend(trend: &str) -> CardQuery {
+    CardQuery {
+        lifetime: Duration::seconds(160),
+        limit: Some(40),
+        sort: Some(doc! { "date" : -1 }),
+        query: doc! {
+            "trends" : trend
+        },
+        projection: None,
+    }
+}
+
 pub fn last_hours(hours: i64) -> CardQuery {
     let filter_utc = Utc::now() - chrono::Duration::hours(hours);
 

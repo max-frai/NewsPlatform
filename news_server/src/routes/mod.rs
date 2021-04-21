@@ -4,6 +4,7 @@ pub mod categories;
 pub mod exact;
 pub mod exact_category;
 pub mod exact_tag;
+pub mod exact_trend;
 pub mod index;
 pub mod js_bundle;
 pub mod robots;
