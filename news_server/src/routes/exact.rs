@@ -1,6 +1,7 @@
 use crate::{helper, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
+use news_general::card::Card;
 use news_general::card_queries::{last_15, last_25_by_category};
 use tera::Context;
 
@@ -61,17 +62,25 @@ async fn _exact_logic(
         )
         .unwrap();
 
-    let card_category = format!("{:?}", card.category);
-    let category_cards = state
-        .fetcher
-        .fetch(last_25_by_category(&card_category), true)
-        .await
-        .unwrap();
+    let mut category_cards = Vec::<Card>::new();
+    let card_category = card.category.to_string();
+    let clusters = &state.popular_clusters.read().await.clusters;
+    for cluster in clusters {
+        if cluster.category == card_category {
+            category_cards = cluster
+                .threads
+                .iter()
+                .take(10)
+                .map(|thread| thread.main_item.clone())
+                .collect();
+            break;
+        }
+    }
 
     let right_tpl2 = state
         .tera
         .render(
-            "modules/compact_news_list/tpl.tera",
+            "modules/image_news_list/tpl.tera",
             &Context::from_serialize(&modules::news_list::NewsListTpl {
                 title: Some(card.category.to_description().to_string()),
                 cards: category_cards,
@@ -82,7 +91,7 @@ async fn _exact_logic(
         .unwrap();
 
     context.insert("center_content", &center_tpl);
-    context.insert("right_content", &format!("{}{}", right_tpl, right_tpl2));
+    context.insert("right_content", &format!("{}{}", right_tpl2, right_tpl));
     context.insert("article_category", &card.category.to_description());
     context.insert("card", &card);
     context.insert("article_name", &card.title);

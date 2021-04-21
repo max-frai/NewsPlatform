@@ -11,6 +11,7 @@ pub struct AppConfig {
     pub exact_card_cache_size: usize,
     pub platform_hash: String,
     pub full_domain: String,
+    pub full_domain_raw: String,
 
     pub authors: Vec<String>,
     pub stop_tags: Vec<String>,

@@ -11,45 +11,8 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::env;
 // use std::path::Path;
+use news_general::cluster::*;
 use std::{collections::HashMap, io::Write};
-
-#[derive(Serialize, Deserialize)]
-struct ClusteringItem {
-    pub category: String,
-    pub timestamp: i64,
-    pub description: String,
-    pub site_name: String,
-    pub text: String,
-    pub title: String,
-    pub url: String,
-    pub file_name: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ClusteringThread {
-    pub articles: Vec<String>,
-    pub category: String,
-    pub title: String,
-    #[serde(default)]
-    pub main_item: Card,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ClusteringResult {
-    pub category: String,
-    pub threads: Vec<ClusteringThread>,
-}
-
-impl Default for ClusteringThread {
-    fn default() -> Self {
-        Self {
-            articles: Vec::default(),
-            category: String::default(),
-            title: String::default(),
-            main_item: Card::default(),
-        }
-    }
-}
 
 async fn clustering_logic(
     for_hours: i64,

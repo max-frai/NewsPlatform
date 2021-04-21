@@ -1,10 +1,8 @@
-use crate::{
-    covid::CovidData, news_cluster::ClusteringResult, state::State, twitter::Tweets,
-    ws_client::WebSocketClient,
-};
+use crate::{covid::CovidData, state::State, twitter::Tweets, ws_client::WebSocketClient};
 use actix::prelude::*;
 use actix_web::{web, Error, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
+use news_general::cluster::ClusteringResult;
 use serde::Serialize;
 use std::collections::HashMap;
 

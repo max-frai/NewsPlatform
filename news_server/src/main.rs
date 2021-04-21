@@ -2,6 +2,7 @@ use crate::sitemap::generate_categories_sitemap;
 use crate::sitemap::generate_head_sitemap;
 use crate::sitemap::generate_posts_sitemap;
 use crate::sitemap::generate_tags_sitemap;
+use news_general::cluster::Cluster;
 use routes::{
     authors::{authors, authors_fix},
     exact_category::{
@@ -23,6 +24,9 @@ use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use listenfd::ListenFd;
 
+use futures::StreamExt;
+use tokio_tungstenite::connect_async;
+
 use crate::routes::categories::categories;
 use crate::routes::categories::categories_fix;
 use crate::routes::exact::exact;
@@ -30,6 +34,8 @@ use crate::routes::exact::exact_amp;
 use crate::routes::exact_tag::exact_tag;
 use crate::routes::exact_tag::exact_tag_fix;
 use crate::routes::exact_tag::{fix_gpe_exact_tag, fix_person_exact_tag};
+use crate::routes::exact_trend::exact_trend;
+use crate::routes::exact_trend::exact_trend_fix;
 use crate::routes::index::index;
 use crate::routes::js_bundle::js_bundle;
 use crate::routes::robots::robots;
@@ -144,6 +150,7 @@ async fn main() -> std::io::Result<()> {
         tags_cache: Arc::new(RwLock::new(HashMap::new())),
         js_bundle: Arc::new(RwLock::new(String::new())),
         sitemap: Arc::new(RwLock::new(String::new())),
+        popular_clusters: Arc::new(RwLock::new(Cluster { clusters: vec![] })),
         dom_helper: Arc::new(DomHelper::new()),
 
         twitter_col: twitter_col.clone(),
@@ -181,7 +188,7 @@ async fn main() -> std::io::Result<()> {
                 for tag in TagKind::iter() {
                     println!("\tday top for kind: {}", tag);
                     let top = tags_manager
-                        .get_popular_by_kind(Some(tag.clone()), chrono::Duration::days(1), 10)
+                        .get_popular_by_kind(Some(tag.clone()), chrono::Duration::days(1), 11)
                         .await
                         .expect("Failed to get day top");
                     {
@@ -240,6 +247,40 @@ async fn main() -> std::io::Result<()> {
         }
     });
 
+    let websocket_constants = constants.clone();
+    let websocket_state = state.clone();
+    tokio::task::spawn(async move {
+        println!("Start websocket client...");
+        let domain = if is_dev {
+            "0.0.0.0"
+        } else {
+            &websocket_constants.full_domain_raw
+        };
+        let ws_addr = format!("ws://{}:2087/ws", domain);
+        dbg!(&ws_addr);
+        let (mut socket, _) = connect_async(&ws_addr).await.unwrap();
+
+        while let Some(msg) = socket.next().await {
+            let msg = msg.unwrap();
+            let data = msg.into_text().unwrap();
+
+            if let Ok(msg_json) = serde_json::from_str::<serde_json::Value>(&data) {
+                if msg_json
+                    .get("kind")
+                    .map(|kind| kind.as_str())
+                    .flatten()
+                    .unwrap_or("")
+                    == "PopularClusterMessage"
+                {
+                    let data = msg_json.get("data").unwrap().as_str().unwrap();
+                    let cluster: Cluster = serde_json::from_str(&data).unwrap();
+                    let mut write = websocket_state.popular_clusters.write().await;
+                    *write = cluster;
+                }
+            }
+        }
+    });
+
     println!(
         "~~~~~~~~~~~ CREATE SERVER: {} ~~~~~~~~~~~~",
         constants.server_url
@@ -273,6 +314,8 @@ async fn main() -> std::io::Result<()> {
             .service(exact_amp)
             .service(authors)
             .service(authors_fix)
+            .service(exact_trend)
+            .service(exact_trend_fix)
             // Exact cateogories --------------------------------
             .service(society_category_fix)
             .service(entertainment_category_fix)

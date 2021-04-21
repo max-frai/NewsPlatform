@@ -1,0 +1,13 @@
+{% import "parts/lined_title.tera" as lined_title %}
+{% if title %}
+    {{ lined_title::generate(title="<h2>" ~ title ~ "</h2>") }}
+{% endif %}
+<div class="text-sm mt-3 tracking-tight grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-1 text-white">
+    {% for card in cards %}
+        <div class="leading-tight bg-cover rounded-lg  h-40 relative" style="background-image: url({{card.og_image}})" title="{{ card.title | escape }}">
+            <a class="absolute rounded-lg w-full h-full left-0 top-0 p-4 transition duration-300 ease-in-out bg-black bg-opacity-50 hover:bg-opacity-70" href="{{ make_card_url(card=card, is_amp=is_amp) }}">
+                <span class="title">{{ card.title }}</span>
+            </a>
+        </div>
+    {% endfor %}
+</div>
