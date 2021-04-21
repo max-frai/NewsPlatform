@@ -15,10 +15,9 @@ pub async fn connect_websocket(
 ) {
     println!("Start websocket client...");
     let domain = if is_dev {
-        "ws://0.0.0.0"
+        "ws://0.0.0.0".to_string()
     } else {
-        // &websocket_constants.full_domain_raw
-        "wss://localhost"
+        format!("wss://{}", &websocket_constants.full_domain_raw)
     };
 
     let ws_addr = format!("{}:2087/ws", domain);
