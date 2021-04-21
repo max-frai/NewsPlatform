@@ -259,6 +259,11 @@ async fn generate_news(
 
             thread.main_item = items_cache.get_mut(&oid).unwrap().to_owned();
             thread.main_item.html = String::new();
+            thread.main_item.markdown = String::new();
+            thread.main_item.markdown_original = String::new();
+            thread.main_item.tags = vec![];
+            thread.main_item.trends = vec![];
+            thread.main_item.marks = vec![];
         }
 
         summary.threads.sort_by(|a, b| {
