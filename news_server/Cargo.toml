@@ -47,7 +47,7 @@ comrak = "0.10.1-rc.1"
 kuchiki = "0.8"
 html5ever = "0.25"
 alphanumeric-sort = "1.4"
-tokio-tungstenite = "0.14"
+tokio-tungstenite = { version="0.14", features = ["rustls-tls"] }
 strum = "0.18"
 strum_macros = "0.18"
 

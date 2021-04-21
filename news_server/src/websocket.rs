@@ -14,7 +14,7 @@ pub async fn connect_websocket(
     websocket_state: Data<State>,
 ) {
     println!("Start websocket client...");
-    let domain = if is_dev {
+    let domain = if !is_dev {
         "ws://0.0.0.0".to_string()
     } else {
         format!("wss://{}", &websocket_constants.full_domain_raw)
@@ -24,7 +24,8 @@ pub async fn connect_websocket(
     println!("\tWS Address: {}", ws_addr);
 
     loop {
-        if let Ok((mut socket, _)) = connect_async(&ws_addr).await {
+        let connection_result = connect_async(&ws_addr).await;
+        if let Ok((mut socket, _)) = connection_result {
             println!("Successfull connection to statistics websocket");
             while let Some(msg) = socket.next().await {
                 if let Ok(msg) = msg {
@@ -53,6 +54,7 @@ pub async fn connect_websocket(
             }
         } else {
             println!("Failed to connect statistics websocket, sleep and try again...");
+            dbg!(connection_result.err());
             sleep(Duration::from_secs(10)).await;
         }
     }
