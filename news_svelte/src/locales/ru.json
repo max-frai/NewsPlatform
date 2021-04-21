@@ -19,5 +19,6 @@
         "sp": "S&P 500"
     },
     "topnews.society": "Важные новости",
-    "topnews.economy": "Последние новости экономики"
+    "topnews.economy": "Последние новости экономики",
+    "topnews.technology": "Последние новости технологий"
 }

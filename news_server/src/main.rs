@@ -24,9 +24,6 @@ use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 use listenfd::ListenFd;
 
-use futures::StreamExt;
-use tokio_tungstenite::connect_async;
-
 use crate::routes::categories::categories;
 use crate::routes::categories::categories_fix;
 use crate::routes::exact::exact;
@@ -69,6 +66,7 @@ pub mod state;
 pub mod tag_cache;
 pub mod tailwind;
 pub mod templates;
+pub mod websocket;
 
 use structopt::StructOpt;
 
@@ -250,35 +248,7 @@ async fn main() -> std::io::Result<()> {
     let websocket_constants = constants.clone();
     let websocket_state = state.clone();
     tokio::task::spawn(async move {
-        println!("Start websocket client...");
-        let domain = if is_dev {
-            "0.0.0.0"
-        } else {
-            &websocket_constants.full_domain_raw
-        };
-        let ws_addr = format!("ws://{}:2087/ws", domain);
-        dbg!(&ws_addr);
-        let (mut socket, _) = connect_async(&ws_addr).await.unwrap();
-
-        while let Some(msg) = socket.next().await {
-            let msg = msg.unwrap();
-            let data = msg.into_text().unwrap();
-
-            if let Ok(msg_json) = serde_json::from_str::<serde_json::Value>(&data) {
-                if msg_json
-                    .get("kind")
-                    .map(|kind| kind.as_str())
-                    .flatten()
-                    .unwrap_or("")
-                    == "PopularClusterMessage"
-                {
-                    let data = msg_json.get("data").unwrap().as_str().unwrap();
-                    let cluster: Cluster = serde_json::from_str(&data).unwrap();
-                    let mut write = websocket_state.popular_clusters.write().await;
-                    *write = cluster;
-                }
-            }
-        }
+        websocket::connect_websocket(is_dev, websocket_constants, websocket_state).await;
     });
 
     println!(
