@@ -14,13 +14,15 @@ pub async fn connect_websocket(
     websocket_state: Data<State>,
 ) {
     println!("Start websocket client...");
-    let domain = if is_dev {
-        "0.0.0.0"
-    } else {
-        &websocket_constants.full_domain_raw
-    };
+    // let domain = if is_dev {
+    //     "0.0.0.0"
+    // } else {
+    //     // &websocket_constants.full_domain_raw
+    // };
+
+    let domain = "0.0.0.0";
     let ws_addr = format!("ws://{}:2087/ws", domain);
-    dbg!(&ws_addr);
+    println!("\tWS Address: {}", ws_addr);
 
     loop {
         if let Ok((mut socket, _)) = connect_async(&ws_addr).await {
