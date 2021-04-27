@@ -30,7 +30,7 @@ async fn exact_tag(
     data: web::Path<(String, String)>,
 ) -> impl Responder {
     let kind = data.0.to_owned();
-    let slug = data.0.to_owned();
+    let slug = data.1.to_owned();
 
     let kind = TagKind::from_str(&kind).unwrap();
     let tag = {
