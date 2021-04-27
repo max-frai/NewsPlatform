@@ -1,6 +1,6 @@
 # --------------------------------------------------
 
-FROM rust:1.48-buster as planner
+FROM rust:1.51-buster as planner
 RUN echo "PREPARE CARGO CHEF PLANNER"
 WORKDIR /newsplatform/
 RUN apt update && apt-get install -y libleptonica-dev libtesseract-dev clang cmake build-essential
@@ -16,7 +16,7 @@ RUN ls -la
 
 # --------------------------------------------------
 
-FROM rust:1.48-buster as cacher
+FROM rust:1.51-buster as cacher
 RUN echo "PREPARE CARGO CHEF CACHER"
 WORKDIR /newsplatform/
 RUN apt update && apt-get install -y libleptonica-dev libtesseract-dev clang cmake build-essential
@@ -27,7 +27,7 @@ RUN ls -la
 
 # --------------------------------------------------
 
-FROM rust:1.48-buster as builder
+FROM rust:1.51-buster as builder
 RUN echo "PREPARE CARGO CHEF BUILDER"
 WORKDIR /newsplatform/
 
@@ -54,7 +54,7 @@ RUN ls -la
 
 # --------------------------------------------------
 
-FROM rust:1.48-buster as runtime
+FROM rust:1.51-buster as runtime
 RUN echo "PREPARE CARGO CHEF RUNTIME"
 
 RUN echo "deb http://ftp.de.debian.org/debian buster main" >> /etc/apt/sources.list
