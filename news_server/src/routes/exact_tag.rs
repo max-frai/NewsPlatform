@@ -9,26 +9,29 @@ use std::str::FromStr;
 use tera::Context;
 
 #[get("/tags/{kind}/{slug}")]
-async fn exact_tag_fix(web::Path((kind, slug)): web::Path<(String, String)>) -> HttpResponse {
-    redirect(&format!("/tags/{}/{}/", kind, slug))
+async fn exact_tag_fix(data: web::Path<(String, String)>) -> HttpResponse {
+    redirect(&format!("/tags/{}/{}/", data.0, data.1))
 }
 
 #[get("/tags/gpe/{slug}/")]
-async fn fix_gpe_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/tags/loc/{}/", slug))
+async fn fix_gpe_exact_tag(data: web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/loc/{}/", *data))
 }
 
 #[get("/tags/person/{slug}/")]
-async fn fix_person_exact_tag(web::Path(slug): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/tags/per/{}/", slug))
+async fn fix_person_exact_tag(data: web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/per/{}/", *data))
 }
 
 #[get("/tags/{kind}/{slug}/")]
 async fn exact_tag(
     mut context: LayoutContext,
     state: web::Data<State>,
-    web::Path((kind, slug)): web::Path<(String, String)>,
+    data: web::Path<(String, String)>,
 ) -> impl Responder {
+    let kind = data.0.to_owned();
+    let slug = data.0.to_owned();
+
     let kind = TagKind::from_str(&kind).unwrap();
     let tag = {
         let tags_manager = state.tags_manager.read().await;

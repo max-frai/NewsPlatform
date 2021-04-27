@@ -8,9 +8,11 @@ use tera::Context;
 async fn _exact_logic(
     is_amp: bool,
     state: web::Data<State>,
-    web::Path((url_category, slug)): web::Path<(String, String)>,
+    data: web::Path<(String, String)>,
     mut context: LayoutContext,
 ) -> impl Responder {
+    let url_category = data.0.to_owned();
+    let slug = data.1.to_owned();
     let card = state.fetcher.fetch_exact(slug).await;
 
     if card.is_err() {
@@ -113,17 +115,17 @@ async fn _exact_logic(
 #[get("/amp/{category}/{slug}.html")]
 async fn exact_amp(
     state: web::Data<State>,
-    web::Path((url_category, slug)): web::Path<(String, String)>,
+    data: web::Path<(String, String)>,
     context: LayoutContext,
 ) -> impl Responder {
-    _exact_logic(true, state, web::Path((url_category, slug)), context).await
+    _exact_logic(true, state, data, context).await
 }
 
 #[get("/{category}/{slug}.html")]
 async fn exact(
     state: web::Data<State>,
-    web::Path((url_category, slug)): web::Path<(String, String)>,
+    data: web::Path<(String, String)>,
     context: LayoutContext,
 ) -> impl Responder {
-    _exact_logic(false, state, web::Path((url_category, slug)), context).await
+    _exact_logic(false, state, data, context).await
 }

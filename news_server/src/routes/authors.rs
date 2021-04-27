@@ -1,10 +1,7 @@
 use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use news_general::{
-    card_queries::{last_25, last_40_by_category},
-    category::Category,
-};
+use news_general::card_queries::last_25;
 use std::str::FromStr;
 use tera::Context;
 

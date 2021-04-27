@@ -6,7 +6,7 @@ use std::str::FromStr;
 use tera::Context;
 
 #[get("/trend/{slug}")]
-async fn exact_trend_fix(web::Path(slug): web::Path<String>) -> HttpResponse {
+async fn exact_trend_fix(slug: web::Path<String>) -> HttpResponse {
     redirect(&format!("/trend/{}/", slug))
 }
 
@@ -14,7 +14,7 @@ async fn exact_trend_fix(web::Path(slug): web::Path<String>) -> HttpResponse {
 async fn exact_trend(
     mut context: LayoutContext,
     state: web::Data<State>,
-    web::Path(slug): web::Path<String>,
+    slug: web::Path<String>,
 ) -> impl Responder {
     let trend_cards = state
         .fetcher

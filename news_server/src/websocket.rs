@@ -2,7 +2,7 @@ use actix_web::web::Data;
 use futures::StreamExt;
 use news_general::cluster::Cluster;
 use news_general::constants::AppConfig;
-use std::{collections::HashMap, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tokio_tungstenite::connect_async;
 
@@ -14,7 +14,7 @@ pub async fn connect_websocket(
     websocket_state: Data<State>,
 ) {
     println!("Start websocket client...");
-    let domain = if !is_dev {
+    let domain = if is_dev {
         "ws://0.0.0.0".to_string()
     } else {
         format!("wss://{}", &websocket_constants.full_domain_raw)

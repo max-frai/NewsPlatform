@@ -2,7 +2,8 @@ use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use news_general::{
-    card_queries::{last_25, last_40_by_category},
+    card::Card,
+    card_queries::{last_15, last_40_by_category},
     category::Category,
 };
 use std::str::FromStr;
@@ -114,7 +115,7 @@ async fn _exact_category(
         )
         .unwrap();
 
-    let last_cards = state.fetcher.fetch(last_25(), true).await.unwrap();
+    let last_cards = state.fetcher.fetch(last_15(), true).await.unwrap();
     let right_tpl = state
         .tera
         .render(
@@ -127,6 +128,21 @@ async fn _exact_category(
             .unwrap(),
         )
         .unwrap();
+
+    let mut category_cards = Vec::<Card>::new();
+    let card_category = category.to_string();
+    let clusters = &state.popular_clusters.read().await.clusters;
+    for cluster in clusters {
+        if cluster.category == card_category {
+            category_cards = cluster
+                .threads
+                .iter()
+                .take(10)
+                .map(|thread| thread.main_item.clone())
+                .collect();
+            break;
+        }
+    }
 
     context.insert("center_content", &news_list_tpl);
     context.insert("right_content", &right_tpl);

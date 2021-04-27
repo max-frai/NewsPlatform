@@ -1,8 +1,8 @@
 use crate::{state::State, templates::make_card_url_raw};
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::web;
 use sitemap::{structs::SiteMapEntry, writer::SiteMapWriter};
 
-use anyhow::{Context, Result};
+use anyhow::Context;
 use news_general::{card_queries::all_sitemap, category::Category};
 use strum::IntoEnumIterator;
 

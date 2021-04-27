@@ -19,17 +19,17 @@ async fn tags_all(state: web::Data<State>, context: LayoutContext) -> impl Respo
 }
 
 #[get("/tags/{kind}")]
-async fn tags_scope_fix(web::Path(kind): web::Path<String>) -> HttpResponse {
-    redirect(&format!("/tags/{}/", kind))
+async fn tags_scope_fix(kind: web::Path<String>) -> HttpResponse {
+    redirect(&format!("/tags/{}/", *kind))
 }
 
 #[get("/tags/{kind}/")]
 async fn tags_scope(
     state: web::Data<State>,
-    web::Path(kind): web::Path<String>,
+    kind: web::Path<String>,
     context: LayoutContext,
 ) -> impl Responder {
-    tag_logic(state, Some(kind), context).await
+    tag_logic(state, Some(kind.to_owned()), context).await
 }
 
 async fn tag_logic(

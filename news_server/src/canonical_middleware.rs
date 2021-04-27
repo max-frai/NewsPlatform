@@ -41,11 +41,11 @@ where
     type Error = Error;
     type Future = S::Future;
 
-    fn poll_ready(&mut self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&self, cx: &mut Context) -> Poll<Result<(), Self::Error>> {
         self.service.poll_ready(cx)
     }
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         let mut context = tera::Context::new();
 
         if let Some(state) = req.app_data::<Data<State>>() {
@@ -79,9 +79,7 @@ where
             exts.insert(context);
         }
 
-        match ServiceRequest::from_parts(httpreq, payload) {
-            Ok(req) => self.service.call(req),
-            Err(_) => panic!("Something went wrong with ServiceRequest construction"),
-        }
+        let req = ServiceRequest::from_parts(httpreq, payload);
+        self.service.call(req)
     }
 }

@@ -1,4 +1,4 @@
-use html5ever::serialize::{SerializeOpts, TraversalScope};
+// use html5ever::serialize::{SerializeOpts, TraversalScope};
 use html5ever::{LocalName, Namespace, QualName};
 use kuchiki::iter::NodeIterator;
 use kuchiki::traits::TendrilSink;
