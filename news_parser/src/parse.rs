@@ -32,12 +32,17 @@ use bson::oid::ObjectId;
 use byteorder::BigEndian;
 use byteorder::ByteOrder;
 use duct::*;
+use lazy_static::*;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::FindOptions,
     Client,
 };
 use serde_json::Value;
+
+lazy_static! {
+    static ref WORD_RE: regex::Regex = regex::Regex::new(r"(\w+)").unwrap();
+}
 
 #[derive(Debug, Clone)]
 pub struct RssItemFull {
@@ -201,6 +206,13 @@ fn calculate_russian_words(
     }
 
     russian_words_found
+}
+
+fn get_string_words(text: &str) -> Vec<String> {
+    WORD_RE
+        .captures_iter(&text)
+        .map(|item| item.get(1).unwrap().as_str().to_lowercase())
+        .collect::<Vec<String>>()
 }
 
 pub async fn parse_news(
@@ -536,12 +548,38 @@ pub async fn parse_news(
         let mut ocr = ocr.borrow_mut();
         for model in models.iter_mut() {
             if let Ok(path) = save_og_image(&model.og_image).await {
-                ocr.set_image(&path);
+                ocr.set_image("test.jpeg");
                 ocr.set_source_resolution(70);
-                if let Ok(text) = ocr.get_utf8_text() {
+                if let Ok(mut text) = ocr.get_utf8_text() {
+                    text = text.replace("!", "і");
                     dbg!(&text);
-                    let num_words =
-                        calculate_russian_words(&text, morph.clone(), embeddings.clone());
+
+                    let original_words = get_string_words(&model.title);
+                    let ocr_words = get_string_words(&text);
+
+                    // dbg!(&model);
+                    // dbg!(&original_words);
+                    // dbg!(&ocr_words);
+
+                    let mut num_words = 0;
+                    for ocr_word in &ocr_words {
+                        if ocr_word.chars().count() <= 3 {
+                            continue;
+                        }
+
+                        for original_word in &original_words {
+                            if original_word == ocr_word {
+                                num_words += 1
+                            }
+                        }
+
+                        if num_words >= 3 {
+                            break;
+                        }
+                    }
+
+                    // let num_words =
+                    //     calculate_russian_words(&text, morph.clone(), embeddings.clone());
                     dbg!(num_words);
 
                     if num_words >= 3 {
