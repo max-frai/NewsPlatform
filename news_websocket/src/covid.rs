@@ -195,14 +195,14 @@ pub async fn parse_covid(state: web::Data<State>) -> anyhow::Result<()> {
         "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/web-data/data/cases.csv";
 
     let overall_better = "https://www.worldometers.info/coronavirus/";
-    let tkmedia = "https://tk.media/coronavirus";
 
-    let (confirmed_points, confirmed_points_all) = generate_timing(confirmed, 254).await?;
-    let (deaths_points, deaths_points_all) = generate_timing(deaths, 254).await?;
+    let (confirmed_points, confirmed_points_all) = generate_timing(confirmed, 255).await?;
+    let (deaths_points, deaths_points_all) = generate_timing(deaths, 255).await?;
     let (recovered_points, recovered_points_all) = generate_timing(recovered, 188).await?;
     // dbg!(&deaths_points);
 
-    let ukraine_results_tkmedia = parse_ukraine_tkmedia(tkmedia).await?;
+    // dbg!(&confirmed_points);
+
     let overall_results = parse_overall(overall).await?;
     let overall_results_odometer = parse_overall_better(overall_better).await?;
 
@@ -211,20 +211,11 @@ pub async fn parse_covid(state: web::Data<State>) -> anyhow::Result<()> {
     let overall_results_final = (
         (
             // Confirmed
-            cmp::max(
-                ukraine_results_tkmedia.0,
-                cmp::max((overall_results.0).0, (overall_results_odometer.0).0),
-            ),
+            cmp::max((overall_results.0).0, (overall_results_odometer.0).0),
             // Deaths
-            cmp::max(
-                ukraine_results_tkmedia.1,
-                cmp::max((overall_results.0).1, (overall_results_odometer.0).1),
-            ),
+            cmp::max((overall_results.0).1, (overall_results_odometer.0).1),
             // Recovered
-            cmp::max(
-                ukraine_results_tkmedia.2,
-                cmp::max((overall_results.0).2, (overall_results_odometer.0).2),
-            ),
+            cmp::max((overall_results.0).2, (overall_results_odometer.0).2),
         ),
         (
             if (overall_results.1).0 > (overall_results_odometer.1).0 {
