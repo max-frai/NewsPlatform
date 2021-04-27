@@ -137,15 +137,32 @@ async fn _exact_category(
             category_cards = cluster
                 .threads
                 .iter()
-                .take(10)
+                .take(6)
                 .map(|thread| thread.main_item.clone())
                 .collect();
             break;
         }
     }
 
+    let right_tpl2 = state
+        .tera
+        .render(
+            "modules/image_news_list/tpl.tera",
+            &Context::from_serialize(&modules::news_list::NewsListTpl {
+                title: Some(format!(
+                    "{} - Важное",
+                    category.to_description().to_string()
+                )),
+                cards: category_cards,
+                is_amp: false,
+            })
+            .unwrap(),
+        )
+        .unwrap();
+
     context.insert("center_content", &news_list_tpl);
-    context.insert("right_content", &right_tpl);
+    context.insert("right_content", &format!("{}{}", right_tpl2, right_tpl));
+    // context.insert("right_content", &right_tpl);
     context.insert("category", &category.to_string());
     context.insert("title", &title);
     context.insert("category_name", &category.to_description());

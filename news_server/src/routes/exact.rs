@@ -2,7 +2,7 @@ use crate::{helper, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
 use news_general::card::Card;
-use news_general::card_queries::{last_15, last_25_by_category};
+use news_general::card_queries::last_15;
 use tera::Context;
 
 async fn _exact_logic(
