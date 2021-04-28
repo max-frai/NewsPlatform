@@ -30,6 +30,6 @@ echo "RUN WEBSOCKET"
 nohup ./news_websocket > websocket_LOG &
 
 echo "RUN PARSER"
-nohup ./news_parser > parser_LOG &
+nohup ./news_parser > parser_LOG 2> parser_error_LOG &
 
 wait $server_process_id
