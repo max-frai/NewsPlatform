@@ -557,16 +557,19 @@ pub async fn parse_news(
         for model in models.iter_mut() {
             if let Ok(path) = save_og_image(&model.og_image).await {
                 ocr.set_image(&path);
+                // ocr.set_image("test.jpg");
                 ocr.set_source_resolution(70);
                 if let Ok(mut ocr_text) = ocr.get_utf8_text() {
-                    ocr_text = ocr_text.replace("!", "і");
+                    ocr_text = ocr_text.to_lowercase().replace("!", "і").replace("$", "s");
                     dbg!(&ocr_text);
 
                     let original_words = get_string_words(&model.title);
+                    // let original_words = get_string_words(
+                    //     "Blue Origin Джеффа Безоса обжалует решение NASA о контракте с SpaceX",
+                    // );
 
                     // dbg!(&model);
-                    // dbg!(&original_words);
-                    // dbg!(&ocr_words);
+                    dbg!(&original_words);
 
                     let mut num_words = 0;
 
