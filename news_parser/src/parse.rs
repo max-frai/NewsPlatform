@@ -556,32 +556,30 @@ pub async fn parse_news(
             if let Ok(path) = save_og_image(&model.og_image).await {
                 ocr.set_image(&path);
                 ocr.set_source_resolution(70);
-                if let Ok(mut text) = ocr.get_utf8_text() {
-                    text = text.replace("!", "і");
-                    dbg!(&text);
+                if let Ok(mut ocr_text) = ocr.get_utf8_text() {
+                    ocr_text = ocr_text.replace("!", "і");
+                    dbg!(&ocr_text);
 
                     let original_words = get_string_words(&model.title);
-                    let ocr_words = get_string_words(&text);
 
                     // dbg!(&model);
                     // dbg!(&original_words);
                     // dbg!(&ocr_words);
 
                     let mut num_words = 0;
-                    for ocr_word in &ocr_words {
-                        if ocr_word.chars().count() <= 3 {
+
+                    for original_word in &original_words {
+                        if original_word.chars().count() <= 3 {
                             continue;
                         }
 
-                        for original_word in &original_words {
-                            if original_word == ocr_word {
-                                num_words += 1
-                            }
+                        if ocr_text.contains(original_word) {
+                            num_words += 1
                         }
+                    }
 
-                        if num_words >= 3 {
-                            break;
-                        }
+                    if num_words >= 3 {
+                        break;
                     }
 
                     // let num_words =
