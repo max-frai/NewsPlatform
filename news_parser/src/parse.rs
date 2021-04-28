@@ -259,7 +259,10 @@ pub async fn parse_news(
         .map(|item| extract_bson_string(item.as_ref().unwrap().get("link")).unwrap_or_default())
         .collect::<Vec<String>>();
 
-    println!("Last news slug length: {}", last_news_slug.len());
+    println!(
+        "Fetched last {} news links from database",
+        last_news_slug.len()
+    );
 
     // Append failed slugs to last slug
     {
@@ -268,7 +271,7 @@ pub async fn parse_news(
     }
 
     println!(
-        "Last news slug length WITH FAILED APPENDED: {}",
+        "Last news links plus failed links appended: {}",
         last_news_slug.len()
     );
 
@@ -291,7 +294,7 @@ pub async fn parse_news(
         .map(|i| i.as_ref().unwrap().clone())
         .collect::<Vec<Document>>();
 
-    // println!("Sources count: {}", all_sources.len());
+    println!("Sources rss count to parse: {}", all_sources.len());
     all_sources.shuffle(&mut rand::thread_rng());
 
     for source_chunk in all_sources.chunks(50) {
@@ -343,7 +346,7 @@ pub async fn parse_news(
             .collect();
 
         let before = result_rss_items.len() as i32;
-        println!("BEFORE REMOVING: {}", result_rss_items.len());
+        println!("Links from all parsed rss: {}", result_rss_items.len());
 
         if !last_news_slug.is_empty() {
             result_rss_items.retain(|ref item| {
@@ -356,10 +359,13 @@ pub async fn parse_news(
 
         let after = result_rss_items.len() as i32;
         println!(
-            "AFTER REMOVING. NEWS COUNT TO PARSE: {}",
+            "Links from all parsed rss after removing from last news from db and failed: {}",
             result_rss_items.len()
         );
-        println!("SKIPPED NEWS: {}", before - after);
+        println!(
+            "DIFF (all parsed rss links - left filtered links): {}",
+            before - after
+        );
 
         result_rss_items.shuffle(&mut rand::thread_rng());
 
@@ -548,7 +554,7 @@ pub async fn parse_news(
         let mut ocr = ocr.borrow_mut();
         for model in models.iter_mut() {
             if let Ok(path) = save_og_image(&model.og_image).await {
-                ocr.set_image("test.jpeg");
+                ocr.set_image(&path);
                 ocr.set_source_resolution(70);
                 if let Ok(mut text) = ocr.get_utf8_text() {
                     text = text.replace("!", "і");
@@ -603,7 +609,7 @@ pub async fn parse_news(
             );
         }
 
-        println!("Models count: {}", bson_cards.len());
+        println!("Models count to insert into DB: {}", bson_cards.len());
 
         if !models.is_empty() {
             news_collection
