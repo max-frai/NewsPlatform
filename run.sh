@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "RUN SERVER"
-nohup ./news_server > server_LOG &
+nohup ./news_server > server_LOG 2> server_error_LOG &
 server_process_id=$!
 
 echo "Kill Xvfb"
