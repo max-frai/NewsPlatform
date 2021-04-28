@@ -164,6 +164,7 @@ async fn save_og_image(link: &str) -> anyhow::Result<String> {
     Ok(preview_path)
 }
 
+/*
 fn calculate_russian_words(
     text: &str,
     morph: Rc<MorphAnalyzer>,
@@ -207,6 +208,7 @@ fn calculate_russian_words(
 
     russian_words_found
 }
+*/
 
 fn get_string_words(text: &str) -> Vec<String> {
     WORD_RE
@@ -220,7 +222,7 @@ pub async fn parse_news(
     constants: Arc<AppConfig>,
     ocr: Rc<RefCell<LepTess>>,
     morph: Rc<MorphAnalyzer>,
-    embeddings: Rc<Embeddings<SimpleVocab, NdArray>>,
+    // embeddings: Rc<Embeddings<SimpleVocab, NdArray>>,
     failed_to_parse: Arc<RwLock<Vec<String>>>,
 ) {
     let browser = Arc::new(Browser::new(

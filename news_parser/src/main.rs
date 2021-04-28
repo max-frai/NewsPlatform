@@ -53,10 +53,10 @@ async fn main() {
             LepTess::new(Some("./tessdata"), "rus").unwrap(),
         ));
 
-        println!("Read word embedings ---------------");
-        let mut reader =
-            BufReader::new(File::open("ruwikiruscorpora_upos_skipgram_300_2_2019.bin").unwrap());
-        let embeddings = Rc::new(Embeddings::read_word2vec_binary(&mut reader).unwrap());
+        // println!("Read word embedings ---------------");
+        // let mut reader =
+        //     BufReader::new(File::open("ruwikiruscorpora_upos_skipgram_300_2_2019.bin").unwrap());
+        // let embeddings = Rc::new(Embeddings::read_word2vec_binary(&mut reader).unwrap());
 
         println!("Read morphy dictionaries ----------");
         let morph = Rc::new(MorphAnalyzer::from_file("news_rsmorphy/"));
@@ -72,10 +72,9 @@ async fn main() {
                     let failed = failed_to_parse_links.clone();
                     let morph = morph.clone();
                     let ocr = ocr_handle.clone();
-                    let embeddings = embeddings.clone();
+                    // let embeddings = embeddings.clone();
                     tokio::task::spawn_local(async move {
-                        crate::parse::parse_news(client, constants, ocr, morph, embeddings, failed)
-                            .await;
+                        crate::parse::parse_news(client, constants, ocr, morph, failed).await;
                     })
                     .await;
 
