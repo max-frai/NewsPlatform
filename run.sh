@@ -24,7 +24,7 @@ sleep 5
 export DISPLAY=:42
 
 echo "RUN NER"
-nohup python3 news_ner.py > ner_LOG &
+nohup python3 -u news_ner.py > ner_LOG &
 
 echo "RUN WEBSOCKET"
 nohup ./news_websocket > websocket_LOG &
