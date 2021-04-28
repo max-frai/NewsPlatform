@@ -10,7 +10,7 @@ ADD news_parser ./news_parser
 ADD news_server ./news_server
 ADD news_websocket ./news_websocket
 ADD Cargo.toml .
-ADD Cargo.lock .
+#ADD Cargo.lock .
 RUN cargo chef prepare  --recipe-path recipe.json
 RUN ls -la
 
@@ -45,7 +45,7 @@ ADD news_parser ./news_parser
 ADD news_server ./news_server
 ADD news_websocket ./news_websocket
 ADD Cargo.toml .
-ADD Cargo.lock .
+#ADD Cargo.lock .
 COPY --from=cacher /newsplatform/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
 RUN ls -la
