@@ -563,7 +563,7 @@ pub async fn parse_news(
                     ocr_text = ocr_text.to_lowercase().replace("!", "і").replace("$", "s");
                     dbg!(&ocr_text);
 
-                    let original_words = get_string_words(&model.title);
+                    let original_words = get_string_words(&model.title.to_lowercase());
                     // let original_words = get_string_words(
                     //     "Blue Origin Джеффа Безоса обжалует решение NASA о контракте с SpaceX",
                     // );
