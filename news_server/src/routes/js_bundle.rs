@@ -31,6 +31,14 @@ async fn js_bundle(state: web::Data<State>) -> actix_web::Result<impl Responder>
         js = format!("{}\n{}", js, js_content);
     }
 
+    // Fix websocker port
+    let port = state
+        .constants
+        .ws_server_url
+        .split(":")
+        .collect::<Vec<&str>>()[1];
+    js = js.replace("WEBSOCKET_PORT", port);
+
     let mut js_bundle_mut = state.js_bundle.write().await;
     *js_bundle_mut = js.to_owned();
 
