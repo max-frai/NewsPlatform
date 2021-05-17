@@ -20,7 +20,12 @@ pub async fn connect_websocket(
         format!("wss://{}", &websocket_constants.full_domain_raw)
     };
 
-    let ws_addr = format!("{}:2087/ws", domain);
+    let port = websocket_constants
+        .ws_server_url
+        .split(":")
+        .collect::<Vec<&str>>()[1];
+
+    let ws_addr = format!("{}:{}/ws", domain, port);
     println!("\tWS Address: {}", ws_addr);
 
     loop {
