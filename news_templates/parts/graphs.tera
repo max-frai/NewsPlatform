@@ -1,2 +1,2 @@
 <h2>Котировки</h2>
-<div id="SvelteCharts"></div>
+<div class="relative" id="SvelteCharts"></div>
