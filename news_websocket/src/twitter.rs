@@ -213,7 +213,7 @@ async fn parse_twitter_logic(
         }
 
         let id = tweet.id as i64;
-        let when = bson::DateTime(tweet.created_at);
+        let when: bson::DateTime = tweet.created_at.into();
         let text = url_re.replace_all(&tweet.text, "").to_string();
 
         let mut user_id = 0 as i64;

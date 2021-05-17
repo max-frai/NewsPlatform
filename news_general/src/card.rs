@@ -56,7 +56,7 @@ impl Default for Card {
             markdown: String::new(),
             markdown_original: String::new(),
             slug: String::new(),
-            date: bson::DateTime(Utc::now()),
+            date: Utc::now().into(),
             description: String::new(),
             lang: String::new(),
             link: String::new(),

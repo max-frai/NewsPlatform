@@ -5,10 +5,9 @@ use chrono::{DateTime, Duration, Utc};
 #[derive(Debug)]
 pub struct CardQuery {
     pub lifetime: Duration,
-    pub limit: Option<i64>,
-    pub sort: Option<Document>,
+    pub limit: i64,
+    pub sort: Document,
     pub query: Document,
-    pub projection: Option<Document>,
 }
 
 impl std::fmt::Display for CardQuery {
@@ -24,88 +23,80 @@ impl std::fmt::Display for CardQuery {
 pub fn last_15() -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(60),
-        limit: Some(15),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 15,
+        sort: doc! { "date" : -1 },
         query: doc! {},
-        projection: None,
     }
 }
 
 pub fn last_25() -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(60),
-        limit: Some(25),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 25,
+        sort: doc! { "date" : -1 },
         query: doc! {},
-        projection: None,
     }
 }
 
 pub fn all_sitemap() -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(500),
-        limit: Some(20000),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 20000,
+        sort: doc! { "date" : -1 },
         query: doc! {},
-        projection: None,
     }
 }
 
 pub fn last_n(num: i64) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(60),
-        limit: Some(num),
-        sort: Some(doc! { "date" : -1 }),
+        limit: num,
+        sort: doc! { "date" : -1 },
         query: doc! {},
-        projection: None,
     }
 }
 
 pub fn last_25_by_category(category: &str) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(160),
-        limit: Some(25),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 25,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "category" : category,
         },
-        projection: None,
     }
 }
 
 pub fn last_40_by_category(category: &str) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(160),
-        limit: Some(40),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 40,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "category" : category,
         },
-        projection: None,
     }
 }
 
 pub fn last_40_by_tag(tag_id: ObjectId) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(160),
-        limit: Some(40),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 40,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "tags" : tag_id
         },
-        projection: None,
     }
 }
 
 pub fn last_40_by_trend(trend: &str) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(160),
-        limit: Some(40),
-        sort: Some(doc! { "date" : -1 }),
+        limit: 40,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "trends" : trend
         },
-        projection: None,
     }
 }
 
@@ -114,20 +105,19 @@ pub fn last_hours(hours: i64) -> CardQuery {
 
     CardQuery {
         lifetime: Duration::seconds(120),
-        limit: None,
-        sort: Some(doc! { "date" : -1 }),
+        limit: 999999999,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "date" : { "$gte" : filter_utc }
         },
-        projection: None,
     }
 }
 
 pub fn last_between_dates(lower: DateTime<Utc>, upper: DateTime<Utc>) -> CardQuery {
     CardQuery {
         lifetime: Duration::seconds(120),
-        limit: None,
-        sort: Some(doc! { "date" : -1 }),
+        limit: 9999999,
+        sort: doc! { "date" : -1 },
         query: doc! {
             "$and" : vec![
                     doc! {
@@ -138,9 +128,5 @@ pub fn last_between_dates(lower: DateTime<Utc>, upper: DateTime<Utc>) -> CardQue
                     }
                 ]
         },
-        projection: None
-        // projection: Some(doc! {
-        //     "title": 1
-        // }),
     }
 }

@@ -1,11 +1,11 @@
-use crate::{card::Card, tag::bson::oid::ObjectId};
+use crate::card::Card;
 use anyhow::Result;
 use bson::doc;
+use bson::oid::ObjectId;
 use chrono::prelude::*;
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use maplit::hashmap;
-use mongodb::bson;
 use mongodb::Collection;
 use regex::*;
 use scraper::Html;

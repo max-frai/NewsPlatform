@@ -110,7 +110,7 @@ pub async fn rewrite_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             let service_text = item.get("service_text").unwrap().as_str().unwrap();
             let title = item.get("title").unwrap().as_str().unwrap();
 
-            let object_id = ObjectId::with_string(&tag).unwrap();
+            let object_id = ObjectId::parse_str(&tag).unwrap();
 
             if text.contains("[...] [...]") {
                 println!("Something wrong with this article rewrite [...]");

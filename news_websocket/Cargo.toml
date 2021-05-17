@@ -25,7 +25,7 @@ actix-service = "=2.0.0-beta.5"
 actix-web = { version="=4.0.0-beta.5", features = ["openssl"] }
 
 news_general = {path = "../news_general"}
-bson = "1.1"
+bson = "2.0.0-beta"
 rayon = "1.5"
 anyhow = "1.0"
 duct = "0.13"
@@ -47,7 +47,7 @@ openssl = "0.10"
 
 reqwest = { version = "0.11", features = ["json"] }
 
-mongodb = "2.0.0-alpha"
+mongodb = "2.0.0-beta"
 tokio = { version="1.4", features=["fs", "macros", "time"] }
 
 "egg-mode" = { git = "https://github.com/RAnders00/egg-mode", branch = "tokio-v1.0-upgrade", features = ["rustls"], default-features = false }

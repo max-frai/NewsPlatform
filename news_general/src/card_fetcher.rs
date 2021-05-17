@@ -86,7 +86,6 @@ impl CardFetcher {
         let options = FindOptions::builder()
             .sort(query.sort)
             .limit(query.limit)
-            .projection(query.projection)
             .allow_disk_use(true)
             .build();
 

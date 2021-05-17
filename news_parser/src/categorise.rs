@@ -131,7 +131,7 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             let articles_ids: Vec<ObjectId> = thread
                 .articles
                 .iter()
-                .map(|_id| ObjectId::with_string(_id).unwrap())
+                .map(|_id| ObjectId::parse_str(_id).unwrap())
                 .collect();
 
             let category = Category::from_str(&thread.category).unwrap();

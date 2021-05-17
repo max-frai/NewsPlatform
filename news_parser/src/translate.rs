@@ -128,7 +128,7 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
             let new_slug = str_slug::slug(&translated_title);
 
-            let object_id = ObjectId::with_string(&tag).unwrap();
+            let object_id = ObjectId::parse_str(&tag).unwrap();
 
             dbg!(&translated_title);
 
