@@ -195,9 +195,14 @@ async fn main() -> std::io::Result<()> {
     println!("Configure cert for websocket server");
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
     builder
-        .set_private_key_file("key.pem", SslFiletype::PEM)
+        .set_private_key_file(
+            format!("certs/{}_key.pem", constants.full_domain_raw),
+            SslFiletype::PEM,
+        )
         .unwrap();
-    builder.set_certificate_chain_file("cert.pem").unwrap();
+    builder
+        .set_certificate_chain_file(format!("certs/{}_cert.pem", constants.full_domain_raw))
+        .unwrap();
 
     let mut listenfd = ListenFd::from_env();
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
