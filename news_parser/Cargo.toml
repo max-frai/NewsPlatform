@@ -14,7 +14,6 @@ split-debuginfo = "unpacked"
 news_general = {path = "../news_general"}
 chrono = "0.4"
 url = "1.2"
-bson = "2.0.0-beta"
 byteorder = "1.4"
 rand = "0.8"
 rayon = "1.5"
@@ -52,5 +51,5 @@ browser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/browser-rs.git" }
 rss-parser-rs = { git = "https://maxfrai@bitbucket.org/maxfrai/rss-parser-rs.git" }
 html2md = { git = "https://github.com/max-frai/html2md.git" }
 
-mongodb = "2.0.0-beta"
+mongodb = "=2.0.0-alpha"
 tokio = { version="1.4", features=["macros", "time"] }

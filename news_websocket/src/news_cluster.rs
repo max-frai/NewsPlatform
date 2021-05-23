@@ -3,9 +3,9 @@ use crate::{
     ws_server::{MostRecentClusterMessage, PopularClusterMessage, SummaryClusterMessage},
 };
 use actix_web::web;
-use bson::{oid::ObjectId, *};
 use duct::*;
 use futures::StreamExt;
+use mongodb::bson::{oid::ObjectId, *};
 use news_general::{card::Card, card_queries::last_hours};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -26,7 +26,7 @@ async fn clustering_logic(
     let iframe_re = regex::Regex::new(r"<iframe.*?</iframe>").unwrap();
     let space_re = regex::Regex::new(r" +").unwrap();
 
-    let mut source2name: HashMap<bson::oid::ObjectId, String> = HashMap::new();
+    let mut source2name: HashMap<mongodb::bson::oid::ObjectId, String> = HashMap::new();
     let mut sources_cursor = state
         .sources_col
         .find(None, None)
@@ -92,7 +92,7 @@ async fn clustering_logic(
             Some(ClusteringItem {
                 category: String::default(),
                 description: String::default(),
-                timestamp: item.date.timestamp_millis() / 1000,
+                timestamp: item.date.timestamp(),
                 site_name: source2name[&item.source_id].to_owned(),
                 text: markdown.to_owned(),
                 title: item.title.to_owned(),
@@ -164,7 +164,7 @@ async fn clustering_logic(
                 .collect();
 
             for article in &thread.articles {
-                let oid = ObjectId::parse_str(&article).unwrap();
+                let oid = ObjectId::with_string(&article).unwrap();
                 state.fetcher.fetch_exact_by_id(oid).await.unwrap();
             }
         }
@@ -224,7 +224,7 @@ async fn generate_news(
         let mut items_cache = HashMap::new();
         for mut thread in summary.threads.iter_mut() {
             for article_id in &thread.articles {
-                let article_id = ObjectId::parse_str(article_id).unwrap();
+                let article_id = ObjectId::with_string(article_id).unwrap();
                 // dbg!(&article_id);
                 let item = state
                     .fetcher
@@ -237,8 +237,8 @@ async fn generate_news(
 
             if title_sorting != NewsTitleSorting::DoNotSort {
                 thread.articles.sort_by(|a, b| {
-                    let a_oid = ObjectId::parse_str(a).unwrap();
-                    let b_oid = ObjectId::parse_str(b).unwrap();
+                    let a_oid = ObjectId::with_string(a).unwrap();
+                    let b_oid = ObjectId::with_string(b).unwrap();
 
                     let a_item = items_cache[&a_oid].to_owned();
                     let b_item = items_cache[&b_oid].to_owned();
@@ -255,7 +255,7 @@ async fn generate_news(
                 });
             }
 
-            let oid = ObjectId::parse_str(thread.articles.first().unwrap()).unwrap();
+            let oid = ObjectId::with_string(thread.articles.first().unwrap()).unwrap();
 
             thread.main_item = items_cache.get_mut(&oid).unwrap().to_owned();
             thread.main_item.html = String::new();
@@ -270,8 +270,8 @@ async fn generate_news(
         summary.threads.sort_by(|a, b| {
             b.main_item
                 .date
-                .timestamp_millis()
-                .partial_cmp(&a.main_item.date.timestamp_millis())
+                .timestamp()
+                .partial_cmp(&a.main_item.date.timestamp())
                 .unwrap()
         });
     }

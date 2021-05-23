@@ -11,7 +11,7 @@ use std::env;
 use std::sync::Arc;
 use unicode_segmentation::UnicodeSegmentation;
 
-use bson::oid::ObjectId;
+use mongodb::bson::oid::ObjectId;
 
 pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     let db = client.database(&constants.database_name);
@@ -128,7 +128,7 @@ pub async fn translate_news(client: Arc<Client>, constants: Arc<AppConfig>) {
 
             let new_slug = str_slug::slug(&translated_title);
 
-            let object_id = ObjectId::parse_str(&tag).unwrap();
+            let object_id = ObjectId::with_string(&tag).unwrap();
 
             dbg!(&translated_title);
 

@@ -1,11 +1,11 @@
 use crate::{state::State, ws_server::TweetsMessage};
 use actix_web::web;
-use bson::doc;
 use chrono::prelude::*;
 use egg_mode::tweet::ExtendedTweetEntities;
 use egg_mode::{self, entities::MediaType, tweet::Timeline};
 use futures::StreamExt;
 use lazy_static::*;
+use mongodb::bson::doc;
 use mongodb::{
     options::{FindOptions, UpdateOptions},
     Collection,
@@ -51,7 +51,10 @@ async fn generate_tweets(state: web::Data<State>) -> anyhow::Result<()> {
 
         let mut tweets = vec![];
         while let Some(tweet) = tweets_iter.next().await {
-            tweets.push(bson::from_bson::<Tweet>(bson::Bson::Document(tweet.unwrap())).unwrap());
+            tweets.push(
+                mongodb::bson::from_bson::<Tweet>(mongodb::bson::Bson::Document(tweet.unwrap()))
+                    .unwrap(),
+            );
         }
 
         // println!("Tweets gethered: {}", tweets.len());
@@ -160,7 +163,7 @@ pub async fn parse_twitter(state: web::Data<State>) -> anyhow::Result<()> {
         println!("Insert tweets");
         for tweet in timeline_tweets {
             let update_options = UpdateOptions::builder().upsert(true).build();
-            let tweet_bson = bson::to_bson(&tweet).unwrap();
+            let tweet_bson = mongodb::bson::to_bson(&tweet).unwrap();
             state
                 .twitter_col
                 .update_one(
@@ -213,7 +216,7 @@ async fn parse_twitter_logic(
         }
 
         let id = tweet.id as i64;
-        let when: bson::DateTime = tweet.created_at.into();
+        let when = tweet.created_at;
         let text = url_re.replace_all(&tweet.text, "").to_string();
 
         let mut user_id = 0 as i64;

@@ -1,7 +1,9 @@
-use bson::oid::ObjectId;
 use chrono::Utc;
 use comrak::{format_html, parse_document, Arena, ComrakOptions};
 use lazy_static::lazy_static;
+use mongodb::bson;
+use mongodb::bson::oid::ObjectId;
+use mongodb::bson::Bson;
 use rand::Rng;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -23,7 +25,6 @@ pub struct Card {
     pub markdown: String,
     pub markdown_original: String,
     pub slug: String,
-    // #[serde(serialize_with = "ts_seconds::serialize")]
     pub date: bson::DateTime,
     pub description: String,
     pub lang: String,
@@ -56,7 +57,7 @@ impl Default for Card {
             markdown: String::new(),
             markdown_original: String::new(),
             slug: String::new(),
-            date: Utc::now().into(),
+            date: bson::DateTime(Utc::now()),
             description: String::new(),
             lang: String::new(),
             link: String::new(),

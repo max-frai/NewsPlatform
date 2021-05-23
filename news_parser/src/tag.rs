@@ -109,7 +109,7 @@ pub async fn tag_news(
                     .search_for_tag_in_wiki(&constants.ner_url, word, kind)
                     .await
                 {
-                    let tag_bson = bson::to_document(&tag).unwrap();
+                    let tag_bson = mongodb::bson::to_document(&tag).unwrap();
                     tags_col.insert_one(tag_bson, None).await;
 
                     if !final_tags.contains(&tag._id) {

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use bson::*;
+use mongodb::bson::*;
 use mongodb::Database;
 use news_general::constants::AppConfig;
 

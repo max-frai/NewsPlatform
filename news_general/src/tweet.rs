@@ -1,5 +1,6 @@
-use bson::doc;
 use chrono::prelude::*;
+use mongodb::bson;
+use mongodb::bson::doc;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

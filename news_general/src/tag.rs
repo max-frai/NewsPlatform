@@ -1,11 +1,11 @@
 use crate::card::Card;
 use anyhow::Result;
-use bson::doc;
-use bson::oid::ObjectId;
 use chrono::prelude::*;
 use futures::stream::StreamExt;
 use lazy_static::lazy_static;
 use maplit::hashmap;
+use mongodb::bson::doc;
+use mongodb::bson::oid::ObjectId;
 use mongodb::Collection;
 use regex::*;
 use scraper::Html;
@@ -111,7 +111,7 @@ impl TagsManager {
         let mut tags_lookup = HashMap::new();
 
         while let Some(tag) = raw_tags.next().await {
-            let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
+            let tag: Tag = mongodb::bson::from_document(tag.unwrap()).unwrap();
             tags.insert(tag._id.to_owned(), tag.to_owned());
             tags_lookup.insert((tag.kind.clone(), tag.slug.to_owned()), tag);
         }
@@ -162,7 +162,7 @@ impl TagsManager {
 
         let mut tags = HashMap::<ObjectId, usize>::new();
         while let Some(card) = last_news.next().await {
-            let card_typed: Card = bson::from_document(card?)?;
+            let card_typed: Card = mongodb::bson::from_document(card?)?;
             for tag in card_typed.tags {
                 if let Some(full_tag) = self.tags.get(&tag) {
                     if let Some(ref filter_kind) = kind {
@@ -200,7 +200,7 @@ impl TagsManagerWriter {
         let mut tags = HashMap::new();
 
         while let Some(tag) = raw_tags.next().await {
-            let tag: Tag = bson::from_document(tag.unwrap()).unwrap();
+            let tag: Tag = mongodb::bson::from_document(tag.unwrap()).unwrap();
             tags.insert((tag.kind.clone(), tag.title.to_owned()), tag);
         }
 

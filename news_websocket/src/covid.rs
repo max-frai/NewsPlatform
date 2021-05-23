@@ -1,7 +1,7 @@
 use crate::{state::State, ws_server};
 use actix_web::web;
-use bson::{bson, doc, oid::ObjectId, Bson};
 use chrono::prelude::*;
+use mongodb::bson::{bson, doc, oid::ObjectId, Bson};
 use serde::{Deserialize, Serialize};
 use std::{cmp, collections::HashMap};
 use ws_server::CovidTimeMessage;

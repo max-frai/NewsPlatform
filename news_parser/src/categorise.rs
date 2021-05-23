@@ -10,8 +10,8 @@ use std::io::Write;
 use std::sync::Arc;
 use std::{collections::HashSet, env};
 
-use bson::oid::ObjectId;
 use chrono::Utc;
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
@@ -131,11 +131,11 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
             let articles_ids: Vec<ObjectId> = thread
                 .articles
                 .iter()
-                .map(|_id| ObjectId::parse_str(_id).unwrap())
+                .map(|_id| ObjectId::with_string(_id).unwrap())
                 .collect();
 
             let category = Category::from_str(&thread.category).unwrap();
-            let category_bson = bson::to_bson(&category).unwrap();
+            let category_bson = mongodb::bson::to_bson(&category).unwrap();
 
             println!("Set category for {} articles", articles_ids.len());
             dbg!(&category);
@@ -160,7 +160,7 @@ pub async fn categorise_news(client: Arc<Client>, constants: Arc<AppConfig>) {
     }
 
     println!("Mark left news as not proper: {}", all_ids.len());
-    let unknown_bson = bson::to_bson(&Category::Unknown).unwrap();
+    let unknown_bson = mongodb::bson::to_bson(&Category::Unknown).unwrap();
     news_collection
         .update_many(
             doc! {

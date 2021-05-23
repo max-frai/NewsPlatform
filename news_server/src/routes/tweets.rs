@@ -1,9 +1,9 @@
 use crate::{helper::redirect, modules};
 use crate::{layout_context::LayoutContext, state::State};
 use actix_web::{get, web, HttpResponse, Responder};
-use bson::doc;
 use chrono::prelude::*;
 use futures::StreamExt;
+use mongodb::bson::doc;
 use mongodb::{
     options::{FindOptions, UpdateOptions},
     Collection,
@@ -41,7 +41,10 @@ async fn tweets(state: web::Data<State>, mut context: LayoutContext) -> impl Res
 
     let mut tweets = vec![];
     while let Some(tweet) = tweets_iter.next().await {
-        tweets.push(bson::from_bson::<Tweet>(bson::Bson::Document(tweet.unwrap())).unwrap());
+        tweets.push(
+            mongodb::bson::from_bson::<Tweet>(mongodb::bson::Bson::Document(tweet.unwrap()))
+                .unwrap(),
+        );
     }
 
     let right_tpl = state

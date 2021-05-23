@@ -4,10 +4,10 @@ use tokio::sync::RwLock;
 use crate::{card::Card, card_queries::CardQuery, category, tag::TagsManager};
 use anyhow::Context;
 use anyhow::Result;
-use bson::{doc, oid::ObjectId};
 use chrono::prelude::*;
 use futures::stream::StreamExt;
 use lru_cache::LruCache;
+use mongodb::bson::{doc, oid::ObjectId};
 use mongodb::options::FindOptions;
 use mongodb::Collection;
 
@@ -95,7 +95,7 @@ impl CardFetcher {
 
         let mut result = vec![];
         while let Some(card) = cards.next().await {
-            let mut card_typed: Card = bson::from_document(card?)?;
+            let mut card_typed: Card = mongodb::bson::from_document(card?)?;
             self.prepare_card(&mut card_typed).await;
             result.push(card_typed);
         }
@@ -124,7 +124,7 @@ impl CardFetcher {
             .find_one(doc! { "slug" : &slug }, None)
             .await;
 
-        let mut card: Card = bson::from_document(card?.context("No such card")?)?;
+        let mut card: Card = mongodb::bson::from_document(card?.context("No such card")?)?;
         self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache.lock() {
@@ -142,7 +142,7 @@ impl CardFetcher {
         }
 
         let card = self.collection.find_one(doc! { "_id" : &_id }, None).await;
-        let mut card: Card = bson::from_document(card?.context("No such card")?)?;
+        let mut card: Card = mongodb::bson::from_document(card?.context("No such card")?)?;
         self.prepare_card(&mut card).await;
 
         if let Ok(mut cache) = self.exact_cache_by_id.lock() {

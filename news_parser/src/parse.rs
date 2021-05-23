@@ -28,11 +28,11 @@ use tokio::sync::RwLock;
 use url::Url;
 use whatlang::{detect, Lang};
 
-use bson::oid::ObjectId;
 use byteorder::BigEndian;
 use byteorder::ByteOrder;
 use duct::*;
 use lazy_static::*;
+use mongodb::bson::oid::ObjectId;
 use mongodb::{
     bson::{doc, document::Document, Bson},
     options::FindOptions,
@@ -136,7 +136,7 @@ pub fn extract_bson_string(data: Option<&Bson>) -> Option<String> {
 fn object_id_from_timestamp(timestamp: u32) -> ObjectId {
     let mut buf: [u8; 12] = [0; 12];
     BigEndian::write_u32(&mut buf, timestamp);
-    ObjectId::from_bytes(buf)
+    ObjectId::with_bytes(buf)
 }
 
 enum ParseResult {
@@ -395,7 +395,7 @@ pub async fn parse_news(
                     let link = item.link.clone().unwrap();
                     let title = item.title.clone().unwrap();
                     let slug = item.slug.clone().unwrap();
-                    let source_id = ObjectId::parse_str(&item.source.clone().unwrap()).unwrap();
+                    let source_id = ObjectId::with_string(&item.source.clone().unwrap()).unwrap();
                     let date = item.pub_date.unwrap();
                     let country = item.country.clone().unwrap();
                     let _source_name = &item.source_name.clone().unwrap();
@@ -604,7 +604,7 @@ pub async fn parse_news(
                 .collect();
 
             bson_cards.push(
-                bson::to_bson(&model)
+                mongodb::bson::to_bson(&model)
                     .unwrap()
                     .as_document()
                     .unwrap()

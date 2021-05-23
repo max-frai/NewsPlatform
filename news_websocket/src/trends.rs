@@ -1,9 +1,9 @@
 use crate::{state::State, ws_server::TodayTrendsMessage};
 use actix_web::web;
-use bson::doc;
 use chrono::prelude::*;
 use lazy_static::*;
 use maplit::hashmap;
+use mongodb::bson::doc;
 use news_general::{card_queries::last_between_dates, normalize_words::normalize_words};
 use rayon::prelude::*;
 use rsmorphy::{opencorpora::kind::PartOfSpeach::Noun, prelude::*};

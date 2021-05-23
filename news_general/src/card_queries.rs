@@ -1,6 +1,6 @@
-use bson::Document;
-use bson::{doc, oid::ObjectId};
 use chrono::{DateTime, Duration, Utc};
+use mongodb::bson::Document;
+use mongodb::bson::{doc, oid::ObjectId};
 
 #[derive(Debug)]
 pub struct CardQuery {
