@@ -25,7 +25,7 @@ async fn feed(state: web::Data<State>) -> impl Responder {
     let channel = ChannelBuilder::default()
         .title("Hubloid")
         .link(state.constants.full_domain.to_owned())
-        .description("HubLoid ➤ Все свежие и главные новости Украины и мира на сегодня ✔ Обновление каждую минуту ≡ Ваш персональный хаб новостей!")
+        .description(&format!("HubLoid ➤ Все свежие и главные новости {} и мира на сегодня ✔ Обновление каждую минуту ≡ Ваш персональный хаб новостей!", state.constants.country_2))
         .items(items)
         .build()
         .unwrap();

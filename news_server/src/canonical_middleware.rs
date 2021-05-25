@@ -52,6 +52,7 @@ where
             context.insert("PROJECT_DOMAIN", &state.constants.full_domain);
             context.insert("BUILD_VERSION", &state.build_random_number);
             context.insert("AUTHORS", &state.constants.authors);
+            context.insert("CONSTANTS", &*state.constants);
         }
 
         if !req.query_string().is_empty() {

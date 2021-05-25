@@ -1,6 +1,6 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AppConfig {
     pub server_url: String,
     pub ws_server_url: String,
@@ -15,6 +15,10 @@ pub struct AppConfig {
 
     pub authors: Vec<String>,
     pub stop_tags: Vec<String>,
+
+    pub country_1: String,
+    pub country_2: String,
+    pub country_3: String,
 
     pub parser_parse: bool,
     pub parser_rewrite: bool,

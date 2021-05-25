@@ -6,7 +6,7 @@
 {% block center_column %}
     {% include "parts/graphs.tera" %}
     <h1 class="text-center pt-2">
-        Мы пишем о политике, бизнесе, образовании, культуре, технологиях в Украине и мире - обо всем, что важно знать современному человеку.
+        Мы пишем о политике, бизнесе, образовании, культуре, технологиях в {{CONSTANTS.country_3}} и мире - обо всем, что важно знать современному человеку.
     </h1>
     <div class="flex flex-wrap justify-evenly">
         {% for author in AUTHORS %}
