@@ -20,6 +20,10 @@ pub struct AppConfig {
     pub country_2: String,
     pub country_3: String,
 
+    pub corona_confirm_index: usize,
+    pub corona_deaths_index: usize,
+    pub corona_recovered_index: usize,
+
     pub parser_parse: bool,
     pub parser_rewrite: bool,
     pub parser_tag: bool,

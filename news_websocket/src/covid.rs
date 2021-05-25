@@ -196,9 +196,12 @@ pub async fn parse_covid(state: web::Data<State>) -> anyhow::Result<()> {
 
     let overall_better = "https://www.worldometers.info/coronavirus/";
 
-    let (confirmed_points, confirmed_points_all) = generate_timing(confirmed, 255).await?;
-    let (deaths_points, deaths_points_all) = generate_timing(deaths, 255).await?;
-    let (recovered_points, recovered_points_all) = generate_timing(recovered, 188).await?;
+    let (confirmed_points, confirmed_points_all) =
+        generate_timing(confirmed, state.constants.corona_confirm_index).await?;
+    let (deaths_points, deaths_points_all) =
+        generate_timing(deaths, state.constants.corona_deaths_index).await?;
+    let (recovered_points, recovered_points_all) =
+        generate_timing(recovered, state.constants.corona_recovered_index).await?;
     // dbg!(&deaths_points);
 
     // dbg!(&confirmed_points);
