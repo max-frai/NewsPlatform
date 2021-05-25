@@ -1,7 +1,7 @@
 {% extends "layouts/layout.tera" %}
 {% block meta %}
-    <title>HubLoid ➤ Новости Украины и мира за последний час - Главное на сегодня</title>
-    <meta content="HubLoid ➤ Все свежие и главные новости Украины и мира на сегодня ✔ Обновление каждую минуту ≡ Ваш персональный хаб новостей!" name="description"/>
+    <title>HubLoid ➤ Новости {{CONSTANTS.country_2}} и мира за последний час - Главное на сегодня</title>
+    <meta content="HubLoid ➤ Все свежие и главные новости {{CONSTANTS.country_2}} и мира на сегодня ✔ Обновление каждую минуту ≡ Ваш персональный хаб новостей!" name="description"/>
 {% endblock %}
 {% block center_column %}
     {% include "parts/graphs.tera" %}
