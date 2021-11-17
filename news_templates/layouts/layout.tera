@@ -33,6 +33,7 @@
                 </div>
                 <div id="sidebar">
                     <div class="sidebar__inner">
+                        <a target="_blank" href="https://price.ua/?utm_source=hubloid&utm_medium=banner&utm_campaign=blackfriday"><img style="width: 100%; border-radius: 10px;" src="/static/media/priceua.jpg" /></a>
                         <div id="SvelteCovid"></div>
                         {% block right_column %}{% endblock right_column %}
                     </div>
